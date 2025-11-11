@@ -40,7 +40,15 @@ export default function PartsPage({
   const vehicleBrands = getVehicleBrands();
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams as Record<string, string>);
+    const params = new URLSearchParams();
+    for (const key in searchParams) {
+      const value = searchParams[key];
+      if (typeof value === 'string') {
+        params.set(key, value);
+      } else if (Array.isArray(value)) {
+        value.forEach(v => params.append(key, v));
+      }
+    }
     params.set('page', pageNumber.toString());
     return `/parts?${params.toString()}`;
   };
