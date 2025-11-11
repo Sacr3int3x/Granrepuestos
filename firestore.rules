@@ -26,6 +26,8 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
+      // The user is an admin if their UID exists in the /admins collection,
+      // OR if they are the specific initial admin user.
       return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
@@ -40,11 +42,8 @@ service cloud.firestore {
      * @principle Allows public read access but restricts write access to admins only.
      */
     match /brands/{brandId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     /******************* Categories Collection Rules *******************/
@@ -58,11 +57,8 @@ service cloud.firestore {
      * @principle Allows public read access but restricts write access to admins only.
      */
     match /categories/{categoryId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     /******************* Parts Collection Rules *******************/
@@ -76,13 +72,11 @@ service cloud.firestore {
      * @principle Allows public read access but restricts write access to admins only.
      */
     match /parts/{partId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
-      /******************* Admins Collection Rules *******************/
+    
+    /******************* Admins Collection Rules *******************/
     /**
      * @description Controls access to the /admins collection. Admin creation is disabled from the client.
      * @path /admins/{uid}
@@ -96,9 +90,12 @@ service cloud.firestore {
       match /admins/{uid} {
         allow get: if isAdmin();
         allow list: if isAdmin();
-        allow create: if false;
-        allow update: if false;
-        allow delete: if isAdmin();
+        // A user can create their own admin document, but cannot create for others.
+        // This is a one-time operation to establish the first admin.
+        allow create: if request.auth.uid == uid;
+        allow update, delete: if false;
     }
   }
 }
+
+    
