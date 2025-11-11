@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,7 +33,7 @@ export default function CartSheet() {
   const handleWhatsAppQuote = () => {
     const message = generateQuoteMessage();
     // Reemplaza YOUR_PHONE_NUMBER con tu número de WhatsApp con código de país
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/584141123707?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -40,7 +41,7 @@ export default function CartSheet() {
     const subject = "Solicitud de Cotización de Repuestos - GranRepuestos";
     const body = generateQuoteMessage();
     // Reemplaza YOUR_EMAIL@example.com con tu dirección de correo
-    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = `mailto:info@granrepuestos.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
 
@@ -51,6 +52,11 @@ export default function CartSheet() {
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="px-6">
           <SheetTitle>Carrito de Compras ({cartItemCount})</SheetTitle>
+           {cartItems.length === 0 && (
+             <SheetDescription>
+                Tu carrito está vacío. ¡Añade algunos repuestos para empezar!
+             </SheetDescription>
+           )}
         </SheetHeader>
         <Separator />
         {cartItems.length > 0 ? (
@@ -89,10 +95,6 @@ export default function CartSheet() {
             >
               <PackageX className="h-16 w-16 text-muted-foreground/50" />
             </div>
-            <h2 className="text-xl font-semibold">Tu carrito está vacío</h2>
-            <p className="text-muted-foreground">
-              ¡Añade algunos repuestos para empezar!
-            </p>
             <Button asChild variant="outline" onClick={() => setIsCartOpen(false)}>
               <Link href="/parts">Ver Repuestos</Link>
             </Button>
