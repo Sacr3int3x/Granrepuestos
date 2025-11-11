@@ -22,7 +22,7 @@ import { Filter } from 'lucide-react';
 
 const PARTS_PER_PAGE = 15;
 
-export default function PartsPage({
+export default async function PartsPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
