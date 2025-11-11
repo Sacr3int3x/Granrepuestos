@@ -67,7 +67,7 @@ export default function Home() {
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed text-center mt-4">
             Nos asociamos con los mejores de la industria para ofrecerte repuestos fiables y de alta calidad.
           </p>
-          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]">
+          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden">
             <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
               {duplicatedBrands.map((brand, index) => (
                 <li key={`${brand.id}-${index}`}>
@@ -91,7 +91,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center tracking-tighter sm:text-4xl md:text-5xl font-headline">
             Productos Destacados
           </h2>
-          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]">
+          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden">
             <ul className="flex items-stretch justify-center md:justify-start [&>li]:mx-4 animate-infinite-scroll">
             {duplicatedFeaturedParts.map((part: Part, index) => (
               <li key={`${part.id}-${index}`} className="w-80 flex-shrink-0">
