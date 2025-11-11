@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,21 +11,43 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Icons } from "@/components/icons";
 import { useCart } from "@/context/cart-context";
 
+const NavLink = ({ href, children, onClick }: { href: string, children: React.ReactNode, onClick: () => void }) => {
+  const pathname = usePathname();
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "text-lg font-medium transition-colors hover:text-primary",
+        pathname === href ? "text-foreground" : "text-muted-foreground"
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </Link>
+  );
+};
+
+
 export default function Header() {
   const pathname = usePathname();
   const { cartItemCount, setIsCartOpen } = useCart();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/parts", label: "Repuestos" },
   ];
 
+  const handleLinkClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center px-4">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Icons.logo className="h-20 w-20 text-primary" />
-          <span className="font-bold sm:inline-block font-headline">
+          <span className="sr-only sm:inline-block font-bold font-headline">
             GranRepuestos
           </span>
         </Link>
@@ -82,7 +105,7 @@ export default function Header() {
             )}
           </Button>
 
-          <Sheet>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -97,27 +120,30 @@ export default function Header() {
                <SheetHeader className="sr-only">
                   <SheetTitle>Menú de navegación</SheetTitle>
                </SheetHeader>
-              <div className="flex flex-col gap-6 pt-6">
-                <Link href="/" className="flex items-center space-x-2">
+              <div className="flex flex-col gap-6 pt-6 h-full">
+                <Link href="/" onClick={handleLinkClick} className="flex items-center space-x-2">
                   <Icons.logo className="h-10 w-10 text-primary" />
                   <span className="font-bold font-headline">GranRepuestos</span>
                 </Link>
                 <nav className="grid gap-4">
                   {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "text-lg font-medium transition-colors hover:text-primary",
-                        pathname === item.href
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      )}
-                    >
+                     <NavLink key={item.href} href={item.href} onClick={handleLinkClick}>
                       {item.label}
-                    </Link>
+                    </NavLink>
                   ))}
                 </nav>
+                 <div className="mt-auto flex flex-col gap-2">
+                   <Button asChild variant="outline">
+                     <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
+                        <MessageSquare className="mr-2" /> WhatsApp
+                      </a>
+                   </Button>
+                    <Button asChild variant="outline">
+                      <a href="mailto:info@granrepuestos.com" onClick={handleLinkClick}>
+                        <Mail className="mr-2" /> Correo
+                      </a>
+                    </Button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
