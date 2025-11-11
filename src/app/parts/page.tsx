@@ -29,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const PARTS_PER_PAGE = 15;
 
-export default function PartsPage() {
+function PartsPageContent() {
   const searchParams = useSearchParams();
   
   const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
@@ -75,9 +75,7 @@ export default function PartsPage() {
   };
 
   const FilterComponent = () => (
-    <Suspense fallback={<div>Cargando filtros...</div>}>
-      <Filters categories={categories} vehicleBrands={vehicleBrands} />
-    </Suspense>
+    <Filters categories={categories} vehicleBrands={vehicleBrands} />
   )
   
   const getBrandForPart = (part: Part) => allBrands?.find(b => b.id === part.brandId);
@@ -270,4 +268,13 @@ export default function PartsPage() {
       </div>
     </div>
   );
+}
+
+
+export default function PartsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">Cargando...</div>}>
+      <PartsPageContent />
+    </Suspense>
+  )
 }
