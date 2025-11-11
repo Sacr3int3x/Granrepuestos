@@ -177,7 +177,7 @@ export default function Home() {
     <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-            <Icons.logo className="w-full h-full text-primary opacity-30 scale-125" />
+            <Icons.logo className="w-full h-full text-primary opacity-20 scale-125" />
         </div>
         <Carousel className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
