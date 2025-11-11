@@ -93,6 +93,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "vehicleBrandId": {
+          "type": "string",
+          "description": "The brand of the vehicle this part is for."
+        },
+        "vehicleModelId": {
+          "type": "string",
+          "description": "The model of the vehicle this part is for."
         }
       },
       "required": [

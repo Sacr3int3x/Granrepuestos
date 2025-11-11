@@ -22,10 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getCategories } from "@/lib/data";
-import type { Part, Brand } from "@/lib/types";
+import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
+import type { Part, Brand, VehicleBrand, VehicleModel } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -38,6 +39,8 @@ const formSchema = z.object({
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
   imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform(val => val.split(',').map(s => s.trim())),
   isFeatured: z.boolean().default(false),
+  vehicleBrandId: z.string().optional(),
+  vehicleModelId: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -55,6 +58,8 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   }, [firestore]);
   const { data: brands } = useCollection<Brand>(brandsQuery);
   const categories = getCategories();
+  const vehicleBrands = getVehicleBrands();
+  const [availableModels, setAvailableModels] = useState<VehicleModel[]>([]);
 
   const defaultValues: Partial<ProductFormValues> = part
     ? {
@@ -62,21 +67,38 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(', ') : '',
       }
     : {
-        name: '',
-        sku: '',
-        description: '',
+        name: "",
+        sku: "",
+        description: "",
         price: 0,
         stock: 0,
-        brandId: '',
-        categoryId: '',
-        imageUrls: '',
+        brandId: "",
+        categoryId: "",
+        imageUrls: "",
         isFeatured: false,
+        vehicleBrandId: "",
+        vehicleModelId: "",
       };
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  const selectedVehicleBrand = form.watch("vehicleBrandId");
+
+  useEffect(() => {
+    if (selectedVehicleBrand) {
+      setAvailableModels(getVehicleModels(selectedVehicleBrand));
+      // Reset model if brand changes and current model is not compatible
+      if(!getVehicleModels(selectedVehicleBrand).find(m => m.id === form.getValues("vehicleModelId"))) {
+        form.setValue("vehicleModelId", "");
+      }
+    } else {
+      setAvailableModels([]);
+      form.setValue("vehicleModelId", "");
+    }
+  }, [selectedVehicleBrand, form]);
 
   const handleSubmit = (data: ProductFormValues) => {
     onSubmit(data);
@@ -107,7 +129,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField control={form.control} name="brandId" render={({ field }) => (
             <FormItem>
-            <FormLabel>Marca</FormLabel>
+            <FormLabel>Marca del Repuesto</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl><SelectTrigger><SelectValue placeholder="Selecciona una marca" /></SelectTrigger></FormControl>
                 <SelectContent>{brands?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
@@ -125,6 +147,60 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             <FormMessage />
             </FormItem>
         )}/>
+        </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="vehicleBrandId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Marca del Vehículo</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona una marca de vehículo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {vehicleBrands.map((brand) => (
+                        <SelectItem key={brand.id} value={brand.id}>
+                          {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehicleModelId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Modelo del Vehículo</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={!selectedVehicleBrand || availableModels.length === 0}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un modelo de vehículo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableModels.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {model.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
         </div>
         <FormField control={form.control} name="imageUrls" render={({ field }) => (
             <FormItem>
