@@ -5,18 +5,20 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBrands } from "@/lib/data";
+import { getBrands, getFeaturedParts } from "@/lib/data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import AddToCartButton from "./parts/components/add-to-cart-button";
+import { Mail, MapPin, Phone } from "lucide-react";
+import type { Part } from "@/lib/types";
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
 
 export default function Home() {
   const brands = getBrands();
+  const featuredParts = getFeaturedParts();
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -56,7 +58,7 @@ export default function Home() {
           
           <div className="w-full pb-10">
             <div className="mx-auto max-w-6xl px-4">
-              <p className="text-center text-sm font-semibold uppercase text-white/60 tracking-wider mb-6">
+              <p className="text-center text-lg font-semibold uppercase text-white/80 tracking-wider mb-6">
                 Marcas con las que trabajamos
               </p>
               <div
@@ -84,6 +86,84 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Products Section */}
+      <section id="featured-products" className="py-16 lg:py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Productos Destacados</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Los repuestos más populares y recomendados por nuestros clientes.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {featuredParts.map((part: Part) => (
+              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group">
+                <CardHeader className="p-0">
+                  <Link href={`/parts/${part.id}`}>
+                    <div className="relative aspect-square w-full">
+                      <Image
+                        src={part.imageUrls[0]}
+                        alt={part.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        data-ai-hint="auto part"
+                      />
+                    </div>
+                  </Link>
+                </CardHeader>
+                <CardContent className="p-4 flex-grow">
+                  <h3 className="text-lg font-semibold leading-tight">
+                     <Link href={`/parts/${part.id}`}>{part.name}</Link>
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">{part.brand.name}</p>
+                </CardContent>
+                <CardFooter className="p-4 flex justify-between items-center">
+                  <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                  <AddToCartButton part={part} />
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-16 lg:py-24 bg-card border-t">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="flex flex-col items-center">
+              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
+                <Phone className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold">Teléfono</h3>
+              <p className="text-muted-foreground mt-2">+1 (234) 567-890</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
+                <Mail className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold">Correo Electrónico</h3>
+              <p className="text-muted-foreground mt-2">
+                <a href="mailto:info@granrepuestos.com" className="hover:underline">info@granrepuestos.com</a>
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
+                <MapPin className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold">Ubicación</h3>
+              <p className="text-muted-foreground mt-2">123 Calle de Repuestos, Ciudad Auto</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
