@@ -49,7 +49,7 @@ export default function Home() {
               GranRepuestos
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/90 drop-shadow-md">
-              Encuentra el repuesto adecuado para tu vehículo en nuestro extenso catálogo.
+              Encuentra el repuesto original adecuado para tu vehículo en nuestro catálogo.
             </p>
             <Button asChild size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href="/parts">Comprar Ahora</Link>
@@ -57,10 +57,15 @@ export default function Home() {
           </div>
           
           <div className="w-full pb-10">
-            <div className="mx-auto max-w-6xl px-4">
-              <p className="text-center text-lg font-semibold uppercase text-white/80 tracking-wider mb-6" style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)' }}>
-                Marcas con las que trabajamos
-              </p>
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold font-headline">
+                  Marcas con las que trabajamos
+                </h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Solo ofrecemos repuestos de las marcas más confiables del mercado.
+                </p>
+              </div>
               <div
                 className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
                 <ul
@@ -143,7 +148,7 @@ export default function Home() {
                 <Phone className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">Teléfono</h3>
-              <p className="text-muted-foreground mt-2">+1 (234) 567-890</p>
+              <p className="text-muted-foreground mt-2">+584141123707</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
@@ -159,7 +164,7 @@ export default function Home() {
                 <MapPin className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">Ubicación</h3>
-              <p className="text-muted-foreground mt-2">123 Calle de Repuestos, Ciudad Auto</p>
+              <p className="text-muted-foreground mt-2">Guatire Edo. Miranda</p>
             </div>
           </div>
         </div>
