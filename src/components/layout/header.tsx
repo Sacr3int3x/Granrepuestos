@@ -21,9 +21,9 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center">
+      <div className="container flex h-20 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Icons.logo className="h-6 w-6 text-primary" />
+          <Icons.logo className="h-10 w-10 text-primary" />
           <span className="font-bold sm:inline-block font-headline">
             GranRepuestos
           </span>
@@ -99,7 +99,7 @@ export default function Header() {
                </SheetHeader>
               <div className="flex flex-col gap-6 pt-6">
                 <Link href="/" className="flex items-center space-x-2">
-                  <Icons.logo className="h-6 w-6 text-primary" />
+                  <Icons.logo className="h-10 w-10 text-primary" />
                   <span className="font-bold font-headline">GranRepuestos</span>
                 </Link>
                 <nav className="grid gap-4">
