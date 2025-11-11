@@ -38,7 +38,15 @@ export default function PartsPage({
   const brands = getBrands();
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams as any);
+    const params = new URLSearchParams();
+    // Safely copy searchParams to avoid runtime errors with non-string values
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        params.set(key, value);
+      } else if (Array.isArray(value)) {
+        value.forEach(v => params.append(key, v));
+      }
+    });
     params.set('page', pageNumber.toString());
     return `/parts?${params.toString()}`;
   };
