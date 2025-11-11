@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,6 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Icons } from "@/components/icons";
+import { useAuth } from "@/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un correo válido." }),
@@ -34,6 +36,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const auth = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,16 +47,25 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // NOTE: This is a mock authentication.
-    // In a real application, you would integrate with Firebase Auth here.
-    console.log("Login attempt with:", values);
-    toast({
-      title: "Inicio de Sesión Exitoso (Simulado)",
-      description: "Redirigiendo al panel de administración...",
-    });
-    // Redirect to admin page after a short delay
-    setTimeout(() => router.push("/admin"), 1000);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: "Inicio de Sesión Exitoso",
+        description: "Redirigiendo al panel de administración...",
+      });
+      router.push("/admin");
+    } catch (error: any) {
+      console.error("Authentication Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: error.message || "No se pudo iniciar sesión. Por favor, revisa tus credenciales.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -81,6 +94,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="admin@example.com"
                         {...field}
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -98,14 +112,15 @@ export default function LoginPage() {
                         type="password"
                         placeholder="********"
                         {...field}
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Iniciar Sesión
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
             </form>
           </Form>
