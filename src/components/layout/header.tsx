@@ -46,7 +46,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center px-4">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Icons.logo className="h-20 w-20 text-primary" />
+          <Icons.logo className="h-12 w-20 text-primary" />
           <span className="sr-only sm:inline-block font-bold font-headline">
             GranRepuestos
           </span>
@@ -133,6 +133,7 @@ export default function Header() {
                   ))}
                 </nav>
                  <div className="mt-auto flex flex-col gap-2">
+                    <p className="text-sm text-muted-foreground px-1">Contáctanos:</p>
                    <Button asChild variant="outline">
                      <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
                         <MessageSquare className="mr-2" /> WhatsApp
