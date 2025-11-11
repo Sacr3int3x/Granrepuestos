@@ -9,11 +9,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import Filters from './components/filters';
+import { CardTitle } from '@/components/ui/card';
 
 const PARTS_PER_PAGE = 8;
 
@@ -35,6 +36,12 @@ export default function PartsPage({
   
   const categories = getCategories();
   const brands = getBrands();
+
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams as any);
+    params.set('page', pageNumber.toString());
+    return `/parts?${params.toString()}`;
+  };
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -102,14 +109,15 @@ export default function PartsPage({
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious 
-                      href={page > 1 ? { pathname: '/parts', query: { ...searchParams, page: page - 1 } } : '#'}
+                      href={createPageURL(page - 1)}
                       aria-disabled={page <= 1}
+                      className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
                     />
                   </PaginationItem>
                   {[...Array(totalPages)].map((_, i) => (
                     <PaginationItem key={i}>
                       <PaginationLink
-                        href={{ pathname: '/parts', query: { ...searchParams, page: i + 1 } }}
+                        href={createPageURL(i + 1)}
                         isActive={page === i + 1}
                       >
                         {i + 1}
@@ -118,8 +126,9 @@ export default function PartsPage({
                   ))}
                   <PaginationItem>
                     <PaginationNext 
-                      href={page < totalPages ? { pathname: '/parts', query: { ...searchParams, page: page + 1 } } : '#'} 
+                      href={createPageURL(page + 1)} 
                       aria-disabled={page >= totalPages}
+                      className={page >= totalPages ? "pointer-events-none opacity-50" : undefined}
                     />
                   </PaginationItem>
                 </PaginationContent>
