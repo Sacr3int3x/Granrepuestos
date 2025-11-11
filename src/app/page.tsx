@@ -43,8 +43,8 @@ export default function Home() {
           </CarouselContent>
         </Carousel>
 
-        <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center text-white p-4">
-          <div className="flex-grow flex flex-col items-center justify-center">
+        <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
+          <div className="flex-grow flex flex-col items-center justify-center text-white" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' }}>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
               GranRepuestos
             </h1>
@@ -58,7 +58,7 @@ export default function Home() {
           
           <div className="w-full pb-10">
             <div className="mx-auto max-w-6xl px-4">
-              <p className="text-center text-lg font-semibold uppercase text-white/80 tracking-wider mb-6">
+              <p className="text-center text-lg font-semibold uppercase text-white/80 tracking-wider mb-6" style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)' }}>
                 Marcas con las que trabajamos
               </p>
               <div
