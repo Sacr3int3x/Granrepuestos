@@ -204,10 +204,11 @@ function PartDetailClient({ partId }: { partId: string }) {
 }
 
 
-export default function PartDetailPage({ params }: { params: { id: string } }) {
+export default async function PartDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   return (
     <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <PartDetailClient partId={params.id} />
+      <PartDetailClient partId={id} />
     </div>
   );
 }
