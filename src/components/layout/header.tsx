@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,28 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
+           <div className="hidden md:flex items-center gap-2">
+             <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              aria-label="Contactar por WhatsApp"
+            >
+               <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer">
+                <MessageSquare className="h-5 w-5" />
+              </a>
+            </Button>
+             <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              aria-label="Contactar por correo"
+            >
+              <a href="mailto:info@granrepuestos.com">
+                <Mail className="h-5 w-5" />
+              </a>
+            </Button>
+          </div>
           <Button
             variant="ghost"
             size="icon"
