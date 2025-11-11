@@ -36,7 +36,7 @@ export default function Home() {
                     priority
                     data-ai-hint={image.imageHint}
                   />
-                  <div className="absolute inset-0 bg-black/60" />
+                  <div className="absolute inset-0 bg-white/40" />
                 </div>
               </CarouselItem>
             ))}
@@ -44,11 +44,11 @@ export default function Home() {
         </Carousel>
 
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
-          <div className="flex-grow flex flex-col items-center justify-center text-white" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' }}>
+          <div className="flex-grow flex flex-col items-center justify-center text-foreground" style={{ textShadow: '0 1px 10px rgba(255, 255, 255, 0.6)' }}>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
               GranRepuestos
             </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-primary-foreground/90 drop-shadow-md">
+            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/90 drop-shadow-md">
               Encuentra el repuesto adecuado para tu vehículo en nuestro extenso catálogo.
             </p>
             <Button asChild size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
