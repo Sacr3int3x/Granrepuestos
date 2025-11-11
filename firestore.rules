@@ -26,8 +26,7 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      // The user is an admin if their UID exists in the /admins collection,
-      // OR if they are the specific initial admin user.
+      // The user is an admin if their UID exists in the /admins collection.
       return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
@@ -78,18 +77,16 @@ service cloud.firestore {
     
     /******************* Admins Collection Rules *******************/
     /**
-     * @description Controls access to the /admins collection. Admin creation is disabled from the client.
+     * @description Controls access to the /admins collection.
      * @path /admins/{uid}
      * @allow get: if isAdmin();
      * @allow list: if isAdmin();
-     * @allow create: if false; // Admin creation must be done from the server/console.
-     * @allow update: if false;
-     * @allow delete: if isAdmin(); // Admins can remove other admins
-     * @principle Secures the admin collection by preventing client-side modifications.
+     * @allow create: if request.auth.uid == uid; // A user can create their own admin document, but cannot create for others.
+     * @allow update, delete: if false; // Prevent client-side modification/deletion.
+     * @principle Secures the admin collection by preventing client-side modifications after creation.
      */
       match /admins/{uid} {
-        allow get: if isAdmin();
-        allow list: if isAdmin();
+        allow get, list: if isAdmin();
         // A user can create their own admin document, but cannot create for others.
         // This is a one-time operation to establish the first admin.
         allow create: if request.auth.uid == uid;
@@ -97,5 +94,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
