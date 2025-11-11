@@ -46,7 +46,7 @@ export default function Home() {
         </Carousel>
         <div className="absolute z-10 text-center text-white p-4">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
-            Repuestos de Calidad, Precios Insuperables
+            GranRepuestos
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-primary-foreground/90 drop-shadow-md">
             Encuentra el repuesto adecuado para tu vehículo en nuestro extenso catálogo.
@@ -57,80 +57,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="mx-auto max-w-3xl text-center">
-             <h2 className="text-3xl font-bold text-center tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Marcas de Confianza
-            </h2>
-            <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-              Nos asociamos con los mejores de la industria para ofrecerte repuestos fiables y de alta calidad.
-            </p>
-          </div>
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 items-center">
-            {brands.map((brand) => (
-              <div key={brand.id} className="flex justify-center">
-                <Image
-                  src={brand.logoUrl}
-                  alt={`${brand.name} Logo`}
-                  width={140}
-                  height={70}
-                  className="object-contain transition-transform duration-300 ease-in-out hover:scale-110 grayscale hover:grayscale-0"
-                  data-ai-hint="brand logo"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-24 bg-card">
-        <div className="container px-4 md:px-6">
-           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
-              Productos Destacados
-            </h2>
-            <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-              Echa un vistazo a nuestros productos más populares y recomendados.
-            </p>
-          </div>
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredParts.map((part: Part) => (
-              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-                <CardHeader className="p-0">
-                  <Link href={`/parts/${part.id}`} className="block relative aspect-square w-full">
-                    <Image
-                      src={part.imageUrls[0]}
-                      alt={part.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      data-ai-hint="auto part"
-                    />
-                  </Link>
-                </CardHeader>
-                <CardContent className="p-4 flex-grow">
-                  <h3 className="text-lg font-semibold font-headline leading-tight">
-                    <Link href={`/parts/${part.id}`}>{part.name}</Link>
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">{part.brand.name}</p>
-                </CardContent>
-                <CardFooter className="p-4 flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
-                  <Button asChild variant="outline">
-                    <Link href={`/parts/${part.id}`}>Ver</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Button asChild size="lg">
-              <Link href="/parts">Ver Todos los Repuestos</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
