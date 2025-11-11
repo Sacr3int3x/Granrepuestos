@@ -70,7 +70,7 @@ export default function Home() {
           <div
             className="w-full inline-flex flex-nowrap overflow-hidden mt-12"
           >
-            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+            <ul className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
               {duplicatedBrands.map((brand, index) => (
                 <li key={`${brand.id}-${index}`}>
                   <Image
@@ -96,7 +96,7 @@ export default function Home() {
           <div
             className="w-full inline-flex flex-nowrap overflow-hidden mt-12"
           >
-            <ul className="flex items-stretch justify-center md:justify-start [&>li]:mx-4 animate-infinite-scroll">
+            <ul className="flex items-stretch justify-center [&>li]:mx-4 animate-infinite-scroll">
             {duplicatedFeaturedParts.map((part: Part, index) => (
               <li key={`${part.id}-${index}`} className="w-80 flex-shrink-0">
                 <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
