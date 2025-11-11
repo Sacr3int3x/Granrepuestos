@@ -21,8 +21,8 @@ export default function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Icons.logo className="h-6 w-6 text-primary" />
-          <span className="hidden font-bold sm:inline-block font-headline">
-            Auto Parts Hub
+          <span className="font-bold sm:inline-block font-headline">
+            GranRepuestos
           </span>
         </Link>
         <nav className="hidden gap-6 text-sm font-medium md:flex">
@@ -63,7 +63,7 @@ export default function Header() {
               <div className="flex flex-col gap-6 pt-6">
                 <Link href="/" className="flex items-center space-x-2">
                   <Icons.logo className="h-6 w-6 text-primary" />
-                  <span className="font-bold font-headline">Auto Parts Hub</span>
+                  <span className="font-bold font-headline">GranRepuestos</span>
                 </Link>
                 <nav className="grid gap-4">
                   {navItems.map((item) => (

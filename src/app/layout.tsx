@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Auto Parts Hub",
+  title: "GranRepuestos",
   description: "Tu tienda única para repuestos de calidad.",
 };
 

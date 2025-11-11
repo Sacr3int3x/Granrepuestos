@@ -64,7 +64,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl font-headline">Admin Login</CardTitle>
           <CardDescription>
-            Accede al panel de administración de Auto Parts Hub.
+            Accede al panel de administración de GranRepuestos.
           </CardDescription>
         </CardHeader>
         <CardContent>
