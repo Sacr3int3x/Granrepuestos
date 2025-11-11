@@ -18,6 +18,7 @@ const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
 export default function Home() {
   const featuredParts = getFeaturedParts();
   const brands = getBrands();
+  const duplicatedBrands = [...brands, ...brands];
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -64,19 +65,21 @@ export default function Home() {
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed text-center mt-4">
             Nos asociamos con los mejores de la industria para ofrecerte repuestos fiables y de alta calidad.
           </p>
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-center">
-            {brands.map((brand) => (
-              <div key={brand.id} className="flex justify-center">
-                <Image
-                  src={brand.logoUrl}
-                  alt={`${brand.name} Logo`}
-                  width={150}
-                  height={80}
-                  className="object-contain transition-transform duration-300 ease-in-out hover:scale-110 grayscale hover:grayscale-0"
-                  data-ai-hint="brand logo"
-                />
-              </div>
-            ))}
+          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]">
+            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+              {duplicatedBrands.map((brand, index) => (
+                <li key={`${brand.id}-${index}`}>
+                  <Image
+                    src={brand.logoUrl}
+                    alt={`${brand.name} Logo`}
+                    width={150}
+                    height={80}
+                    className="object-contain transition-transform duration-300 ease-in-out hover:scale-110 grayscale hover:grayscale-0"
+                    data-ai-hint="brand logo"
+                  />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
