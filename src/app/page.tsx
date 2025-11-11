@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -19,6 +20,7 @@ export default function Home() {
   const featuredParts = getFeaturedParts();
   const brands = getBrands();
   const duplicatedBrands = [...brands, ...brands];
+  const duplicatedFeaturedParts = [...featuredParts, ...featuredParts];
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -89,33 +91,37 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center tracking-tighter sm:text-4xl md:text-5xl font-headline">
             Productos Destacados
           </h2>
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredParts.map((part: Part) => (
-              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-square w-full">
-                    <Image
-                      src={part.imageUrls[0]}
-                      alt={part.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      data-ai-hint="auto part"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 flex-grow">
-                  <h3 className="text-lg font-semibold font-headline">{part.name}</h3>
-                  <p className="text-sm text-muted-foreground">{part.brand.name}</p>
-                </CardContent>
-                <CardFooter className="p-4 flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
-                  <Button asChild variant="outline">
-                    <Link href={`/parts/${part.id}`}>Ver</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+          <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-200px),transparent_100%)]">
+            <ul className="flex items-stretch justify-center md:justify-start [&>li]:mx-4 animate-infinite-scroll">
+            {duplicatedFeaturedParts.map((part: Part, index) => (
+              <li key={`${part.id}-${index}`} className="w-80 flex-shrink-0">
+                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                  <CardHeader className="p-0">
+                    <div className="relative aspect-square w-full">
+                      <Image
+                        src={part.imageUrls[0]}
+                        alt={part.name}
+                        fill
+                        className="object-cover"
+                        sizes="320px"
+                        data-ai-hint="auto part"
+                      />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 flex-grow">
+                    <h3 className="text-lg font-semibold font-headline">{part.name}</h3>
+                    <p className="text-sm text-muted-foreground">{part.brand.name}</p>
+                  </CardContent>
+                  <CardFooter className="p-4 flex justify-between items-center">
+                    <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
+                    <Button asChild variant="outline">
+                      <Link href={`/parts/${part.id}`}>Ver</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </li>
             ))}
+            </ul>
           </div>
           <div className="text-center mt-12">
             <Button asChild size="lg">
