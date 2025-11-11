@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import { getParts, getCategories, getBrands, getVehicleBrands } from '@/lib/data';
 import type { Part } from '@/lib/types';
@@ -15,6 +16,7 @@ import Image from 'next/image';
 import { Suspense } from 'react';
 import Filters from './components/filters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent } from "@/components/ui/card";
 
 const PARTS_PER_PAGE = 10;
 
@@ -74,46 +76,78 @@ export default function PartsPage({
 
         <main className="lg:col-span-3">
           {paginatedParts.length > 0 ? (
-            <div className="border rounded-lg overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">Imagen</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Marca</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead className="text-right">Precio</TableHead>
-                    <TableHead className="text-center">Stock</TableHead>
-                    <TableHead />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedParts.map((part: Part) => (
-                    <TableRow key={part.id}>
-                      <TableCell>
-                        <Image
-                          src={part.imageUrls[0]}
-                          alt={part.name}
-                          width={60}
-                          height={60}
-                          className="rounded-md object-cover"
-                          data-ai-hint="auto part"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium">{part.name}</TableCell>
-                      <TableCell>{part.brand.name}</TableCell>
-                      <TableCell>{part.sku}</TableCell>
-                      <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
-                      <TableCell className="text-center">{part.stock}</TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                        </Button>
-                      </TableCell>
+            <div className="space-y-4">
+              {/* Mobile View - Cards */}
+              <div className="md:hidden space-y-4">
+                {paginatedParts.map((part: Part) => (
+                  <Card key={part.id} className="overflow-hidden">
+                    <CardContent className="p-4 flex gap-4">
+                      <Image
+                        src={part.imageUrls[0]}
+                        alt={part.name}
+                        width={80}
+                        height={80}
+                        className="rounded-md object-cover"
+                        data-ai-hint="auto part"
+                      />
+                      <div className="flex-grow">
+                        <h3 className="font-medium">{part.name}</h3>
+                        <p className="text-sm text-muted-foreground">{part.brand.name}</p>
+                        <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+                        <div className="flex items-center justify-between mt-2">
+                           <p className="font-semibold">${part.price.toFixed(2)}</p>
+                           <Button asChild variant="outline" size="sm">
+                            <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop View - Table */}
+              <div className="hidden md:block border rounded-lg overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[80px]">Imagen</TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Marca</TableHead>
+                      <TableHead>SKU</TableHead>
+                      <TableHead className="text-right">Precio</TableHead>
+                      <TableHead className="text-center">Stock</TableHead>
+                      <TableHead />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedParts.map((part: Part) => (
+                      <TableRow key={part.id}>
+                        <TableCell>
+                          <Image
+                            src={part.imageUrls[0]}
+                            alt={part.name}
+                            width={60}
+                            height={60}
+                            className="rounded-md object-cover"
+                            data-ai-hint="auto part"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{part.name}</TableCell>
+                        <TableCell>{part.brand.name}</TableCell>
+                        <TableCell>{part.sku}</TableCell>
+                        <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
+                        <TableCell className="text-center">{part.stock}</TableCell>
+                        <TableCell className="text-right">
+                          <Button asChild variant="outline" size="sm">
+                            <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-lg">
