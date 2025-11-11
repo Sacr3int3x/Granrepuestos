@@ -35,7 +35,7 @@ import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import type { Brand } from "@/lib/types";
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -55,34 +55,56 @@ export default function BrandsTab() {
   const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
     if (!firestore || !brandsCollection) return;
     
-    try {
-      if (editingBrand && data.id) {
-        const brandDoc = doc(firestore, "brands", data.id);
-        await updateDoc(brandDoc, { name: data.name, logoUrl: data.logoUrl });
-        toast({ title: "Marca actualizada", description: `"${data.name}" ha sido actualizada.` });
-      } else {
-        await addDoc(brandsCollection, { name: data.name, logoUrl: data.logoUrl });
-        toast({ title: "Marca creada", description: `"${data.name}" ha sido añadida.` });
-      }
-    } catch (error) {
-      console.error("Error submitting brand:", error);
-      toast({ title: "Error", description: "No se pudo guardar la marca.", variant: "destructive" });
-    } finally {
-      setEditingBrand(undefined);
-      setIsFormOpen(false);
+    const brandData = { name: data.name, logoUrl: data.logoUrl };
+
+    if (editingBrand && data.id) {
+      const brandDoc = doc(firestore, "brands", data.id);
+      updateDoc(brandDoc, brandData)
+        .then(() => {
+          toast({ title: "Marca actualizada", description: `"${data.name}" ha sido actualizada.` });
+        })
+        .catch(() => {
+          const error = new FirestorePermissionError({
+            path: brandDoc.path,
+            operation: 'update',
+            requestResourceData: brandData,
+          });
+          errorEmitter.emit('permission-error', error);
+        });
+    } else {
+      addDoc(brandsCollection, brandData)
+        .then(() => {
+          toast({ title: "Marca creada", description: `"${data.name}" ha sido añadida.` });
+        })
+        .catch(() => {
+          const error = new FirestorePermissionError({
+            path: brandsCollection.path,
+            operation: 'create',
+            requestResourceData: brandData,
+          });
+          errorEmitter.emit('permission-error', error);
+        });
     }
+    
+    setEditingBrand(undefined);
+    setIsFormOpen(false);
   };
 
   const handleDelete = async (brandId: string) => {
     if (!firestore) return;
-    try {
-      const brandDoc = doc(firestore, "brands", brandId);
-      await deleteDoc(brandDoc);
-      toast({ title: "Marca eliminada", variant: "destructive" });
-    } catch (error) {
-      console.error("Error deleting brand: ", error);
-      toast({ title: "Error", description: "No se pudo eliminar la marca.", variant: "destructive" });
-    }
+    
+    const brandDoc = doc(firestore, "brands", brandId);
+    deleteDoc(brandDoc)
+      .then(() => {
+        toast({ title: "Marca eliminada", variant: "destructive" });
+      })
+      .catch(() => {
+        const error = new FirestorePermissionError({
+          path: brandDoc.path,
+          operation: 'delete',
+        });
+        errorEmitter.emit('permission-error', error);
+      });
   };
 
   const openEditDialog = (brand: Brand) => {
