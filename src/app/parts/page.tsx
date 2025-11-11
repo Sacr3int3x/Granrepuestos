@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 
-const PARTS_PER_PAGE = 10;
+const PARTS_PER_PAGE = 15;
 
 export default function PartsPage({
   searchParams,
