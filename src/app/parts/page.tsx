@@ -16,6 +16,9 @@ import Filters from './components/filters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Filter } from 'lucide-react';
+
 
 const PARTS_PER_PAGE = 15;
 
@@ -55,6 +58,12 @@ export default function PartsPage({
     return `/parts?${params.toString()}`;
   };
 
+  const FilterComponent = () => (
+    <Suspense fallback={<div>Cargando filtros...</div>}>
+      <Filters categories={categories} brands={brands} vehicleBrands={vehicleBrands} />
+    </Suspense>
+  )
+
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8 text-center">
@@ -66,11 +75,28 @@ export default function PartsPage({
         </p>
       </div>
 
+       <div className="lg:hidden mb-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full">
+              <Filter className="mr-2 h-4 w-4" />
+              Filtrar
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
+            <SheetHeader>
+              <SheetTitle>Filtros</SheetTitle>
+            </SheetHeader>
+            <div className="overflow-y-auto">
+              <FilterComponent />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        <aside className="lg:col-span-1">
-          <Suspense fallback={<div>Cargando filtros...</div>}>
-            <Filters categories={categories} brands={brands} vehicleBrands={vehicleBrands} />
-          </Suspense>
+        <aside className="lg:col-span-1 hidden lg:block">
+          <FilterComponent />
         </aside>
 
         <main className="lg:col-span-3">

@@ -89,8 +89,8 @@ export default function Filters({ categories, brands, vehicleBrands }: FiltersPr
 
 
   return (
-    <Card className="sticky top-20">
-      <CardHeader>
+    <Card className="sticky top-20 shadow-none border-none lg:border lg:shadow-sm">
+      <CardHeader className='hidden lg:flex'>
         <CardTitle className="flex items-center justify-between">
           Filtros
           {hasFilters && (
@@ -101,7 +101,7 @@ export default function Filters({ categories, brands, vehicleBrands }: FiltersPr
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-6">
+      <CardContent className="grid gap-6 p-1 lg:p-6">
         <form onSubmit={handleSearch} className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
