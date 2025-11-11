@@ -5,6 +5,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +38,7 @@ export default function Home() {
                     priority
                     data-ai-hint={image.imageHint}
                   />
-                  <div className="absolute inset-0 bg-white/40" />
+                   <div className="absolute inset-0 bg-white/40" />
                 </div>
               </CarouselItem>
             ))}
@@ -101,36 +103,50 @@ export default function Home() {
               Los repuestos más populares y recomendados por nuestros clientes.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredParts.map((part: Part) => (
-              <Card key={part.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group">
-                <CardHeader className="p-0">
-                  <Link href={`/parts/${part.id}`}>
-                    <div className="relative aspect-square w-full">
-                      <Image
-                        src={part.imageUrls[0]}
-                        alt={part.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        data-ai-hint="auto part"
-                      />
-                    </div>
-                  </Link>
-                </CardHeader>
-                <CardContent className="p-4 flex-grow">
-                  <h3 className="text-lg font-semibold leading-tight">
-                     <Link href={`/parts/${part.id}`}>{part.name}</Link>
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">{part.brand.name}</p>
-                </CardContent>
-                <CardFooter className="p-4 flex justify-between items-center">
-                  <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
-                  <AddToCartButton part={part} />
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {featuredParts.map((part: Part) => (
+                <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
+                   <div className="p-1">
+                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group h-full">
+                      <CardHeader className="p-0">
+                        <Link href={`/parts/${part.id}`}>
+                          <div className="relative aspect-square w-full">
+                            <Image
+                              src={part.imageUrls[0]}
+                              alt={part.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              data-ai-hint="auto part"
+                            />
+                          </div>
+                        </Link>
+                      </CardHeader>
+                      <CardContent className="p-4 flex-grow">
+                        <h3 className="text-lg font-semibold leading-tight">
+                           <Link href={`/parts/${part.id}`}>{part.name}</Link>
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">{part.brand.name}</p>
+                      </CardContent>
+                      <CardFooter className="p-4 flex justify-between items-center mt-auto">
+                        <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                        <AddToCartButton part={part} />
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 h-10 w-10" />
+            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 h-10 w-10" />
+          </Carousel>
         </div>
       </section>
 
