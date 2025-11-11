@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getParts, getCategories, getBrands, getVehicleBrands, getVehicleModels } from '@/lib/data';
+import { getParts, getCategories, getBrands, getVehicleBrands } from '@/lib/data';
 import type { Part } from '@/lib/types';
 import {
   Pagination,
@@ -38,17 +38,9 @@ export default function PartsPage({
   const categories = getCategories();
   const brands = getBrands();
   const vehicleBrands = getVehicleBrands();
-  const vehicleModels = getVehicleModels();
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams();
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (typeof value === 'string') {
-        params.set(key, value);
-      } else if (Array.isArray(value)) {
-        value.forEach(v => params.append(key, v));
-      }
-    });
+    const params = new URLSearchParams(searchParams as Record<string, string>);
     params.set('page', pageNumber.toString());
     return `/parts?${params.toString()}`;
   };
@@ -67,7 +59,7 @@ export default function PartsPage({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <aside className="lg:col-span-1">
           <Suspense fallback={<div>Cargando filtros...</div>}>
-            <Filters categories={categories} brands={brands} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />
+            <Filters categories={categories} brands={brands} vehicleBrands={vehicleBrands} />
           </Suspense>
         </aside>
 

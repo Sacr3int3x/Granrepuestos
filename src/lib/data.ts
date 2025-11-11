@@ -20,25 +20,35 @@ const categories: Category[] = [
 const vehicleBrands: VehicleBrand[] = [
   { id: 'toyota', name: 'Toyota' },
   { id: 'honda', name: 'Honda' },
+  { id: 'mitsubishi', name: 'Mitsubishi' },
+  { id: 'chevrolet', name: 'Chevrolet' },
   { id: 'ford', name: 'Ford' },
-  { id: 'vw', name: 'Volkswagen' },
-  { id: 'bmw', name: 'BMW' },
-  { id: 'mercedes', name: 'Mercedes-Benz' },
-  { id: 'audi', name: 'Audi' },
-  { id: 'subaru', name: 'Subaru' },
-  { id: 'peugeot', name: 'Peugeot' },
+  { id: 'isuzu', name: 'Isuzu' },
+  { id: 'jeep', name: 'Jeep' },
 ]
 
 const vehicleModels: VehicleModel[] = [
+    // Toyota
     { id: 'corolla', name: 'Corolla', brandId: 'toyota' },
+    { id: 'hilux', name: 'Hilux', brandId: 'toyota' },
+    { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
+    // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
+    { id: 'crv', name: 'CR-V', brandId: 'honda' },
+    // Mitsubishi
+    { id: 'lancer', name: 'Lancer', brandId: 'mitsubishi' },
+    { id: 'l200', name: 'L200', brandId: 'mitsubishi' },
+    // Chevrolet
+    { id: 'spark', name: 'Spark', brandId: 'chevrolet' },
+    { id: 'silverado', name: 'Silverado', brandId: 'chevrolet' },
+    // Ford
     { id: 'focus', name: 'Focus', brandId: 'ford' },
-    { id: 'golf', name: 'Golf', brandId: 'vw' },
-    { id: 'a3', name: 'A3', brandId: 'audi' },
-    { id: 'e90', name: 'Serie 3 E90', brandId: 'bmw' },
-    { id: 'w204', name: 'Clase C W204', brandId: 'mercedes' },
-    { id: 'impreza', name: 'Impreza WRX', brandId: 'subaru' },
-    { id: '308', name: '308', brandId: 'peugeot' },
+    { id: 'ranger', name: 'Ranger', brandId: 'ford' },
+    // Isuzu
+    { id: 'dmax', name: 'D-Max', brandId: 'isuzu' },
+    // Jeep
+    { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
+    { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
 ]
 
 const parts: Part[] = [
@@ -97,7 +107,7 @@ const parts: Part[] = [
     imageUrls: ['https://picsum.photos/seed/spark1/600/600'],
     isFeatured: true,
     specifications: {
-      Material: 'Iridio',
+      'Material': 'Iridio',
       'Vida útil': 'Hasta 100,000 km',
     },
     relatedPartIds: ['p005'],
@@ -118,8 +128,8 @@ const parts: Part[] = [
       Posición: 'Delantero Derecho',
     },
     relatedPartIds: ['p002', 'p010'],
-    vehicleBrandId: 'vw',
-    vehicleModelId: 'golf',
+    vehicleBrandId: 'mitsubishi',
+    vehicleModelId: 'lancer',
   },
   {
     id: 'p005',
@@ -172,8 +182,8 @@ const parts: Part[] = [
       Diámetro: '312 mm',
     },
     relatedPartIds: ['p001'],
-    vehicleBrandId: 'audi',
-    vehicleModelId: 'a3',
+    vehicleBrandId: 'jeep',
+    vehicleModelId: 'cherokee',
   },
   {
     id: 'p008',
@@ -190,8 +200,8 @@ const parts: Part[] = [
       Material: 'Aluminio',
     },
     relatedPartIds: ['p005', 'p003'],
-    vehicleBrandId: 'bmw',
-    vehicleModelId: 'e90',
+    vehicleBrandId: 'chevrolet',
+    vehicleModelId: 'silverado',
   },
   {
     id: 'p009',
@@ -209,8 +219,8 @@ const parts: Part[] = [
       Voltaje: '12V',
     },
     relatedPartIds: ['p010'],
-    vehicleBrandId: 'mercedes',
-    vehicleModelId: 'w204',
+    vehicleBrandId: 'isuzu',
+    vehicleModelId: 'dmax',
   },
   {
     id: 'p010',
@@ -246,8 +256,8 @@ const parts: Part[] = [
       Diámetro: '240 mm',
     },
     relatedPartIds: ['p005'],
-    vehicleBrandId: 'peugeot',
-    vehicleModelId: '308',
+    vehicleBrandId: 'ford',
+    vehicleModelId: 'ranger',
   },
   {
     id: 'p012',
@@ -265,8 +275,8 @@ const parts: Part[] = [
       Posición: 'Kit completo',
     },
     relatedPartIds: ['p002', 'p007', 'p001'],
-    vehicleBrandId: 'subaru',
-    vehicleModelId: 'impreza',
+    vehicleBrandId: 'toyota',
+    vehicleModelId: 'hilux',
   }
 ];
 
@@ -338,8 +348,9 @@ export function getVehicleBrands(): VehicleBrand[] {
   return vehicleBrands;
 }
 
-export function getVehicleModels(): VehicleModel[] {
-    return vehicleModels;
+export function getVehicleModels(brandId?: string): VehicleModel[] {
+    if (!brandId) return vehicleModels;
+    return vehicleModels.filter(model => model.brandId === brandId);
 }
 
 export function getRelatedParts(part: Part): Part[] {

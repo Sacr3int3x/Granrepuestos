@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -15,24 +15,32 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Category, Brand, VehicleBrand, VehicleModel } from '@/lib/types';
 import { Search, X } from 'lucide-react';
+import { getVehicleModels } from '@/lib/data';
 
 interface FiltersProps {
   categories: Category[];
   brands: Brand[];
   vehicleBrands: VehicleBrand[];
-  vehicleModels: VehicleModel[];
 }
 
-export default function Filters({ categories, brands, vehicleBrands, vehicleModels }: FiltersProps) {
+export default function Filters({ categories, brands, vehicleBrands }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const selectedVehicleBrand = searchParams.get('vehicleBrand');
+  
+  const availableModels = useMemo(() => {
+    if (!selectedVehicleBrand) return [];
+    return getVehicleModels(selectedVehicleBrand);
+  }, [selectedVehicleBrand]);
+
 
   const createQueryString = useCallback(
     (paramsToUpdate: Record<string, string | number | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
       Object.entries(paramsToUpdate).forEach(([key, value]) => {
-        if (value === undefined || value === '') {
+        if (value === undefined || value === '' || value === 'all') {
           params.delete(key);
         } else {
           params.set(key, String(value));
@@ -45,8 +53,20 @@ export default function Filters({ categories, brands, vehicleBrands, vehicleMode
     [searchParams]
   );
   
+  const handleBrandChange = (value: string) => {
+    const newQueryString = createQueryString({ 
+        vehicleBrand: value, 
+        vehicleModel: undefined // Reset model when brand changes
+    });
+    router.push(`${pathname}?${newQueryString}`);
+  };
+
+  const handleModelChange = (value: string) => {
+    router.push(`${pathname}?${createQueryString({ vehicleModel: value })}`);
+  };
+
   const handleSelectChange = (key: string) => (value: string) => {
-    router.push(pathname + '?' + createQueryString({ [key]: value === 'all' ? undefined : value }));
+    router.push(pathname + '?' + createQueryString({ [key]: value }));
   };
   
   const handlePriceChange = (newPrice: number[]) => {
@@ -65,7 +85,7 @@ export default function Filters({ categories, brands, vehicleBrands, vehicleMode
   };
   
   const currentMaxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 500;
-  const hasFilters = !!(searchParams.get('query') || searchParams.get('brand') || searchParams.get('category') || searchParams.get('maxPrice') || searchParams.get('vehicleBrand') || searchParams.get('vehicleModel'));
+  const hasFilters = !!(searchParams.toString());
 
 
   return (
@@ -125,7 +145,7 @@ export default function Filters({ categories, brands, vehicleBrands, vehicleMode
         
         <div className="grid gap-2">
           <label className="font-medium">Marca del Vehículo</label>
-          <Select onValueChange={handleSelectChange('vehicleBrand')} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
+          <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
             <SelectTrigger>
               <SelectValue placeholder="Seleccionar marca" />
             </SelectTrigger>
@@ -140,13 +160,17 @@ export default function Filters({ categories, brands, vehicleBrands, vehicleMode
 
         <div className="grid gap-2">
           <label className="font-medium">Modelo del Vehículo</label>
-          <Select onValueChange={handleSelectChange('vehicleModel')} defaultValue={searchParams.get('vehicleModel') || 'all'}>
+          <Select 
+            onValueChange={handleModelChange} 
+            defaultValue={searchParams.get('vehicleModel') || 'all'}
+            disabled={!selectedVehicleBrand}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Seleccionar modelo" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los modelos</SelectItem>
-              {vehicleModels.map((model) => (
+              {availableModels.map((model) => (
                 <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
               ))}
             </SelectContent>
