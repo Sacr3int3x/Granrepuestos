@@ -1,0 +1,161 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { getBrands } from "@/lib/data";
+import { BrandForm } from "./brand-form";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import type { Brand } from "@/lib/types";
+
+export default function BrandsTab() {
+  const [brands, setBrands] = useState(getBrands());
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingBrand, setEditingBrand] = useState<Brand | undefined>(undefined);
+  const { toast } = useToast();
+
+  const handleFormSubmit = (data: Omit<Brand, 'id'> & { id?: string }) => {
+    if (editingBrand) {
+      setBrands(brands.map((b) => (b.id === data.id ? { ...b, ...data } : b)));
+      toast({ title: "Marca actualizada", description: `"${data.name}" ha sido actualizada.` });
+    } else {
+      const newBrand = { ...data, id: data.name.toLowerCase().replace(/\s+/g, '-') };
+      setBrands([newBrand, ...brands]);
+      toast({ title: "Marca creada", description: `"${data.name}" ha sido añadida.` });
+    }
+    setEditingBrand(undefined);
+    setIsFormOpen(false);
+  };
+
+  const handleDelete = (brandId: string) => {
+    setBrands(brands.filter((b) => b.id !== brandId));
+    toast({ title: "Marca eliminada", variant: "destructive" });
+  };
+
+  const openEditDialog = (brand: Brand) => {
+    setEditingBrand(brand);
+    setIsFormOpen(true);
+  };
+  
+  const openNewDialog = () => {
+    setEditingBrand(undefined);
+    setIsFormOpen(true);
+  };
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Gestionar Marcas</CardTitle>
+        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={openNewDialog}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Añadir Marca
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{editingBrand ? "Editar Marca" : "Añadir Nueva Marca"}</DialogTitle>
+              <DialogDescription>
+                {editingBrand ? "Edita los detalles de la marca." : "Rellena los detalles para añadir una nueva marca."}
+              </DialogDescription>
+            </DialogHeader>
+            <BrandForm
+              key={editingBrand?.id}
+              onSubmit={handleFormSubmit}
+              brand={editingBrand}
+            />
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Logo</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {brands.map((brand) => (
+              <TableRow key={brand.id}>
+                <TableCell>
+                  <Image
+                    src={brand.logoUrl}
+                    alt={brand.name}
+                    width={80}
+                    height={40}
+                    className="rounded-md object-contain"
+                  />
+                </TableCell>
+                <TableCell className="font-medium">{brand.name}</TableCell>
+                <TableCell className="text-right">
+                <div className="flex gap-2 justify-end">
+                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(brand)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente la marca.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(brand.id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}

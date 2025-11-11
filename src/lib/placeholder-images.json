@@ -1,3 +1,130 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "Sleek car driving on a winding road at sunset",
+      "imageUrl": "https://images.unsplash.com/photo-1572401611152-cf63d874b019?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjYXIlMjByb2FkfGVufDB8fHx8MTc2Mjg3MDg3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car road"
+    },
+    {
+      "id": "hero-2",
+      "description": "Close-up of a high-performance car engine",
+      "imageUrl": "https://images.unsplash.com/photo-1606577924006-27d39b132ae2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjYXIlMjBlbmdpbmV8ZW58MHx8fHwxNzYyODU2MjgzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car engine"
+    },
+    {
+      "id": "hero-3",
+      "description": "Modern auto parts warehouse with shelves of components",
+      "imageUrl": "https://images.unsplash.com/photo-1527383418406-f85a3b146499?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhdXRvJTIwcGFydHN8ZW58MHx8fHwxNzYyODc1NjQ0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "auto parts"
+    },
+    {
+      "id": "brand-bosch",
+      "description": "Bosch brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1605106702842-01a887a31122?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMHBhdHRlcm58ZW58MHx8fHwxNzYyODEzODQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract pattern"
+    },
+    {
+      "id": "brand-brembo",
+      "description": "Brembo brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1608832049346-d33240d11451?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhYnN0cmFjdCUyMG1ldGFsfGVufDB8fHx8MTc2MjgyMDIwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract metal"
+    },
+    {
+      "id": "brand-ngk",
+      "description": "NGK brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1627819098699-d8ae75db1112?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhYnN0cmFjdCUyMGxpZ2h0fGVufDB8fHx8MTc2MjgwNTYzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract light"
+    },
+    {
+      "id": "brand-mann-filter",
+      "description": "Mann-Filter brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhYnN0cmFjdCUyMHRleHR1cmV8ZW58MHx8fHwxNzYyNzk5NDUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract texture"
+    },
+    {
+      "id": "brand-bilstein",
+      "description": "Bilstein brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1636811714614-b2738deac0eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhYnN0cmFjdCUyMGRlc2lnbnxlbnwwfHx8fDE3NjI4MzU2NDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract design"
+    },
+    {
+      "id": "brand-valeo",
+      "description": "Valeo brand placeholder image",
+      "imageUrl": "https://images.unsplash.com/photo-1632516643720-e7f5d7d6ecc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHNoYXBlfGVufDB8fHx8MTc2Mjg1NTIwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract shape"
+    },
+    {
+      "id": "part-brake-1",
+      "description": "High performance brake disc",
+      "imageUrl": "https://images.unsplash.com/photo-1725434696079-462c2e4af905?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxicmFrZSUyMGRpc2N8ZW58MHx8fHwxNzYyODA4NjA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brake disc"
+    },
+    {
+      "id": "part-brake-2",
+      "description": "High performance brake caliper",
+      "imageUrl": "https://images.unsplash.com/photo-1692303574072-74ad9095fc35?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxicmFrZSUyMGNhbGlwZXJ8ZW58MHx8fHwxNzYyODc1NjQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brake caliper"
+    },
+    {
+      "id": "part-brake-3",
+      "description": "Set of brake pads",
+      "imageUrl": "https://images.unsplash.com/photo-1662074050260-1e015d6cd8c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxicmFrZSUyMHBhZHN8ZW58MHx8fHwxNzYyNzg2Nzg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brake pads"
+    },
+    {
+      "id": "part-spark-1",
+      "description": "Iridium spark plug",
+      "imageUrl": "https://images.unsplash.com/photo-1760713174351-4e7350ff797e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzcGFyayUyMHBsdWd8ZW58MHx8fHwxNzYyODQ3NTcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spark plug"
+    },
+    {
+      "id": "part-filter-1",
+      "description": "Engine oil filter",
+      "imageUrl": "https://images.unsplash.com/photo-1602928355784-b05f7a78b842?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxvaWwlMjBmaWx0ZXJ8ZW58MHx8fHwxNzYyNzY1ODE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "oil filter"
+    },
+    {
+      "id": "part-filter-2",
+      "description": "Car air filter",
+      "imageUrl": "https://images.unsplash.com/photo-1756575433595-c2f87d10e5f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhaXIlMjBmaWx0ZXJ8ZW58MHx8fHwxNzYyNzY1ODE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "air filter"
+    },
+    {
+      "id": "part-suspension-1",
+      "description": "Shock absorber",
+      "imageUrl": "https://images.unsplash.com/photo-1760317890353-5b156b3f9769?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzaG9jayUyMGFic29yYmVyfGVufDB8fHx8MTc2Mjc3MTQwMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "shock absorber"
+    },
+    {
+      "id": "part-suspension-2",
+      "description": "Coil spring",
+      "imageUrl": "https://images.unsplash.com/photo-1658324977709-33858a95f5bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y29pbCUyMHNwcmluZ3xlbnwwfHx8fDE3NjI4NzU2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coil spring"
+    },
+    {
+      "id": "part-headlight-1",
+      "description": "LED headlight assembly",
+      "imageUrl": "https://images.unsplash.com/photo-1532268116505-8c59cc37d2e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjYXIlMjBoZWFkbGlnaHR8ZW58MHx8fHwxNzYyODc0NTE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car headlight"
+    },
+    {
+      "id": "part-radiator-1",
+      "description": "Aluminum car radiator",
+      "imageUrl": "https://images.unsplash.com/photo-1655228022564-dcff41cc5ee1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjYXIlMjByYWRpYXRvcnxlbnwwfHx8fDE3NjI4NTEyNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car radiator"
+    },
+    {
+      "id": "part-alternator-1",
+      "description": "Car alternator",
+      "imageUrl": "https://images.unsplash.com/photo-1755283043781-7a3a7048f0d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjYXIlMjBhbHRlcm5hdG9yfGVufDB8fHx8MTc2Mjg1MTI3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car alternator"
+    },
+    {
+      "id": "part-battery-1",
+      "description": "Car battery",
+      "imageUrl": "https://images.unsplash.com/photo-1676337167752-2062c6ca7366?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjYXIlMjBiYXR0ZXJ5fGVufDB8fHx8MTc2Mjg3NTY0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car battery"
+    }
+  ]
 }
