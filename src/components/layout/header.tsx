@@ -6,7 +6,7 @@ import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "@/components/icons";
 import { useCart } from "@/context/cart-context";
 
@@ -94,6 +94,9 @@ export default function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
+               <SheetHeader className="sr-only">
+                  <SheetTitle>Menú de navegación</SheetTitle>
+               </SheetHeader>
               <div className="flex flex-col gap-6 pt-6">
                 <Link href="/" className="flex items-center space-x-2">
                   <Icons.logo className="h-6 w-6 text-primary" />
