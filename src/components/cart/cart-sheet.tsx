@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useCart } from "@/context/cart-context";
@@ -12,12 +13,37 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CartItemCard from "./cart-item-card";
-import { ShoppingCart, PackageX } from "lucide-react";
+import { ShoppingCart, PackageX, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 
 export default function CartSheet() {
   const { cartItems, cartTotal, isCartOpen, setIsCartOpen, cartItemCount } = useCart();
+
+  const generateQuoteMessage = () => {
+    let message = "¡Hola GranRepuestos! 👋\n\nQuisiera solicitar una cotización para los siguientes repuestos:\n\n";
+    cartItems.forEach(item => {
+      message += `• ${item.quantity}x - ${item.part.name} (SKU: ${item.part.sku})\n`;
+    });
+    message += `\nTotal estimado: $${cartTotal.toFixed(2)}\n\n¡Quedo a la espera de su respuesta!`;
+    return message;
+  };
+
+  const handleWhatsAppQuote = () => {
+    const message = generateQuoteMessage();
+    // Reemplaza YOUR_PHONE_NUMBER con tu número de WhatsApp con código de país
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleEmailQuote = () => {
+    const subject = "Solicitud de Cotización de Repuestos - GranRepuestos";
+    const body = generateQuoteMessage();
+    // Reemplaza YOUR_EMAIL@example.com con tu dirección de correo
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  };
+
 
   return (
     <>
@@ -37,14 +63,22 @@ export default function CartSheet() {
                 </div>
             </ScrollArea>
             <Separator />
-            <SheetFooter className="p-6 sm:justify-between">
-              <div className="text-lg font-semibold">
-                <span>Subtotal: </span>
+            <SheetFooter className="p-6 flex flex-col gap-2 text-center sm:text-left">
+              <div className="text-lg font-semibold w-full flex justify-between items-center mb-4">
+                <span>Subtotal:</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
-              <Button asChild className="w-full sm:w-auto">
-                <Link href="/checkout">Proceder al Pago</Link>
-              </Button>
+              <p className="text-sm text-muted-foreground mb-2">Solicita tu cotización:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <Button onClick={handleWhatsAppQuote} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
+                  <MessageSquare className="mr-2" />
+                  WhatsApp
+                </Button>
+                <Button onClick={handleEmailQuote} variant="outline">
+                  <Mail className="mr-2" />
+                  Correo
+                </Button>
+              </div>
             </SheetFooter>
           </>
         ) : (
