@@ -1,4 +1,4 @@
-import type { Brand, Category, Part } from './types';
+import type { Brand, Category, Part, VehicleBrand, VehicleModel } from './types';
 
 const brands: Brand[] = [
   { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
@@ -16,6 +16,30 @@ const categories: Category[] = [
   { id: 'body', name: 'Carrocería' },
   { id: 'electrical', name: 'Eléctrico' },
 ];
+
+const vehicleBrands: VehicleBrand[] = [
+  { id: 'toyota', name: 'Toyota' },
+  { id: 'honda', name: 'Honda' },
+  { id: 'ford', name: 'Ford' },
+  { id: 'vw', name: 'Volkswagen' },
+  { id: 'bmw', name: 'BMW' },
+  { id: 'mercedes', name: 'Mercedes-Benz' },
+  { id: 'audi', name: 'Audi' },
+  { id: 'subaru', name: 'Subaru' },
+  { id: 'peugeot', name: 'Peugeot' },
+]
+
+const vehicleModels: VehicleModel[] = [
+    { id: 'corolla', name: 'Corolla', brandId: 'toyota' },
+    { id: 'civic', name: 'Civic', brandId: 'honda' },
+    { id: 'focus', name: 'Focus', brandId: 'ford' },
+    { id: 'golf', name: 'Golf', brandId: 'vw' },
+    { id: 'a3', name: 'A3', brandId: 'audi' },
+    { id: 'e90', name: 'Serie 3 E90', brandId: 'bmw' },
+    { id: 'w204', name: 'Clase C W204', brandId: 'mercedes' },
+    { id: 'impreza', name: 'Impreza WRX', brandId: 'subaru' },
+    { id: '308', name: '308', brandId: 'peugeot' },
+]
 
 const parts: Part[] = [
   {
@@ -36,10 +60,11 @@ const parts: Part[] = [
     specifications: {
       Material: 'Cerámica',
       Posición: 'Delantera',
-      Compatibilidad: 'Toyota Corolla 2018-2022',
-      Dimensiones: '137 x 55 x 17 mm',
+      'Vida útil': '80,000 km',
     },
     relatedPartIds: ['p002', 'p003'],
+    vehicleBrandId: 'toyota',
+    vehicleModelId: 'corolla',
   },
   {
     id: 'p002',
@@ -55,10 +80,10 @@ const parts: Part[] = [
     specifications: {
       Tipo: 'Monotubo de gas',
       Posición: 'Trasera',
-      Compatibilidad: 'Honda Civic 2016-2021',
-      Marca: 'Bilstein',
     },
     relatedPartIds: ['p001', 'p004'],
+    vehicleBrandId: 'honda',
+    vehicleModelId: 'civic',
   },
   {
     id: 'p003',
@@ -74,8 +99,6 @@ const parts: Part[] = [
     specifications: {
       Material: 'Iridio',
       'Vida útil': 'Hasta 100,000 km',
-      Compatibilidad: 'Universal (consultar manual)',
-      Marca: 'NGK',
     },
     relatedPartIds: ['p005'],
   },
@@ -93,10 +116,10 @@ const parts: Part[] = [
     specifications: {
       Tecnología: 'Full LED',
       Posición: 'Delantero Derecho',
-      Compatibilidad: 'Volkswagen Golf MK7',
-      Marca: 'Valeo',
     },
     relatedPartIds: ['p002', 'p010'],
+    vehicleBrandId: 'vw',
+    vehicleModelId: 'golf',
   },
   {
     id: 'p005',
@@ -111,8 +134,6 @@ const parts: Part[] = [
     isFeatured: false,
     specifications: {
       Tipo: 'Sellado',
-      Compatibilidad: 'Varios modelos (consultar)',
-      Marca: 'Mann-Filter',
     },
     relatedPartIds: ['p003', 'p006'],
   },
@@ -129,10 +150,10 @@ const parts: Part[] = [
     isFeatured: false,
     specifications: {
       Material: 'Carbón Activado',
-      Compatibilidad: 'Ford Focus 2015-2018',
-      Marca: 'Mann-Filter',
     },
     relatedPartIds: ['p005'],
+    vehicleBrandId: 'ford',
+    vehicleModelId: 'focus',
   },
   {
     id: 'p007',
@@ -149,9 +170,10 @@ const parts: Part[] = [
       Tipo: 'Ventilado',
       Posición: 'Delantero',
       Diámetro: '312 mm',
-      Compatibilidad: 'Audi A3 2017-2020',
     },
     relatedPartIds: ['p001'],
+    vehicleBrandId: 'audi',
+    vehicleModelId: 'a3',
   },
   {
     id: 'p008',
@@ -166,10 +188,10 @@ const parts: Part[] = [
     isFeatured: false,
     specifications: {
       Material: 'Aluminio',
-      Compatibilidad: 'BMW Serie 3 E90',
-      Marca: 'Valeo',
     },
     relatedPartIds: ['p005', 'p003'],
+    vehicleBrandId: 'bmw',
+    vehicleModelId: 'e90',
   },
   {
     id: 'p009',
@@ -185,10 +207,10 @@ const parts: Part[] = [
     specifications: {
       Amperaje: '120A',
       Voltaje: '12V',
-      Compatibilidad: 'Mercedes-Benz C-Class W204',
-      Marca: 'Bosch',
     },
     relatedPartIds: ['p010'],
+    vehicleBrandId: 'mercedes',
+    vehicleModelId: 'w204',
   },
   {
     id: 'p010',
@@ -205,7 +227,6 @@ const parts: Part[] = [
       Tipo: 'AGM',
       CCA: '760A',
       Capacidad: '70Ah',
-      Compatibilidad: 'Varios modelos con Start-Stop',
     },
     relatedPartIds: ['p009', 'p004'],
   },
@@ -223,10 +244,10 @@ const parts: Part[] = [
     specifications: {
       Componentes: 'Disco, Plato, Cojinete',
       Diámetro: '240 mm',
-      Compatibilidad: 'Peugeot 308 1.6 HDi',
-      Marca: 'Valeo',
     },
     relatedPartIds: ['p005'],
+    vehicleBrandId: 'peugeot',
+    vehicleModelId: '308',
   },
   {
     id: 'p012',
@@ -242,10 +263,10 @@ const parts: Part[] = [
     specifications: {
       Tipo: 'Deportivo',
       Posición: 'Kit completo',
-      Compatibilidad: 'Subaru Impreza WRX 2015+',
-      Marca: 'Bilstein',
     },
     relatedPartIds: ['p002', 'p007', 'p001'],
+    vehicleBrandId: 'subaru',
+    vehicleModelId: 'impreza',
   }
 ];
 
@@ -255,6 +276,8 @@ export function getParts(filters: {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  vehicleBrand?: string;
+  vehicleModel?: string;
 } = {}) {
   let filteredParts = [...parts];
 
@@ -283,6 +306,14 @@ export function getParts(filters: {
   if (filters.maxPrice) {
     filteredParts = filteredParts.filter((part) => part.price <= filters.maxPrice);
   }
+  
+  if (filters.vehicleBrand) {
+    filteredParts = filteredParts.filter((part) => part.vehicleBrandId === filters.vehicleBrand);
+  }
+  
+  if (filters.vehicleModel) {
+    filteredParts = filteredParts.filter((part) => part.vehicleModelId === filters.vehicleModel);
+  }
 
   return filteredParts;
 }
@@ -301,6 +332,14 @@ export function getBrands(): Brand[] {
 
 export function getCategories(): Category[] {
   return categories;
+}
+
+export function getVehicleBrands(): VehicleBrand[] {
+  return vehicleBrands;
+}
+
+export function getVehicleModels(): VehicleModel[] {
+    return vehicleModels;
 }
 
 export function getRelatedParts(part: Part): Part[] {

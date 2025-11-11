@@ -13,15 +13,17 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Category, Brand } from '@/lib/types';
+import type { Category, Brand, VehicleBrand, VehicleModel } from '@/lib/types';
 import { Search, X } from 'lucide-react';
 
 interface FiltersProps {
   categories: Category[];
   brands: Brand[];
+  vehicleBrands: VehicleBrand[];
+  vehicleModels: VehicleModel[];
 }
 
-export default function Filters({ categories, brands }: FiltersProps) {
+export default function Filters({ categories, brands, vehicleBrands, vehicleModels }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -63,7 +65,7 @@ export default function Filters({ categories, brands }: FiltersProps) {
   };
   
   const currentMaxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 500;
-  const hasFilters = !!(searchParams.get('query') || searchParams.get('brand') || searchParams.get('category') || searchParams.get('maxPrice'));
+  const hasFilters = !!(searchParams.get('query') || searchParams.get('brand') || searchParams.get('category') || searchParams.get('maxPrice') || searchParams.get('vehicleBrand') || searchParams.get('vehicleModel'));
 
 
   return (
@@ -92,7 +94,7 @@ export default function Filters({ categories, brands }: FiltersProps) {
         </form>
 
         <div className="grid gap-2">
-          <label className="font-medium">Marca</label>
+          <label className="font-medium">Marca del Repuesto</label>
           <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
             <SelectTrigger>
               <SelectValue placeholder="Seleccionar marca" />
@@ -116,6 +118,36 @@ export default function Filters({ categories, brands }: FiltersProps) {
               <SelectItem value="all">Todas las categorías</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <label className="font-medium">Marca del Vehículo</label>
+          <Select onValueChange={handleSelectChange('vehicleBrand')} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
+            <SelectTrigger>
+              <SelectValue placeholder="Seleccionar marca" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las marcas</SelectItem>
+              {vehicleBrands.map((brand) => (
+                <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid gap-2">
+          <label className="font-medium">Modelo del Vehículo</label>
+          <Select onValueChange={handleSelectChange('vehicleModel')} defaultValue={searchParams.get('vehicleModel') || 'all'}>
+            <SelectTrigger>
+              <SelectValue placeholder="Seleccionar modelo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los modelos</SelectItem>
+              {vehicleModels.map((model) => (
+                <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>

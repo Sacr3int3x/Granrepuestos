@@ -45,13 +45,13 @@ export default function Home() {
         </Carousel>
         <div className="absolute z-10 text-center text-white p-4">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
-            Quality Parts, Unbeatable Prices
+            Repuestos de Calidad, Precios Insuperables
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-primary-foreground/90 drop-shadow-md">
-            Find the right part for your vehicle from our extensive catalog.
+            Encuentra el repuesto adecuado para tu vehículo en nuestro extenso catálogo.
           </p>
           <Button asChild size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
-            <Link href="/parts">Shop Now</Link>
+            <Link href="/parts">Comprar Ahora</Link>
           </Button>
         </div>
       </section>
@@ -59,10 +59,10 @@ export default function Home() {
       <section className="py-16 lg:py-24 bg-background">
         <div className="container px-4 md:px-6">
           <h2 className="text-3xl font-bold text-center tracking-tighter sm:text-4xl md:text-5xl font-headline">
-            Brands We Trust
+            Marcas de Confianza
           </h2>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed text-center mt-4">
-            We partner with the best in the industry to bring you reliable and high-quality parts.
+            Nos asociamos con los mejores de la industria para ofrecerte repuestos fiables y de alta calidad.
           </p>
           <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-center">
             {brands.map((brand) => (
@@ -84,7 +84,7 @@ export default function Home() {
       <section className="py-16 lg:py-24 bg-card">
         <div className="container px-4 md:px-6">
           <h2 className="text-3xl font-bold text-center tracking-tighter sm:text-4xl md:text-5xl font-headline">
-            Featured Products
+            Productos Destacados
           </h2>
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredParts.map((part: Part) => (
@@ -108,7 +108,7 @@ export default function Home() {
                 <CardFooter className="p-4 flex justify-between items-center">
                   <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
                   <Button asChild variant="outline">
-                    <Link href={`/parts/${part.id}`}>View</Link>
+                    <Link href={`/parts/${part.id}`}>Ver</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -116,7 +116,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-12">
             <Button asChild size="lg">
-              <Link href="/parts">View All Parts</Link>
+              <Link href="/parts">Ver Todos los Repuestos</Link>
             </Button>
           </div>
         </div>

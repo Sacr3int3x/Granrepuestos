@@ -9,6 +9,17 @@ export type Category = {
   name: string;
 };
 
+export type VehicleBrand = {
+    id: string;
+    name: string;
+}
+
+export type VehicleModel = {
+    id: string;
+    name: string;
+    brandId: string;
+}
+
 export type Part = {
   id: string;
   name: string;
@@ -24,4 +35,6 @@ export type Part = {
     [key: string]: string;
   };
   relatedPartIds: string[];
+  vehicleBrandId?: string;
+  vehicleModelId?: string;
 };

@@ -41,7 +41,7 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
                   <div className="aspect-square relative bg-card rounded-lg overflow-hidden border">
                     <Image
                       src={url}
-                      alt={`${part.name} - view ${index + 1}`}
+                      alt={`${part.name} - vista ${index + 1}`}
                       fill
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -126,7 +126,7 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
                 <CardFooter className="p-4 flex justify-between items-center">
                   <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/parts/${relatedPart.id}`}>View</Link>
+                    <Link href={`/parts/${relatedPart.id}`}>Ver</Link>
                   </Button>
                 </CardFooter>
               </Card>
