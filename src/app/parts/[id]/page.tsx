@@ -1,7 +1,7 @@
 
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -42,7 +42,7 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
 
     const relatedPartsQuery = useMemoFirebase(() => {
         if (!firestore || !part.relatedPartIds || part.relatedPartIds.length === 0) return null;
-        return query(collection(firestore, 'parts'), where('id', 'in', part.relatedPartIds));
+        return query(collection(firestore, 'parts'), where('__name__', 'in', part.relatedPartIds));
     }, [firestore, part.relatedPartIds]);
 
     const { data: relatedParts } = useCollection<Part>(relatedPartsQuery);
@@ -204,8 +204,31 @@ function PartDetailClient({ partId }: { partId: string }) {
 }
 
 
-export default function PartDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function PartDetailPage() {
+  const params = useParams();
+  const id = typeof params.id === 'string' ? params.id : '';
+  
+  if (!id) {
+    // You can return a loading state or null here
+    // while waiting for the router to be ready.
+    return (
+        <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                  <Skeleton className="aspect-square w-full rounded-lg" />
+              </div>
+              <div className="space-y-4">
+                  <Skeleton className="h-10 w-3/4" />
+                  <Skeleton className="h-6 w-1/4" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-10 w-1/2" />
+                  <Skeleton className="h-12 w-1/3" />
+              </div>
+          </div>
+        </div>
+      );
+  }
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <PartDetailClient partId={id} />
