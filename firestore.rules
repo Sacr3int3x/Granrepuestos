@@ -26,8 +26,8 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      // The user is an admin if their UID exists in the /admins collection.
-      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      // The user is an admin if their UID exists in the /admins collection or matches a hardcoded UID.
+      return exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.uid == "txlhGIPOaQR1zISpvJwMgBzdBIt2";
     }
 
     /******************* Brands Collection Rules *******************/
@@ -81,16 +81,12 @@ service cloud.firestore {
      * @path /admins/{uid}
      * @allow get: if isAdmin();
      * @allow list: if isAdmin();
-     * @allow create: if request.auth.uid == uid; // A user can create their own admin document, but cannot create for others.
-     * @allow update, delete: if false; // Prevent client-side modification/deletion.
-     * @principle Secures the admin collection by preventing client-side modifications after creation.
+     * @allow create, update, delete: if false; // Prevent all client-side modification.
+     * @principle Secures the admin collection by preventing any client-side modifications.
      */
       match /admins/{uid} {
         allow get, list: if isAdmin();
-        // A user can create their own admin document, but cannot create for others.
-        // This is a one-time operation to establish the first admin.
-        allow create: if request.auth.uid == uid;
-        allow update, delete: if false;
+        allow write: if false;
     }
   }
 }
