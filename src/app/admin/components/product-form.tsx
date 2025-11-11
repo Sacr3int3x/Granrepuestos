@@ -59,21 +59,23 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   const defaultValues: Partial<ProductFormValues> = part
     ? {
         ...part,
-        imageUrls: part.imageUrls as any, // Adjust type
+        imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(', ') : '',
       }
     : {
-        isFeatured: false,
+        name: '',
+        sku: '',
+        description: '',
         price: 0,
         stock: 0,
-        imageUrls: [],
+        brandId: '',
+        categoryId: '',
+        imageUrls: '',
+        isFeatured: false,
       };
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-        ...defaultValues,
-        imageUrls: Array.isArray(defaultValues.imageUrls) ? defaultValues.imageUrls.join(', ') : '',
-    },
+    defaultValues,
   });
 
   const handleSubmit = (data: ProductFormValues) => {
