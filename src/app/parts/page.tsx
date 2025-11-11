@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { getParts, getCategories, getBrands, getVehicleBrands } from '@/lib/data';
 import type { Part } from '@/lib/types';
@@ -73,7 +74,7 @@ export default function PartsPage({
 
         <main className="lg:col-span-3">
           {paginatedParts.length > 0 ? (
-            <div className="border rounded-lg">
+            <div className="border rounded-lg overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
