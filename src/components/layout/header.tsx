@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Wrench } from "lucide-react";
+import { Menu } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,12 +42,6 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
-          <Button asChild>
-            <Link href="/admin">
-              <Wrench className="mr-2 h-4 w-4" />
-              Admin
-            </Link>
-          </Button>
           <Sheet>
             <SheetTrigger asChild>
               <Button
