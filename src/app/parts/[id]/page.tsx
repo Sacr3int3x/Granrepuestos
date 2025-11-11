@@ -3,7 +3,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getPartById, getRelatedParts } from "@/lib/data";
 import {
   Carousel,
   CarouselContent,
@@ -26,12 +25,13 @@ import { useCart } from "@/context/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import AddToCartButton from "../components/add-to-cart-button";
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
-import { doc, collection } from "firebase/firestore";
+import { doc, collection, query, where } from "firebase/firestore";
 import { getCategories } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 
 function PartDetailContent({ part, brands, categories }: { part: Part; brands: Brand[]; categories: Category[] }) {
+    const firestore = useFirestore();
     const { toast } = useToast();
     
     const brand = brands.find(b => b.id === part.brandId);
@@ -42,11 +42,14 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
         brand: brand || { id: part.brandId, name: 'Unknown', logoUrl: ''},
         category: category || { id: part.categoryId, name: 'Unknown' }
     };
-    
-    // We can't query for related parts in this component as we don't have all parts.
-    // This could be fetched separately if needed.
-    const relatedParts: Part[] = [];
 
+    const relatedPartsQuery = useMemoFirebase(() => {
+        if (!firestore || !part.relatedPartIds || part.relatedPartIds.length === 0) return null;
+        return query(collection(firestore, 'parts'), where('id', 'in', part.relatedPartIds));
+    }, [firestore, part.relatedPartIds]);
+
+    const { data: relatedParts } = useCollection<Part>(relatedPartsQuery);
+    
     return (
     <>
       <div className="grid md:grid-cols-2 gap-12">
@@ -104,7 +107,7 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
                     <TableCell className="font-medium">SKU</TableCell>
                     <TableCell>{fullPart.sku}</TableCell>
                 </TableRow>
-                {Object.entries(fullPart.specifications).map(([key, value]) => (
+                {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
                     <TableRow key={key}>
                     <TableCell className="font-medium">{key}</TableCell>
                     <TableCell>{value}</TableCell>
@@ -115,9 +118,7 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
         </Card>
       </div>
 
-      {/* Related parts logic needs re-implementation with Firestore */}
-      {/*
-      {relatedParts.length > 0 && (
+      {relatedParts && relatedParts.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -137,7 +138,9 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
                 </CardHeader>
                 <CardContent className="p-4 flex-grow">
                   <h3 className="text-lg font-semibold">{relatedPart.name}</h3>
-                  <p className="text-sm text-muted-foreground">{relatedPart.brand.name}</p>
+                   {brands.find(b => b.id === relatedPart.brandId) && (
+                      <p className="text-sm text-muted-foreground">{brands.find(b => b.id === relatedPart.brandId)?.name}</p>
+                   )}
                 </CardContent>
                 <CardFooter className="p-4 flex justify-between items-center">
                   <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
@@ -150,7 +153,6 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
           </div>
         </div>
       )}
-      */}
     </>
   );
 }
@@ -160,9 +162,9 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
 
   const partRef = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || !params.id) return null;
     return doc(firestore, 'parts', params.id);
-  }, [firestore, params.id]);
+  }, [firestore, params]);
   const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
   const brandsRef = useMemoFirebase(() => {
