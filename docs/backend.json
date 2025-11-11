@@ -1,0 +1,185 @@
+{
+  "entities": {
+    "Brand": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Brand",
+      "type": "object",
+      "description": "Represents a brand of auto parts.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Brand entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the brand."
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL of the brand's logo.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "logoUrl"
+      ]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Represents a category of auto parts (e.g., Engine, Suspension, Body).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Category entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the category."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Part": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Part",
+      "type": "object",
+      "description": "Represents an auto part.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Part entity."
+        },
+        "brandId": {
+          "type": "string",
+          "description": "Reference to Brand. (Relationship: Brand 1:N Part)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the part."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the part."
+        },
+        "sku": {
+          "type": "string",
+          "description": "The stock keeping unit code for the part."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the part."
+        },
+        "stock": {
+          "type": "number",
+          "description": "The number of parts in stock."
+        },
+        "imageUrls": {
+          "type": "array",
+          "description": "URLs of the images for the part.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "categoryIds": {
+          "type": "array",
+          "description": "References to Categories. (Relationship: Category N:N Part)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "brandId",
+        "name",
+        "description",
+        "sku",
+        "price",
+        "stock",
+        "imageUrls"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/brands/{brandId}",
+        "definition": {
+          "entityName": "Brand",
+          "schema": {
+            "$ref": "#/backend/entities/Brand"
+          },
+          "description": "Stores brand information. Each document represents a brand of auto parts.",
+          "params": [
+            {
+              "name": "brandId",
+              "description": "Unique identifier for the brand."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Stores category information. Each document represents a category of auto parts.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "Unique identifier for the category."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/parts/{partId}",
+        "definition": {
+          "entityName": "Part",
+          "schema": {
+            "$ref": "#/backend/entities/Part"
+          },
+          "description": "Stores auto part information. Each document represents an auto part.",
+          "params": [
+            {
+              "name": "partId",
+              "description": "Unique identifier for the part."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/admins/{uid}",
+        "definition": {
+          "entityName": "admins",
+          "schema": {
+            "$ref": "#/backend/entities/admins"
+          },
+          "description": "Collection of admin users. The presence of a document indicates admin privileges.",
+          "params": [
+            {
+              "name": "uid",
+              "description": "User ID of the administrator."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support the Auto Parts Hub application, focusing on a clean separation of concerns, security, and efficient data retrieval. The structure prioritizes authorization independence and supports listing operations (QAPs) through structural segregation. Brands, Categories, and Parts are stored in separate collections at the root level to facilitate easy management and querying. The administrative functionality is secured through a dedicated 'admins' collection, leveraging the principle of 'Existence over Content' for role management, enhancing security. The structure uses denormalization strategically to avoid complex security rules and maintain data integrity."
+  }
+}
