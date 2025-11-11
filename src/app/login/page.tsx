@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -27,7 +28,6 @@ import { Icons } from "@/components/icons";
 import { useAuth } from "@/firebase";
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   AuthErrorCodes,
 } from "firebase/auth";
 import { useState } from "react";
@@ -39,14 +39,11 @@ const formSchema = z.object({
     .min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
 });
 
-type AuthMode = "login" | "signup";
-
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [authMode, setAuthMode] = useState<AuthMode>("login");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,27 +73,12 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      if (authMode === "login") {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
-        toast({
-          title: "Inicio de Sesión Exitoso",
-          description: "Redirigiendo al panel de administración...",
-        });
-      } else {
-        await createUserWithEmailAndPassword(
-          auth,
-          values.email,
-          values.password
-        );
-        toast({
-          title: "¡Cuenta Creada!",
-          description: "Ahora inicia sesión para acceder al panel de administración.",
-        });
-        setAuthMode('login'); // Redirect to login mode after signup
-      }
-      if (authMode === 'login') {
-        router.push("/admin");
-      }
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: "Inicio de Sesión Exitoso",
+        description: "Redirigiendo al panel de administración...",
+      });
+      router.push("/admin");
     } catch (error: any) {
       console.error("Authentication Error:", error);
       toast({
@@ -109,11 +91,6 @@ export default function LoginPage() {
     }
   }
 
-  const toggleAuthMode = () => {
-    setAuthMode(authMode === "login" ? "signup" : "login");
-    form.reset();
-  };
-
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12 px-4">
       <Card className="mx-auto max-w-sm w-full shadow-xl">
@@ -122,12 +99,10 @@ export default function LoginPage() {
             <Icons.logo className="h-10 w-10 text-primary" />
           </div>
           <CardTitle className="text-2xl font-headline">
-            {authMode === "login" ? "Admin Login" : "Crear Cuenta"}
+            Admin Login
           </CardTitle>
           <CardDescription>
-            {authMode === "login"
-              ? "Accede al panel de administración de GranRepuestos."
-              : "Crea una nueva cuenta de administrador."}
+            Accede al panel de administración de GranRepuestos.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -172,29 +147,11 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading
                   ? "Procesando..."
-                  : authMode === "login"
-                  ? "Iniciar Sesión"
-                  : "Crear Cuenta"}
+                  : "Iniciar Sesión"}
               </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            {authMode === "login" ? (
-              <>
-                ¿No tienes una cuenta?{" "}
-                <button onClick={toggleAuthMode} className="underline text-primary">
-                  Crear cuenta
-                </button>
-              </>
-            ) : (
-              <>
-                ¿Ya tienes una cuenta?{" "}
-                <button onClick={toggleAuthMode} className="underline text-primary">
-                  Iniciar sesión
-                </button>
-              </>
-            )}
-            <div className="my-2"></div>
             <Link
               href="/"
               className="underline text-muted-foreground hover:text-primary"
