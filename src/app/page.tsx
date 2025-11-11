@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <section className="relative w-full h-screen flex items-center justify-center">
+      <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center">
         <Carousel className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
             {heroImages.map((image) => (
@@ -55,38 +55,39 @@ export default function Home() {
               <Link href="/parts">Comprar Ahora</Link>
             </Button>
           </div>
-          
-          <div className="w-full pb-10">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-                  Marcas con las que trabajamos
-                </h2>
-                <p className="mt-4 text-lg text-muted-foreground">
-                  Solo ofrecemos repuestos de las marcas más confiables del mercado.
-                </p>
-              </div>
-              <div
-                className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
-                <ul
-                  className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
-                  {brands.map((brand) => (
-                    <li key={brand.id}>
-                      <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
-                    </li>
-                  ))}
-                </ul>
-                <ul
-                  className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
-                  aria-hidden="true">
-                  {brands.map((brand) => (
-                    <li key={`${brand.id}-clone`}>
-                      <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+        </div>
+      </section>
+
+      {/* Brands Section */}
+      <section id="brands" className="py-16 lg:py-24 bg-card border-y">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
+              Marcas con las que trabajamos
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Solo ofrecemos repuestos de las marcas más confiables del mercado.
+            </p>
+          </div>
+          <div
+            className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+            <ul
+              className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+              {brands.map((brand) => (
+                <li key={brand.id}>
+                  <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
+                </li>
+              ))}
+            </ul>
+            <ul
+              className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+              aria-hidden="true">
+              {brands.map((brand) => (
+                <li key={`${brand.id}-clone`}>
+                  <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
