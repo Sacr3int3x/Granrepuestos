@@ -105,6 +105,12 @@
         "stock",
         "imageUrls"
       ]
+    },
+    "admins": {
+      "title": "Admin User",
+      "description": "An empty document whose ID is the UID of a Firebase Auth user. The existence of this document indicates that the user has admin privileges. No properties are stored in the document itself.",
+      "type": "object",
+      "properties": {}
     }
   },
   "auth": {

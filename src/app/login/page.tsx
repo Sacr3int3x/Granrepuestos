@@ -90,10 +90,13 @@ export default function LoginPage() {
         );
         toast({
           title: "¡Cuenta Creada!",
-          description: "Redirigiendo al panel de administración...",
+          description: "Ahora inicia sesión para acceder al panel de administración.",
         });
+        setAuthMode('login'); // Redirect to login mode after signup
       }
-      router.push("/admin");
+      if (authMode === 'login') {
+        router.push("/admin");
+      }
     } catch (error: any) {
       console.error("Authentication Error:", error);
       toast({
