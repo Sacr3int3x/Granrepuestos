@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getBrands, getCategories } from "@/lib/data";
-import type { Part } from "@/lib/types";
+import { getCategories } from "@/lib/data";
+import type { Part, Brand } from "@/lib/types";
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -41,12 +43,17 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  onSubmit: (data: Part) => void;
+  onSubmit: (data: any) => void; // Changed to any to accommodate brand object
   part?: Part;
 }
 
 export function ProductForm({ onSubmit, part }: ProductFormProps) {
-  const brands = getBrands();
+  const firestore = useFirestore();
+  const brandsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+  const { data: brands } = useCollection<Brand>(brandsQuery);
   const categories = getCategories();
 
   const defaultValues: Partial<ProductFormValues> = part
@@ -72,7 +79,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   });
 
   const handleSubmit = (data: ProductFormValues) => {
-    const brand = brands.find(b => b.id === data.brandId);
+    const brand = brands?.find(b => b.id === data.brandId);
     const category = categories.find(c => c.id === data.categoryId);
 
     if (!brand || !category) {
@@ -80,13 +87,13 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         return;
     }
 
-    const fullPartData: Part = {
+    const fullPartData = {
         ...data,
         id: part?.id || '',
         imageUrls: data.imageUrls,
-        brand,
+        brand, // Pass the whole brand object
         category,
-        specifications: part?.specifications || {}, // Keep existing specs, form doesn't edit them
+        specifications: part?.specifications || {},
         relatedPartIds: part?.relatedPartIds || [],
     };
     onSubmit(fullPartData);
@@ -120,7 +127,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             <FormLabel>Marca</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl><SelectTrigger><SelectValue placeholder="Selecciona una marca" /></SelectTrigger></FormControl>
-                <SelectContent>{brands.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+                <SelectContent>{brands?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
             </Select>
             <FormMessage />
             </FormItem>

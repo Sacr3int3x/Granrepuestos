@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -13,20 +13,29 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Category, Brand, VehicleBrand, VehicleModel } from '@/lib/types';
+import type { Category, Brand, VehicleBrand } from '@/lib/types';
 import { Search, X } from 'lucide-react';
 import { getVehicleModels } from '@/lib/data';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+
 
 interface FiltersProps {
   categories: Category[];
-  brands: Brand[];
   vehicleBrands: VehicleBrand[];
 }
 
-export default function Filters({ categories, brands, vehicleBrands }: FiltersProps) {
+export default function Filters({ categories, vehicleBrands }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const firestore = useFirestore();
+  const brandsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+  const { data: brands } = useCollection<Brand>(brandsQuery);
 
   const selectedVehicleBrand = searchParams.get('vehicleBrand');
   
@@ -121,7 +130,7 @@ export default function Filters({ categories, brands, vehicleBrands }: FiltersPr
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas las marcas</SelectItem>
-              {brands.map((brand) => (
+              {brands?.map((brand) => (
                 <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
               ))}
             </SelectContent>

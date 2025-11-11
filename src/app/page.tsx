@@ -1,4 +1,6 @@
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,16 +12,76 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBrands, getFeaturedParts } from "@/lib/data";
+import { getFeaturedParts } from "@/lib/data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin } from "lucide-react";
-import type { Part } from "@/lib/types";
+import type { Part, Brand } from "@/lib/types";
+import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
 
+function BrandsSection() {
+  const firestore = useFirestore();
+  const brandsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+  
+  const { data: brands, isLoading } = useCollection<Brand>(brandsQuery);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4">
+          <div className="w-full inline-flex flex-nowrap overflow-hidden">
+             <ul className="flex items-center justify-center [&_li]:mx-8">
+                {[...Array(6)].map((_, i) => (
+                  <li key={i}>
+                    <Skeleton className="w-[120px] h-[50px]" />
+                  </li>
+                ))}
+             </ul>
+          </div>
+      </div>
+    )
+  }
+  
+  if (!brands || brands.length === 0) {
+    return null; // Or a message indicating no brands found
+  }
+
+  // Duplicate brands for infinite scroll effect
+  const extendedBrands = [...brands, ...brands];
+
+  return (
+    <div
+      className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+      <ul
+        className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+        {extendedBrands.map((brand, index) => (
+          <li key={`${brand.id}-${index}`}>
+            <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
+          </li>
+        ))}
+      </ul>
+      <ul
+        className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+        aria-hidden="true">
+        {extendedBrands.map((brand, index) => (
+          <li key={`${brand.id}-clone-${index}`}>
+            <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
 export default function Home() {
-  const brands = getBrands();
   const featuredParts = getFeaturedParts();
 
   return (
@@ -71,26 +133,7 @@ export default function Home() {
               Solo ofrecemos repuestos de las marcas más confiables del mercado.
             </p>
           </div>
-          <div
-            className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
-            <ul
-              className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
-              {brands.map((brand) => (
-                <li key={brand.id}>
-                  <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
-                </li>
-              ))}
-            </ul>
-            <ul
-              className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
-              aria-hidden="true">
-              {brands.map((brand) => (
-                <li key={`${brand.id}-clone`}>
-                  <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
-                </li>
-              ))}
-            </ul>
-          </div>
+          <BrandsSection />
         </div>
       </section>
 

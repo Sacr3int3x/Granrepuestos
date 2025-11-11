@@ -1,13 +1,12 @@
 import type { Brand, Category, Part, VehicleBrand, VehicleModel } from './types';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase'; // Assuming you have a firebase config file
 
-const brands: Brand[] = [
-  { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
-  { id: 'brembo', name: 'Brembo', logoUrl: 'https://picsum.photos/seed/brembo/150/80' },
-  { id: 'ngk', name: 'NGK', logoUrl: 'https://picsum.photos/seed/ngk/150/80' },
-  { id: 'mann-filter', name: 'Mann-Filter', logoUrl: 'https://picsum.photos/seed/mann/150/80' },
-  { id: 'bilstein', name: 'Bilstein', logoUrl: 'https://picsum.photos/seed/bilstein/150/80' },
-  { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
-];
+
+// The brands data is now fetched from Firestore.
+// This array can be kept for fallback or initial seeding if necessary, but the primary source is Firestore.
+const brands: Brand[] = [];
+
 
 const categories: Category[] = [
   { id: 'engine', name: 'Motor' },
@@ -59,7 +58,7 @@ const parts: Part[] = [
     description: 'Juego de pastillas de freno de cerámica de alto rendimiento para una frenada superior y bajo nivel de polvo.',
     price: 75.99,
     stock: 120,
-    brand: brands[1], // Brembo
+    brand: { id: 'brembo', name: 'Brembo', logoUrl: 'https://picsum.photos/seed/brembo/150/80' },
     category: categories[2], // Brakes
     imageUrls: [
       'https://picsum.photos/seed/brake3/600/600',
@@ -83,7 +82,7 @@ const parts: Part[] = [
     description: 'Amortiguador de gas monotubo para una conducción suave y estable.',
     price: 120.5,
     stock: 80,
-    brand: brands[4], // Bilstein
+    brand: { id: 'bilstein', name: 'Bilstein', logoUrl: 'https://picsum.photos/seed/bilstein/150/80' },
     category: categories[1], // Suspension
     imageUrls: ['https://picsum.photos/seed/susp1/600/600', 'https://picsum.photos/seed/susp2/600/600'],
     isFeatured: true,
@@ -102,7 +101,7 @@ const parts: Part[] = [
     description: 'Bujía de iridio de larga duración para un encendido eficiente y un mejor rendimiento del combustible.',
     price: 15.0,
     stock: 300,
-    brand: brands[2], // NGK
+    brand: { id: 'ngk', name: 'NGK', logoUrl: 'https://picsum.photos/seed/ngk/150/80' },
     category: categories[0], // Engine
     imageUrls: ['https://picsum.photos/seed/spark1/600/600'],
     isFeatured: true,
@@ -119,7 +118,7 @@ const parts: Part[] = [
     description: 'Faro completo con tecnología LED para una visibilidad nocturna superior y un aspecto moderno.',
     price: 250.0,
     stock: 45,
-    brand: brands[5], // Valeo
+    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
     category: categories[3], // Body
     imageUrls: ['https://picsum.photos/seed/headlight1/600/600'],
     isFeatured: true,
@@ -138,7 +137,7 @@ const parts: Part[] = [
     description: 'Filtro de aceite de alta capacidad para una protección óptima del motor.',
     price: 12.99,
     stock: 500,
-    brand: brands[3], // Mann-Filter
+    brand: { id: 'mann-filter', name: 'Mann-Filter', logoUrl: 'https://picsum.photos/seed/mann/150/80' },
     category: categories[0], // Engine
     imageUrls: ['https://picsum.photos/seed/filter1/600/600'],
     isFeatured: false,
@@ -154,7 +153,7 @@ const parts: Part[] = [
     description: 'Filtro de aire de cabina con carbón activado para eliminar olores y partículas.',
     price: 22.5,
     stock: 250,
-    brand: brands[3], // Mann-Filter
+    brand: { id: 'mann-filter', name: 'Mann-Filter', logoUrl: 'https://picsum.photos/seed/mann/150/80' },
     category: categories[3], // Body
     imageUrls: ['https://picsum.photos/seed/filter2/600/600'],
     isFeatured: false,
@@ -172,7 +171,7 @@ const parts: Part[] = [
     description: 'Disco de freno ventilado para una mejor disipación del calor y rendimiento constante.',
     price: 95.0,
     stock: 150,
-    brand: brands[1], // Brembo
+    brand: { id: 'brembo', name: 'Brembo', logoUrl: 'https://picsum.photos/seed/brembo/150/80' },
     category: categories[2], // Brakes
     imageUrls: ['https://picsum.photos/seed/brake1/600/600', 'https://picsum.photos/seed/brake2/600/600'],
     isFeatured: false,
@@ -192,7 +191,7 @@ const parts: Part[] = [
     description: 'Radiador de alto rendimiento fabricado en aluminio para una refrigeración eficiente.',
     price: 180.0,
     stock: 60,
-    brand: brands[5], // Valeo
+    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
     category: categories[0], // Engine
     imageUrls: ['https://picsum.photos/seed/radiator1/600/600'],
     isFeatured: false,
@@ -210,7 +209,7 @@ const parts: Part[] = [
     description: 'Alternador remanufacturado de 120 amperios, calidad OEM.',
     price: 210.0,
     stock: 70,
-    brand: brands[0], // Bosch
+    brand: { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
     category: categories[4], // Electrical
     imageUrls: ['https://picsum.photos/seed/alternator1/600/600'],
     isFeatured: false,
@@ -229,7 +228,7 @@ const parts: Part[] = [
     description: 'Batería AGM (Absorbent Glass Mat) de alto rendimiento para vehículos con sistema Start-Stop.',
     price: 199.99,
     stock: 90,
-    brand: brands[0], // Bosch
+    brand: { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
     category: categories[4], // Electrical
     imageUrls: ['https://picsum.photos/seed/battery1/600/600'],
     isFeatured: false,
@@ -247,7 +246,7 @@ const parts: Part[] = [
     description: 'Kit de embrague completo incluye disco, plato de presión y cojinete.',
     price: 240.0,
     stock: 55,
-    brand: brands[5], // Valeo
+    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
     category: categories[0], // Engine
     imageUrls: ['https://picsum.photos/seed/clutch1/600/600'],
     isFeatured: false,
@@ -266,7 +265,7 @@ const parts: Part[] = [
     description: 'Juego de 4 amortiguadores deportivos para una mayor rigidez y mejor manejo.',
     price: 450.0,
     stock: 30,
-    brand: brands[4], // Bilstein
+    brand: { id: 'bilstein', name: 'Bilstein', logoUrl: 'https://picsum.photos/seed/bilstein/150/80' },
     category: categories[1], // Suspension
     imageUrls: ['https://picsum.photos/seed/susp-kit/600/600'],
     isFeatured: false,
@@ -337,6 +336,7 @@ export function getFeaturedParts(): Part[] {
 }
 
 export function getBrands(): Brand[] {
+  // This function is now illustrative. In a real app, you'd fetch this from Firestore.
   return brands;
 }
 

@@ -29,36 +29,60 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getBrands } from "@/lib/data";
 import { BrandForm } from "./brand-form";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import type { Brand } from "@/lib/types";
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BrandsTab() {
-  const [brands, setBrands] = useState(getBrands());
+  const firestore = useFirestore();
+  const brandsCollection = useMemoFirebase(() => {
+      if(!firestore) return null;
+      return collection(firestore, "brands");
+  }, [firestore]);
+
+  const { data: brands, isLoading } = useCollection<Brand>(brandsCollection);
+  
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | undefined>(undefined);
   const { toast } = useToast();
 
-  const handleFormSubmit = (data: Omit<Brand, 'id'> & { id?: string }) => {
-    if (editingBrand) {
-      setBrands(brands.map((b) => (b.id === data.id ? { ...b, ...data } : b)));
-      toast({ title: "Marca actualizada", description: `"${data.name}" ha sido actualizada.` });
-    } else {
-      const newBrand = { ...data, id: data.name.toLowerCase().replace(/\s+/g, '-') };
-      setBrands([newBrand, ...brands]);
-      toast({ title: "Marca creada", description: `"${data.name}" ha sido añadida.` });
+  const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
+    if (!firestore || !brandsCollection) return;
+    
+    try {
+      if (editingBrand && data.id) {
+        const brandDoc = doc(firestore, "brands", data.id);
+        await updateDoc(brandDoc, { name: data.name, logoUrl: data.logoUrl });
+        toast({ title: "Marca actualizada", description: `"${data.name}" ha sido actualizada.` });
+      } else {
+        await addDoc(brandsCollection, { name: data.name, logoUrl: data.logoUrl });
+        toast({ title: "Marca creada", description: `"${data.name}" ha sido añadida.` });
+      }
+    } catch (error) {
+      console.error("Error submitting brand:", error);
+      toast({ title: "Error", description: "No se pudo guardar la marca.", variant: "destructive" });
+    } finally {
+      setEditingBrand(undefined);
+      setIsFormOpen(false);
     }
-    setEditingBrand(undefined);
-    setIsFormOpen(false);
   };
 
-  const handleDelete = (brandId: string) => {
-    setBrands(brands.filter((b) => b.id !== brandId));
-    toast({ title: "Marca eliminada", variant: "destructive" });
+  const handleDelete = async (brandId: string) => {
+    if (!firestore) return;
+    try {
+      const brandDoc = doc(firestore, "brands", brandId);
+      await deleteDoc(brandDoc);
+      toast({ title: "Marca eliminada", variant: "destructive" });
+    } catch (error) {
+      console.error("Error deleting brand: ", error);
+      toast({ title: "Error", description: "No se pudo eliminar la marca.", variant: "destructive" });
+    }
   };
 
   const openEditDialog = (brand: Brand) => {
@@ -98,6 +122,18 @@ export default function BrandsTab() {
         </Dialog>
       </CardHeader>
       <CardContent>
+        {isLoading ? (
+            <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4">
+                        <Skeleton className="h-12 w-24 rounded-md" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-[250px]" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        ) : (
         <Table>
           <TableHeader>
             <TableRow>
@@ -107,7 +143,7 @@ export default function BrandsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {brands.map((brand) => (
+            {brands?.map((brand) => (
               <TableRow key={brand.id}>
                 <TableCell>
                   <Image
@@ -155,6 +191,7 @@ export default function BrandsTab() {
             ))}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   );

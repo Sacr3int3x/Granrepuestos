@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getParts, getCategories, getBrands, getVehicleBrands } from '@/lib/data';
+import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
 import type { Part } from '@/lib/types';
 import {
   Pagination,
@@ -41,7 +41,6 @@ export default function PartsPage({
   const paginatedParts = allParts.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
   
   const categories = getCategories();
-  const brands = getBrands();
   const vehicleBrands = getVehicleBrands();
 
   const createPageURL = (pageNumber: number | string) => {
@@ -60,7 +59,7 @@ export default function PartsPage({
 
   const FilterComponent = () => (
     <Suspense fallback={<div>Cargando filtros...</div>}>
-      <Filters categories={categories} brands={brands} vehicleBrands={vehicleBrands} />
+      <Filters categories={categories} vehicleBrands={vehicleBrands} />
     </Suspense>
   )
 
