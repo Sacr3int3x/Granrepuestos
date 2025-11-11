@@ -1,6 +1,4 @@
-import type { Brand, Category, Part, VehicleBrand, VehicleModel } from './types';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from './firebase'; // Assuming you have a firebase config file
+import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
 // The brands data is now fetched from Firestore.
@@ -58,8 +56,8 @@ const parts: Part[] = [
     description: 'Juego de pastillas de freno de cerámica de alto rendimiento para una frenada superior y bajo nivel de polvo.',
     price: 75.99,
     stock: 120,
-    brand: { id: 'brembo', name: 'Brembo', logoUrl: 'https://picsum.photos/seed/brembo/150/80' },
-    category: categories[2], // Brakes
+    brandId: 'brembo',
+    categoryId: 'brakes',
     imageUrls: [
       'https://picsum.photos/seed/brake3/600/600',
       'https://picsum.photos/seed/brake1/600/600',
@@ -82,8 +80,8 @@ const parts: Part[] = [
     description: 'Amortiguador de gas monotubo para una conducción suave y estable.',
     price: 120.5,
     stock: 80,
-    brand: { id: 'bilstein', name: 'Bilstein', logoUrl: 'https://picsum.photos/seed/bilstein/150/80' },
-    category: categories[1], // Suspension
+    brandId: 'bilstein',
+    categoryId: 'suspension',
     imageUrls: ['https://picsum.photos/seed/susp1/600/600', 'https://picsum.photos/seed/susp2/600/600'],
     isFeatured: true,
     specifications: {
@@ -101,8 +99,8 @@ const parts: Part[] = [
     description: 'Bujía de iridio de larga duración para un encendido eficiente y un mejor rendimiento del combustible.',
     price: 15.0,
     stock: 300,
-    brand: { id: 'ngk', name: 'NGK', logoUrl: 'https://picsum.photos/seed/ngk/150/80' },
-    category: categories[0], // Engine
+    brandId: 'ngk',
+    categoryId: 'engine',
     imageUrls: ['https://picsum.photos/seed/spark1/600/600'],
     isFeatured: true,
     specifications: {
@@ -118,8 +116,8 @@ const parts: Part[] = [
     description: 'Faro completo con tecnología LED para una visibilidad nocturna superior y un aspecto moderno.',
     price: 250.0,
     stock: 45,
-    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
-    category: categories[3], // Body
+    brandId: 'valeo',
+    categoryId: 'body',
     imageUrls: ['https://picsum.photos/seed/headlight1/600/600'],
     isFeatured: true,
     specifications: {
@@ -137,8 +135,8 @@ const parts: Part[] = [
     description: 'Filtro de aceite de alta capacidad para una protección óptima del motor.',
     price: 12.99,
     stock: 500,
-    brand: { id: 'mann-filter', name: 'Mann-Filter', logoUrl: 'https://picsum.photos/seed/mann/150/80' },
-    category: categories[0], // Engine
+    brandId: 'mann-filter',
+    categoryId: 'engine',
     imageUrls: ['https://picsum.photos/seed/filter1/600/600'],
     isFeatured: false,
     specifications: {
@@ -153,8 +151,8 @@ const parts: Part[] = [
     description: 'Filtro de aire de cabina con carbón activado para eliminar olores y partículas.',
     price: 22.5,
     stock: 250,
-    brand: { id: 'mann-filter', name: 'Mann-Filter', logoUrl: 'https://picsum.photos/seed/mann/150/80' },
-    category: categories[3], // Body
+    brandId: 'mann-filter',
+    categoryId: 'body',
     imageUrls: ['https://picsum.photos/seed/filter2/600/600'],
     isFeatured: false,
     specifications: {
@@ -171,8 +169,8 @@ const parts: Part[] = [
     description: 'Disco de freno ventilado para una mejor disipación del calor y rendimiento constante.',
     price: 95.0,
     stock: 150,
-    brand: { id: 'brembo', name: 'Brembo', logoUrl: 'https://picsum.photos/seed/brembo/150/80' },
-    category: categories[2], // Brakes
+    brandId: 'brembo',
+    categoryId: 'brakes',
     imageUrls: ['https://picsum.photos/seed/brake1/600/600', 'https://picsum.photos/seed/brake2/600/600'],
     isFeatured: false,
     specifications: {
@@ -191,8 +189,8 @@ const parts: Part[] = [
     description: 'Radiador de alto rendimiento fabricado en aluminio para una refrigeración eficiente.',
     price: 180.0,
     stock: 60,
-    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
-    category: categories[0], // Engine
+    brandId: 'valeo',
+    categoryId: 'engine',
     imageUrls: ['https://picsum.photos/seed/radiator1/600/600'],
     isFeatured: false,
     specifications: {
@@ -209,8 +207,8 @@ const parts: Part[] = [
     description: 'Alternador remanufacturado de 120 amperios, calidad OEM.',
     price: 210.0,
     stock: 70,
-    brand: { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
-    category: categories[4], // Electrical
+    brandId: 'bosch',
+    categoryId: 'electrical',
     imageUrls: ['https://picsum.photos/seed/alternator1/600/600'],
     isFeatured: false,
     specifications: {
@@ -228,8 +226,8 @@ const parts: Part[] = [
     description: 'Batería AGM (Absorbent Glass Mat) de alto rendimiento para vehículos con sistema Start-Stop.',
     price: 199.99,
     stock: 90,
-    brand: { id: 'bosch', name: 'Bosch', logoUrl: 'https://picsum.photos/seed/bosch/150/80' },
-    category: categories[4], // Electrical
+    brandId: 'bosch',
+    categoryId: 'electrical',
     imageUrls: ['https://picsum.photos/seed/battery1/600/600'],
     isFeatured: false,
     specifications: {
@@ -246,8 +244,8 @@ const parts: Part[] = [
     description: 'Kit de embrague completo incluye disco, plato de presión y cojinete.',
     price: 240.0,
     stock: 55,
-    brand: { id: 'valeo', name: 'Valeo', logoUrl: 'https://picsum.photos/seed/valeo/150/80' },
-    category: categories[0], // Engine
+    brandId: 'valeo',
+    categoryId: 'engine',
     imageUrls: ['https://picsum.photos/seed/clutch1/600/600'],
     isFeatured: false,
     specifications: {
@@ -265,8 +263,8 @@ const parts: Part[] = [
     description: 'Juego de 4 amortiguadores deportivos para una mayor rigidez y mejor manejo.',
     price: 450.0,
     stock: 30,
-    brand: { id: 'bilstein', name: 'Bilstein', logoUrl: 'https://picsum.photos/seed/bilstein/150/80' },
-    category: categories[1], // Suspension
+    brandId: 'bilstein',
+    categoryId: 'suspension',
     imageUrls: ['https://picsum.photos/seed/susp-kit/600/600'],
     isFeatured: false,
     specifications: {
@@ -279,16 +277,19 @@ const parts: Part[] = [
   }
 ];
 
-export function getParts(filters: {
-  query?: string;
-  brand?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  vehicleBrand?: string;
-  vehicleModel?: string;
-} = {}) {
-  let filteredParts = [...parts];
+export function getParts(
+  allParts: Part[],
+  filters: {
+    query?: string;
+    brand?: string;
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    vehicleBrand?: string;
+    vehicleModel?: string;
+  } = {}
+) {
+  let filteredParts = [...allParts];
 
   if (filters.query) {
     const lowerCaseQuery = filters.query.toLowerCase();
@@ -301,11 +302,11 @@ export function getParts(filters: {
   }
 
   if (filters.brand) {
-    filteredParts = filteredParts.filter((part) => part.brand.id === filters.brand);
+    filteredParts = filteredParts.filter((part) => part.brandId === filters.brand);
   }
 
   if (filters.category) {
-    filteredParts = filteredParts.filter((part) => part.category.id === filters.category);
+    filteredParts = filteredParts.filter((part) => part.categoryId === filters.category);
   }
   
   if (filters.minPrice) {
@@ -327,12 +328,12 @@ export function getParts(filters: {
   return filteredParts;
 }
 
-export function getPartById(id: string): Part | undefined {
-  return parts.find((part) => part.id === id);
+export function getPartById(allParts: Part[], id: string): Part | undefined {
+  return allParts.find((part) => part.id === id);
 }
 
-export function getFeaturedParts(): Part[] {
-  return parts.filter((part) => part.isFeatured);
+export function getFeaturedParts(allParts: Part[]): Part[] {
+  return allParts.filter((part) => part.isFeatured);
 }
 
 export function getBrands(): Brand[] {
@@ -353,6 +354,7 @@ export function getVehicleModels(brandId?: string): VehicleModel[] {
     return vehicleModels.filter(model => model.brandId === brandId);
 }
 
-export function getRelatedParts(part: Part): Part[] {
-    return parts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
+export function getRelatedParts(allParts: Part[], part: Part): Part[] {
+    if (!part || !part.relatedPartIds) return [];
+    return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }

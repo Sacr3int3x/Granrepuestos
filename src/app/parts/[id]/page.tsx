@@ -21,42 +21,44 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
-import type { Part } from "@/lib/types";
+import type { Part, Brand, Category } from "@/lib/types";
 import { useCart } from "@/context/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import AddToCartButton from "../components/add-to-cart-button";
+import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
+import { doc, collection } from "firebase/firestore";
+import { getCategories } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
 
-export default function PartDetailPage({ params }: { params: { id: string } }) {
-  const part = getPartById(params.id);
-  const { addToCart } = useCart();
-  const { toast } = useToast();
+function PartDetailContent({ part, brands, categories }: { part: Part; brands: Brand[]; categories: Category[] }) {
+    const { toast } = useToast();
+    
+    const brand = brands.find(b => b.id === part.brandId);
+    const category = categories.find(c => c.id === part.categoryId);
 
-  if (!part) {
-    notFound();
-  }
+    const fullPart = {
+        ...part,
+        brand: brand || { id: part.brandId, name: 'Unknown', logoUrl: ''},
+        category: category || { id: part.categoryId, name: 'Unknown' }
+    };
+    
+    // We can't query for related parts in this component as we don't have all parts.
+    // This could be fetched separately if needed.
+    const relatedParts: Part[] = [];
 
-  const relatedParts = getRelatedParts(part);
-
-  const handleAddToCart = () => {
-    addToCart(part);
-    toast({
-      title: "¡Añadido al carrito!",
-      description: `${part.name} ha sido añadido a tu carrito.`,
-    });
-  };
-
-  return (
-    <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    return (
+    <>
       <div className="grid md:grid-cols-2 gap-12">
         <div>
           <Carousel className="w-full">
             <CarouselContent>
-              {part.imageUrls.map((url, index) => (
+              {fullPart.imageUrls.map((url, index) => (
                 <CarouselItem key={index}>
                   <div className="aspect-square relative bg-card rounded-lg overflow-hidden border">
                     <Image
                       src={url}
-                      alt={`${part.name} - vista ${index + 1}`}
+                      alt={`${fullPart.name} - vista ${index + 1}`}
                       fill
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -72,23 +74,23 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
         </div>
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
-            {part.name}
+            {fullPart.name}
           </h1>
           <div className="mt-2 flex items-center gap-4">
-             <Link href={`/parts?brand=${part.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{part.brand.name}</Link>
-             <Badge variant="secondary">{part.category.name}</Badge>
+             <Link href={`/parts?brand=${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
+             <Badge variant="secondary">{fullPart.category.name}</Badge>
           </div>
-          <p className="mt-6 text-base text-muted-foreground">{part.description}</p>
+          <p className="mt-6 text-base text-muted-foreground">{fullPart.description}</p>
           
           <div className="mt-8">
-            <p className="text-4xl font-bold text-primary">${part.price.toFixed(2)}</p>
-            <p className={part.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
-              {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
+            <p className="text-4xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
+            <p className={fullPart.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
+              {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
             </p>
           </div>
 
           <div className="mt-8">
-             <AddToCartButton part={part} size="lg" showText={true} />
+             <AddToCartButton part={fullPart} size="lg" showText={true} />
           </div>
         </div>
       </div>
@@ -100,9 +102,9 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
                 <TableBody>
                 <TableRow>
                     <TableCell className="font-medium">SKU</TableCell>
-                    <TableCell>{part.sku}</TableCell>
+                    <TableCell>{fullPart.sku}</TableCell>
                 </TableRow>
-                {Object.entries(part.specifications).map(([key, value]) => (
+                {Object.entries(fullPart.specifications).map(([key, value]) => (
                     <TableRow key={key}>
                     <TableCell className="font-medium">{key}</TableCell>
                     <TableCell>{value}</TableCell>
@@ -113,6 +115,8 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
         </Card>
       </div>
 
+      {/* Related parts logic needs re-implementation with Firestore */}
+      {/*
       {relatedParts.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
@@ -146,6 +150,61 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       )}
+      */}
+    </>
+  );
+}
+
+
+export default function PartDetailPage({ params }: { params: { id: string } }) {
+  const firestore = useFirestore();
+
+  const partRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'parts', params.id);
+  }, [firestore, params.id]);
+  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+
+  const brandsRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+  const { data: brands, isLoading: areBrandsLoading } = useCollection<Brand>(brandsRef);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  
+  useEffect(() => {
+      setCategories(getCategories());
+  }, []);
+
+  const isLoading = isPartLoading || areBrandsLoading || categories.length === 0;
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 gap-12">
+            <div>
+                <Skeleton className="aspect-square w-full rounded-lg" />
+            </div>
+            <div className="space-y-4">
+                <Skeleton className="h-10 w-3/4" />
+                <Skeleton className="h-6 w-1/4" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-10 w-1/2" />
+                <Skeleton className="h-12 w-1/3" />
+            </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!part || !brands) {
+    notFound();
+  }
+
+  return (
+    <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <PartDetailContent part={part} brands={brands} categories={categories} />
     </div>
   );
 }

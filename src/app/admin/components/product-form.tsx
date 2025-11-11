@@ -43,7 +43,7 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  onSubmit: (data: any) => void; // Changed to any to accommodate brand object
+  onSubmit: (data: ProductFormValues) => void;
   part?: Part;
 }
 
@@ -59,9 +59,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   const defaultValues: Partial<ProductFormValues> = part
     ? {
         ...part,
-        brandId: part.brand.id,
-        categoryId: part.category.id,
-        imageUrls: part.imageUrls,
+        imageUrls: part.imageUrls as any, // Adjust type
       }
     : {
         isFeatured: false,
@@ -74,29 +72,12 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
         ...defaultValues,
-        imageUrls: defaultValues.imageUrls?.join(', '),
+        imageUrls: Array.isArray(defaultValues.imageUrls) ? defaultValues.imageUrls.join(', ') : '',
     },
   });
 
   const handleSubmit = (data: ProductFormValues) => {
-    const brand = brands?.find(b => b.id === data.brandId);
-    const category = categories.find(c => c.id === data.categoryId);
-
-    if (!brand || !category) {
-        console.error("Brand or category not found");
-        return;
-    }
-
-    const fullPartData = {
-        ...data,
-        id: part?.id || '',
-        imageUrls: data.imageUrls,
-        brand, // Pass the whole brand object
-        category,
-        specifications: part?.specifications || {},
-        relatedPartIds: part?.relatedPartIds || [],
-    };
-    onSubmit(fullPartData);
+    onSubmit(data);
   };
 
   return (

@@ -27,8 +27,8 @@ export type Part = {
   description: string;
   price: number;
   stock: number;
-  brand: Brand;
-  category: Category;
+  brandId: string;
+  categoryId: string;
   imageUrls: string[];
   isFeatured: boolean;
   specifications: {

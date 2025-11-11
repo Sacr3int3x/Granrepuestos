@@ -18,7 +18,7 @@ import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin } from "lucide-react";
 import type { Part, Brand } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
@@ -81,9 +81,97 @@ function BrandsSection() {
 }
 
 
-export default function Home() {
-  const featuredParts = getFeaturedParts();
+function FeaturedProductsSection() {
+    const firestore = useFirestore();
+    const brandsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return collection(firestore, 'brands');
+    }, [firestore]);
+    const { data: brands, isLoading: brandsLoading } = useCollection<Brand>(brandsQuery);
 
+    const partsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'parts'), where('isFeatured', '==', true));
+    }, [firestore]);
+
+    const { data: featuredParts, isLoading: partsLoading } = useCollection<Part>(partsQuery);
+    
+    const getBrandForPart = (part: Part) => brands?.find(b => b.id === part.brandId);
+
+    if (partsLoading || brandsLoading) {
+        return (
+            <div className="container mx-auto px-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                         <Card key={i}>
+                            <CardHeader><Skeleton className="h-[200px] w-full" /></CardHeader>
+                            <CardContent className="space-y-2">
+                                <Skeleton className="h-4 w-4/5" />
+                                <Skeleton className="h-4 w-2/5" />
+                            </CardContent>
+                             <CardFooter>
+                                <Skeleton className="h-8 w-1/2" />
+                            </CardFooter>
+                         </Card>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    if (!featuredParts || featuredParts.length === 0) {
+        return <div className="text-center text-muted-foreground">No hay productos destacados.</div>;
+    }
+
+    return (
+        <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {featuredParts.map((part: Part) => (
+                <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
+                   <div className="p-1">
+                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group h-full">
+                      <CardHeader className="p-0">
+                        <Link href={`/parts/${part.id}`}>
+                          <div className="relative aspect-square w-full">
+                            <Image
+                              src={part.imageUrls[0]}
+                              alt={part.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              data-ai-hint="auto part"
+                            />
+                          </div>
+                        </Link>
+                      </CardHeader>
+                      <CardContent className="p-4 flex-grow">
+                        <h3 className="text-lg font-semibold leading-tight">
+                           <Link href={`/parts/${part.id}`}>{part.name}</Link>
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
+                      </CardContent>
+                      <CardFooter className="p-4 flex justify-between items-center mt-auto">
+                        <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                        <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 h-10 w-10" />
+            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 h-10 w-10" />
+          </Carousel>
+    )
+}
+
+export default function Home() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center">
@@ -146,50 +234,7 @@ export default function Home() {
               Los repuestos más populares y recomendados por nuestros clientes.
             </p>
           </div>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {featuredParts.map((part: Part) => (
-                <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
-                   <div className="p-1">
-                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group h-full">
-                      <CardHeader className="p-0">
-                        <Link href={`/parts/${part.id}`}>
-                          <div className="relative aspect-square w-full">
-                            <Image
-                              src={part.imageUrls[0]}
-                              alt={part.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              data-ai-hint="auto part"
-                            />
-                          </div>
-                        </Link>
-                      </CardHeader>
-                      <CardContent className="p-4 flex-grow">
-                        <h3 className="text-lg font-semibold leading-tight">
-                           <Link href={`/parts/${part.id}`}>{part.name}</Link>
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">{part.brand.name}</p>
-                      </CardContent>
-                      <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                        <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
-                        <AddToCartButton part={part} />
-                      </CardFooter>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 h-10 w-10" />
-            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 h-10 w-10" />
-          </Carousel>
+          <FeaturedProductsSection />
         </div>
       </section>
 

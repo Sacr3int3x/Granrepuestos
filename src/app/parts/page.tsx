@@ -1,6 +1,8 @@
+
+'use client';
+
 import Link from 'next/link';
-import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
-import type { Part } from '@/lib/types';
+import type { Part, Brand } from '@/lib/types';
 import {
   Pagination,
   PaginationContent,
@@ -11,48 +13,63 @@ import {
 } from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import Filters from './components/filters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const PARTS_PER_PAGE = 15;
 
-export default async function PartsPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const page = typeof searchParams.page === 'string' ? Number(searchParams.page) : 1;
-  const query = typeof searchParams.query === 'string' ? searchParams.query : undefined;
-  const brand = typeof searchParams.brand === 'string' ? searchParams.brand : undefined;
-  const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
-  const vehicleBrand = typeof searchParams.vehicleBrand === 'string' ? searchParams.vehicleBrand : undefined;
-  const vehicleModel = typeof searchParams.vehicleModel === 'string' ? searchParams.vehicleModel : undefined;
-  const minPrice = typeof searchParams.minPrice === 'string' ? Number(searchParams.minPrice) : undefined;
-  const maxPrice = typeof searchParams.maxPrice === 'string' ? Number(searchParams.maxPrice) : undefined;
-
-  const allParts = getParts({ query, brand, category, minPrice, maxPrice, vehicleBrand, vehicleModel });
-  const totalPages = Math.ceil(allParts.length / PARTS_PER_PAGE);
-  const paginatedParts = allParts.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
+export default function PartsPage() {
+  const searchParams = useSearchParams();
   
+  const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
+  const query = searchParams.get('query') || undefined;
+  const brandFilter = searchParams.get('brand') || undefined;
+  const categoryFilter = searchParams.get('category') || undefined;
+  const vehicleBrand = searchParams.get('vehicleBrand') || undefined;
+  const vehicleModel = searchParams.get('vehicleModel') || undefined;
+  const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
+  const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
+
+  const firestore = useFirestore();
+  const partsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'parts');
+  }, [firestore]);
+  const { data: allParts, isLoading: partsLoading } = useCollection<Part>(partsQuery);
+
+  const brandsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+  const { data: allBrands, isLoading: brandsLoading } = useCollection<Brand>(brandsQuery);
+
+  const { filteredParts, totalPages, paginatedParts } = useMemo(() => {
+    if (!allParts || !allBrands) {
+        return { filteredParts: [], totalPages: 0, paginatedParts: [] };
+    }
+    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, minPrice, maxPrice, vehicleBrand, vehicleModel });
+    const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
+    const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
+    return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
+  }, [allParts, allBrands, query, brandFilter, categoryFilter, minPrice, maxPrice, vehicleBrand, vehicleModel, page]);
+
+
   const categories = getCategories();
   const vehicleBrands = getVehicleBrands();
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams();
-    for (const key in searchParams) {
-      const value = searchParams[key];
-      if (typeof value === 'string') {
-        params.set(key, value);
-      } else if (Array.isArray(value)) {
-        value.forEach(v => params.append(key, v));
-      }
-    }
+    const params = new URLSearchParams(searchParams.toString());
     params.set('page', pageNumber.toString());
     return `/parts?${params.toString()}`;
   };
@@ -62,6 +79,11 @@ export default async function PartsPage({
       <Filters categories={categories} vehicleBrands={vehicleBrands} />
     </Suspense>
   )
+  
+  const getBrandForPart = (part: Part) => allBrands?.find(b => b.id === part.brandId);
+  const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
+
+  const isLoading = partsLoading || brandsLoading;
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -99,38 +121,53 @@ export default async function PartsPage({
         </aside>
 
         <main className="lg:col-span-3">
-          {paginatedParts.length > 0 ? (
+          {isLoading ? (
+             <div className="space-y-4">
+                <div className="md:hidden space-y-4">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)}
+                </div>
+                <div className="hidden md:block border rounded-lg">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                </div>
+            </div>
+          ) : paginatedParts.length > 0 ? (
             <div className="space-y-4">
               {/* Mobile View - Cards */}
               <div className="md:hidden space-y-4">
-                {paginatedParts.map((part: Part) => (
-                  <Card key={part.id} className="overflow-hidden">
-                    <CardContent className="p-4 flex gap-4">
-                      <Image
-                        src={part.imageUrls[0]}
-                        alt={part.name}
-                        width={80}
-                        height={80}
-                        className="rounded-md object-cover"
-                        data-ai-hint="auto part"
-                      />
-                      <div className="flex-grow">
-                        <h3 className="font-medium">{part.name}</h3>
-                        <p className="text-sm text-muted-foreground">{part.brand.name}</p>
-                        <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
-                        <div className="flex items-center justify-between mt-2">
-                           <p className="font-semibold">${part.price.toFixed(2)}</p>
-                           <div className='flex items-center gap-2'>
-                              <AddToCartButton part={part} size="icon" />
-                              <Button asChild variant="outline" size="sm">
-                                <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                              </Button>
-                           </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {paginatedParts.map((part: Part) => {
+                    const brand = getBrandForPart(part);
+                    const category = getCategoryForPart(part);
+                    if (!brand || !category) return null;
+                    const fullPart = {...part, brand, category};
+                    return (
+                        <Card key={part.id} className="overflow-hidden">
+                            <CardContent className="p-4 flex gap-4">
+                            <Image
+                                src={part.imageUrls[0]}
+                                alt={part.name}
+                                width={80}
+                                height={80}
+                                className="rounded-md object-cover"
+                                data-ai-hint="auto part"
+                            />
+                            <div className="flex-grow">
+                                <h3 className="font-medium">{part.name}</h3>
+                                <p className="text-sm text-muted-foreground">{brand?.name}</p>
+                                <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+                                <div className="flex items-center justify-between mt-2">
+                                <p className="font-semibold">${part.price.toFixed(2)}</p>
+                                <div className='flex items-center gap-2'>
+                                    <AddToCartButton part={fullPart} size="icon" />
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                                    </Button>
+                                </div>
+                                </div>
+                            </div>
+                            </CardContent>
+                        </Card>
+                    )
+                })}
               </div>
 
               {/* Desktop View - Table */}
@@ -148,33 +185,39 @@ export default async function PartsPage({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedParts.map((part: Part) => (
-                      <TableRow key={part.id}>
-                        <TableCell>
-                          <Image
-                            src={part.imageUrls[0]}
-                            alt={part.name}
-                            width={60}
-                            height={60}
-                            className="rounded-md object-cover"
-                            data-ai-hint="auto part"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">{part.name}</TableCell>
-                        <TableCell>{part.brand.name}</TableCell>
-                        <TableCell>{part.sku}</TableCell>
-                        <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
-                        <TableCell className="text-center">{part.stock}</TableCell>
-                        <TableCell className="text-right">
-                          <div className='flex items-center justify-end gap-2'>
-                             <AddToCartButton part={part} size="icon" />
-                             <Button asChild variant="outline" size="sm">
-                              <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {paginatedParts.map((part: Part) => {
+                        const brand = getBrandForPart(part);
+                        const category = getCategoryForPart(part);
+                        if (!brand || !category) return null;
+                        const fullPart = {...part, brand, category};
+                        return (
+                        <TableRow key={part.id}>
+                            <TableCell>
+                            <Image
+                                src={part.imageUrls[0]}
+                                alt={part.name}
+                                width={60}
+                                height={60}
+                                className="rounded-md object-cover"
+                                data-ai-hint="auto part"
+                            />
+                            </TableCell>
+                            <TableCell className="font-medium">{part.name}</TableCell>
+                            <TableCell>{brand?.name}</TableCell>
+                            <TableCell>{part.sku}</TableCell>
+                            <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
+                            <TableCell className="text-center">{part.stock}</TableCell>
+                            <TableCell className="text-right">
+                            <div className='flex items-center justify-end gap-2'>
+                                <AddToCartButton part={fullPart} size="icon" />
+                                <Button asChild variant="outline" size="sm">
+                                <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                                </Button>
+                            </div>
+                            </TableCell>
+                        </TableRow>
+                        )
+                    })}
                   </TableBody>
                 </Table>
               </div>

@@ -29,39 +29,72 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getParts } from "@/lib/data";
 import { ProductForm } from "./product-form";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import type { Part } from "@/lib/types";
+import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
+import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductsTab() {
-  // In a real app, this state would be managed via API calls and a state management library.
-  const [parts, setParts] = useState(getParts());
+  const firestore = useFirestore();
+  const partsCollection = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, "parts");
+  }, [firestore]);
+
+  const { data: parts, isLoading } = useCollection<Part>(partsCollection);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<Part | undefined>(undefined);
   const { toast } = useToast();
 
-  const handleFormSubmit = (data: Part) => {
-    if (editingPart) {
-      // Update logic
-      setParts(parts.map((p) => (p.id === data.id ? data : p)));
-      toast({ title: "Repuesto actualizado", description: `"${data.name}" ha sido actualizado.` });
+  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds'> & { id?: string }) => {
+    if (!firestore || !partsCollection) return;
+    
+    const partData = {
+        ...data,
+        // Ensure fields that are not in the form are handled
+        specifications: editingPart?.specifications || {}, 
+        relatedPartIds: editingPart?.relatedPartIds || [],
+    };
+
+    if (editingPart && data.id) {
+      const partDoc = doc(firestore, "parts", data.id);
+      updateDoc(partDoc, partData)
+        .then(() => {
+          toast({ title: "Repuesto actualizado", description: `"${data.name}" ha sido actualizado.` });
+        })
+        .catch(() => {
+            const error = new FirestorePermissionError({ path: partDoc.path, operation: 'update', requestResourceData: partData });
+            errorEmitter.emit('permission-error', error);
+        });
     } else {
-      // Create logic
-      const newPart = { ...data, id: `p${Date.now()}` };
-      setParts([newPart, ...parts]);
-      toast({ title: "Repuesto creado", description: `"${data.name}" ha sido añadido.` });
+      addDoc(partsCollection, partData)
+        .then(() => {
+          toast({ title: "Repuesto creado", description: `"${data.name}" ha sido añadido.` });
+        })
+        .catch(() => {
+            const error = new FirestorePermissionError({ path: partsCollection.path, operation: 'create', requestResourceData: partData });
+            errorEmitter.emit('permission-error', error);
+        });
     }
     setEditingPart(undefined);
     setIsFormOpen(false);
   };
 
   const handleDelete = (partId: string) => {
-    setParts(parts.filter((p) => p.id !== partId));
-    toast({ title: "Repuesto eliminado", variant: "destructive" });
+    if (!firestore) return;
+    const partDoc = doc(firestore, "parts", partId);
+    deleteDoc(partDoc).then(() => {
+        toast({ title: "Repuesto eliminado", variant: "destructive" });
+    }).catch(() => {
+        const error = new FirestorePermissionError({ path: partDoc.path, operation: 'delete' });
+        errorEmitter.emit('permission-error', error);
+    })
   };
 
   const openEditDialog = (part: Part) => {
@@ -101,6 +134,18 @@ export default function ProductsTab() {
         </Dialog>
       </CardHeader>
       <CardContent>
+        {isLoading ? (
+            <div className="space-y-4">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4 p-2">
+                        <Skeleton className="h-10 w-10 rounded-md" />
+                        <Skeleton className="h-4 w-2/5" />
+                        <Skeleton className="h-4 w-1/5" />
+                        <Skeleton className="h-4 w-1/5" />
+                    </div>
+                ))}
+            </div>
+        ) : (
         <Table>
           <TableHeader>
             <TableRow>
@@ -113,9 +158,10 @@ export default function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {parts.map((part) => (
+            {parts?.map((part) => (
               <TableRow key={part.id}>
                 <TableCell>
+                  {part.imageUrls && part.imageUrls[0] ? (
                   <Image
                     src={part.imageUrls[0]}
                     alt={part.name}
@@ -123,6 +169,7 @@ export default function ProductsTab() {
                     height={40}
                     className="rounded-md object-cover"
                   />
+                  ) : <div className="h-10 w-10 bg-muted rounded-md" />}
                 </TableCell>
                 <TableCell className="font-medium">{part.name}</TableCell>
                 <TableCell>{part.sku}</TableCell>
@@ -164,6 +211,7 @@ export default function ProductsTab() {
             ))}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   );
