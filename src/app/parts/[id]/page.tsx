@@ -1,3 +1,5 @@
+"use client";
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,15 +22,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ShoppingCart } from "lucide-react";
 import type { Part } from "@/lib/types";
+import { useCart } from "@/context/cart-context";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PartDetailPage({ params }: { params: { id: string } }) {
   const part = getPartById(params.id);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   if (!part) {
     notFound();
   }
 
   const relatedParts = getRelatedParts(part);
+
+  const handleAddToCart = () => {
+    addToCart(part);
+    toast({
+      title: "¡Añadido al carrito!",
+      description: `${part.name} ha sido añadido a tu carrito.`,
+    });
+  };
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -73,7 +87,7 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="mt-8">
-            <Button size="lg" className="w-full" disabled={part.stock === 0}>
+            <Button size="lg" className="w-full" disabled={part.stock === 0} onClick={handleAddToCart}>
               <ShoppingCart className="mr-2 h-5 w-5" />
               Añadir al Carrito
             </Button>

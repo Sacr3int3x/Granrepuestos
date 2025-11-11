@@ -2,22 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, ShoppingCart } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "@/components/icons";
+import { useCart } from "@/context/cart-context";
 
 export default function Header() {
   const pathname = usePathname();
+  const { cartItemCount, setIsCartOpen } = useCart();
+  
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/parts", label: "Repuestos" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Icons.logo className="h-6 w-6 text-primary" />
@@ -42,6 +45,21 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex relative"
+            aria-label="Abrir carrito"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
+                {cartItemCount}
+              </span>
+            )}
+          </Button>
+
           <Sheet>
             <SheetTrigger asChild>
               <Button
