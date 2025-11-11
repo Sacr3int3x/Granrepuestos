@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { getBrands, getFeaturedParts } from "@/lib/data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MessageSquare, MapPin } from "lucide-react";
 import type { Part } from "@/lib/types";
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
@@ -59,7 +59,7 @@ export default function Home() {
           <div className="w-full pb-10">
             <div className="container mx-auto px-4">
               <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline">
+                <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
                   Marcas con las que trabajamos
                 </h2>
                 <p className="mt-4 text-lg text-muted-foreground">
@@ -69,7 +69,7 @@ export default function Home() {
               <div
                 className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
                 <ul
-                  className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+                  className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
                   {brands.map((brand) => (
                     <li key={brand.id}>
                       <Image src={brand.logoUrl} alt={brand.name} width={120} height={50} className="object-contain" />
@@ -77,7 +77,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <ul
-                  className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+                  className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
                   aria-hidden="true">
                   {brands.map((brand) => (
                     <li key={`${brand.id}-clone`}>
@@ -145,10 +145,12 @@ export default function Home() {
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
-                <Phone className="h-8 w-8" />
+                <MessageSquare className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold">Teléfono</h3>
-              <p className="text-muted-foreground mt-2">+584141123707</p>
+              <h3 className="text-xl font-semibold">WhatsApp</h3>
+              <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" className="text-muted-foreground mt-2 hover:underline">
+                +58 414-1123707
+              </a>
             </div>
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
