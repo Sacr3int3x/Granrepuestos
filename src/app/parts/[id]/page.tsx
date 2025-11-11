@@ -20,10 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ShoppingCart } from "lucide-react";
 import type { Part, Brand, Category } from "@/lib/types";
-import { useCart } from "@/context/cart-context";
-import { useToast } from "@/hooks/use-toast";
 import AddToCartButton from "../components/add-to-cart-button";
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
@@ -33,7 +30,6 @@ import { useEffect, useState } from "react";
 
 function PartDetailContent({ part, brands, categories }: { part: Part; brands: Brand[]; categories: Category[] }) {
     const firestore = useFirestore();
-    const { toast } = useToast();
     
     const brand = brands.find(b => b.id === part.brandId);
     const category = categories.find(c => c.id === part.categoryId);
@@ -158,14 +154,13 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
   );
 }
 
-
-export default function PartDetailPage({ params }: { params: { id: string } }) {
+function PartDetailClient({ partId }: { partId: string }) {
   const firestore = useFirestore();
 
   const partRef = useMemoFirebase(() => {
-    if (!firestore || !params.id) return null;
-    return doc(firestore, 'parts', params.id);
-  }, [firestore, params]);
+    if (!firestore || !partId) return null;
+    return doc(firestore, 'parts', partId);
+  }, [firestore, partId]);
   const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
   const brandsRef = useMemoFirebase(() => {
@@ -205,9 +200,14 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
     notFound();
   }
 
+  return <PartDetailContent part={part} brands={brands} categories={categories} />;
+}
+
+
+export default function PartDetailPage({ params }: { params: { id: string } }) {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <PartDetailContent part={part} brands={brands} categories={categories} />
+      <PartDetailClient partId={params.id} />
     </div>
   );
 }
