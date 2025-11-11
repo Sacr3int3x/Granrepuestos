@@ -1,5 +1,3 @@
-
-
 import Link from 'next/link';
 import { getParts, getCategories, getBrands, getVehicleBrands } from '@/lib/data';
 import type { Part } from '@/lib/types';
@@ -17,6 +15,7 @@ import { Suspense } from 'react';
 import Filters from './components/filters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from "@/components/ui/card";
+import AddToCartButton from './components/add-to-cart-button';
 
 const PARTS_PER_PAGE = 10;
 
@@ -96,9 +95,12 @@ export default function PartsPage({
                         <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
                         <div className="flex items-center justify-between mt-2">
                            <p className="font-semibold">${part.price.toFixed(2)}</p>
-                           <Button asChild variant="outline" size="sm">
-                            <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                          </Button>
+                           <div className='flex items-center gap-2'>
+                              <AddToCartButton part={part} size="icon" />
+                              <Button asChild variant="outline" size="sm">
+                                <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                              </Button>
+                           </div>
                         </div>
                       </div>
                     </CardContent>
@@ -139,9 +141,12 @@ export default function PartsPage({
                         <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
                         <TableCell className="text-center">{part.stock}</TableCell>
                         <TableCell className="text-right">
-                          <Button asChild variant="outline" size="sm">
-                            <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                          </Button>
+                          <div className='flex items-center justify-end gap-2'>
+                             <AddToCartButton part={part} size="icon" />
+                             <Button asChild variant="outline" size="sm">
+                              <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

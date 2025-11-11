@@ -24,6 +24,7 @@ import { ShoppingCart } from "lucide-react";
 import type { Part } from "@/lib/types";
 import { useCart } from "@/context/cart-context";
 import { useToast } from "@/hooks/use-toast";
+import AddToCartButton from "../components/add-to-cart-button";
 
 export default function PartDetailPage({ params }: { params: { id: string } }) {
   const part = getPartById(params.id);
@@ -87,10 +88,7 @@ export default function PartDetailPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="mt-8">
-            <Button size="lg" className="w-full" disabled={part.stock === 0} onClick={handleAddToCart}>
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Añadir al Carrito
-            </Button>
+             <AddToCartButton part={part} size="lg" showText={true} />
           </div>
         </div>
       </div>
