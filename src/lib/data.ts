@@ -283,8 +283,6 @@ export function getParts(
     query?: string;
     brand?: string;
     category?: string;
-    minPrice?: number;
-    maxPrice?: number;
     vehicleBrand?: string;
     vehicleModel?: string;
   } = {}
@@ -307,14 +305,6 @@ export function getParts(
 
   if (filters.category) {
     filteredParts = filteredParts.filter((part) => part.categoryId === filters.category);
-  }
-  
-  if (filters.minPrice) {
-    filteredParts = filteredParts.filter((part) => part.price >= filters.minPrice);
-  }
-
-  if (filters.maxPrice) {
-    filteredParts = filteredParts.filter((part) => part.price <= filters.maxPrice);
   }
   
   if (filters.vehicleBrand) {

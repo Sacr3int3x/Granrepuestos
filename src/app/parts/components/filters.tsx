@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Category, Brand, VehicleBrand } from '@/lib/types';
@@ -79,10 +78,6 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
     router.push(pathname + '?' + createQueryString({ [key]: value }));
   };
   
-  const handlePriceChange = (newPrice: number[]) => {
-    router.push(pathname + '?' + createQueryString({ maxPrice: newPrice[0] }));
-  };
-
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -94,7 +89,6 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
     router.push(pathname);
   };
   
-  const currentMaxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 500;
   const hasFilters = !!(searchParams.toString());
 
 
@@ -187,19 +181,6 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
           </Select>
         </div>
         
-        <div className="grid gap-2">
-           <label htmlFor="price-range" className="font-medium">
-            Rango de Precio: <span className="font-bold text-primary">${currentMaxPrice}</span>
-          </label>
-          <Slider
-            id="price-range"
-            max={500}
-            step={10}
-            defaultValue={[currentMaxPrice]}
-            onValueCommit={handlePriceChange}
-            aria-label="Price range slider"
-          />
-        </div>
       </CardContent>
     </Card>
   );

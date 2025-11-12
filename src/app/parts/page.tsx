@@ -41,9 +41,7 @@ function PartsPageContent() {
   const categoryFilter = searchParams.get('category') || undefined;
   const vehicleBrand = searchParams.get('vehicleBrand') || undefined;
   const vehicleModel = searchParams.get('vehicleModel') || undefined;
-  const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
-  const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
-
+  
   const firestore = useFirestore();
   const partsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -61,11 +59,11 @@ function PartsPageContent() {
     if (!allParts || !allBrands) {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
     }
-    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, minPrice, maxPrice, vehicleBrand, vehicleModel });
+    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
     const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
     const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
     return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
-  }, [allParts, allBrands, query, brandFilter, categoryFilter, minPrice, maxPrice, vehicleBrand, vehicleModel, page]);
+  }, [allParts, allBrands, query, brandFilter, categoryFilter, vehicleBrand, vehicleModel, page]);
 
 
   const categories = getCategories();
