@@ -75,6 +75,7 @@ export default function Header() {
               size="icon"
               asChild
               aria-label="Contactar por WhatsApp"
+              className="transition-colors"
             >
                <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer">
                 <MessageSquare className="h-5 w-5" />
@@ -85,6 +86,7 @@ export default function Header() {
               size="icon"
               asChild
               aria-label="Contactar por correo"
+              className="transition-colors"
             >
               <a href="mailto:info@granrepuestos.com">
                 <Mail className="h-5 w-5" />
@@ -94,7 +96,7 @@ export default function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="hidden md:flex relative"
+            className="hidden md:flex relative transition-colors"
             aria-label="Abrir carrito"
             onClick={() => setIsCartOpen(true)}
           >

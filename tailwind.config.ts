@@ -13,6 +13,8 @@ export default {
         'infinite-scroll': 'infinite-scroll 40s linear infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.5s ease-in-out',
+        'fade-in-up': 'fade-in-up 0.5s ease-in-out',
       },
       keyframes: {
         'infinite-scroll': {
@@ -33,6 +35,20 @@ export default {
           },
           to: {
             height: '0',
+          },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'fade-in-up': {
+          from: {
+            opacity: '0',
+            transform: 'translateY(10px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
           },
         },
       },

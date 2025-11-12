@@ -181,23 +181,23 @@ export default function Home() {
             <Image
                 src={HeroImage}
                 alt="Repuestos de automoviles"
-                layout="fill"
-                objectFit="cover"
+                fill
+                className="object-cover"
                 quality={100}
                 priority
             />
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
               GranRepuestos
             </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md">
+            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
-            <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s]">
               <Link href="/parts">Ver Catálogo</Link>
             </Button>
           </div>
@@ -205,7 +205,7 @@ export default function Home() {
       </section>
 
       {/* Brands Section */}
-      <section id="brands" className="py-16 lg:py-24 bg-card border-y">
+      <section id="brands" className="py-16 lg:py-24 bg-card border-y animate-fade-in-up [animation-delay:0.8s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
@@ -220,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products Section */}
-      <section id="featured-products" className="py-16 lg:py-24 bg-background">
+      <section id="featured-products" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Productos Destacados</h2>
@@ -233,7 +233,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 lg:py-24 bg-card border-t">
+      <section id="contact" className="py-16 lg:py-24 bg-card border-t animate-fade-in-up [animation-delay:1.2s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos</h2>

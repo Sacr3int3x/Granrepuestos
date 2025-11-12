@@ -36,7 +36,7 @@ export default function RootLayout({
             <CartProviderWrapper>
                 <div className="relative flex min-h-screen flex-col">
                     <Header />
-                    <main className="flex-1">{children}</main>
+                    <main className="flex-1 animate-fade-in">{children}</main>
                     <Footer />
                 </div>
                 <div className="fixed bottom-28 right-4 z-50">
