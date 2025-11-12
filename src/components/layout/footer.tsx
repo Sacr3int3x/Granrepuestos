@@ -4,9 +4,9 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="border-t bg-card">
-      <div className="container flex items-center justify-center py-3">
-        <div className="flex flex-col items-center gap-2 text-center text-sm text-muted-foreground md:flex-row md:gap-4">
-          <Icons.logo className="h-6 w-6 text-primary" />
+      <div className="container flex items-center justify-center py-1">
+        <div className="flex flex-col items-center gap-0 text-center text-sm text-muted-foreground md:flex-row md:gap-0">
+          <Icons.logo className="h-8 w-10 text-primary" />
           <p className="leading-loose">
             &copy; {new Date().getFullYear()} GranRepuestos. Todos los derechos reservados.
           </p>
