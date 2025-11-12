@@ -177,7 +177,7 @@ export default function Home() {
     <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-            <Icons.logo className="w-full h-full text-primary opacity-20 scale-125" />
+            <Icons.logo className="w-full h-full text-primary opacity-5 scale-125" />
         </div>
         <Carousel className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent className="h-full">
@@ -205,10 +205,10 @@ export default function Home() {
               GranRepuestos
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/90 drop-shadow-md">
-              Encuentra el repuesto original adecuado para tu vehículo en nuestro catálogo.
+              La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
-            <Button asChild size="lg" className="mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
-              <Link href="/parts">Comprar Ahora</Link>
+            <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Link href="/parts">Ver Catálogo</Link>
             </Button>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function Home() {
               Marcas con las que trabajamos
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Solo ofrecemos repuestos de las marcas más confiables del mercado.
+            Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial. ¡Cero imitaciones, Cero Chino!.
             </p>
           </div>
           <BrandsSection />
@@ -292,5 +292,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
