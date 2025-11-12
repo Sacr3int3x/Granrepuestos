@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -106,198 +107,200 @@ function PartsPageContent() {
   const isLoading = partsLoading || brandsLoading;
 
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-headline">
-          Repuestos
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Encuentra la pieza perfecta para tu vehículo.
-        </p>
-      </div>
-      
-       <div className="lg:hidden mb-4 space-y-4">
-        <form onSubmit={handleSearch} className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            name="query"
-            placeholder="Buscar por nombre o SKU..." 
-            className="pl-10 pr-20" 
-            defaultValue={searchParams.get('query') || ''}
-          />
-          <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
-        </form>
+    <div className="bg-white">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-headline">
+            Repuestos
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Encuentra la pieza perfecta para tu vehículo.
+          </p>
+        </div>
+        
+         <div className="lg:hidden mb-4 space-y-4">
+          <form onSubmit={handleSearch} className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              name="query"
+              placeholder="Buscar por nombre o SKU..." 
+              className="pl-10 pr-20" 
+              defaultValue={searchParams.get('query') || ''}
+            />
+            <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
+          </form>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="w-full">
-              <Filter className="mr-2 h-4 w-4" />
-              Filtrar y Ordenar
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
-            <SheetHeader>
-              <SheetTitle>Filtros</SheetTitle>
-            </SheetHeader>
-            <div className="overflow-y-auto">
-              <FilterComponent />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        <aside className="lg:col-span-1 hidden lg:block">
-          <FilterComponent />
-        </aside>
-
-        <main className="lg:col-span-3">
-          {isLoading ? (
-             <div className="space-y-4">
-                <div className="md:hidden space-y-4">
-                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)}
-                </div>
-                <div className="hidden md:block border rounded-lg">
-                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
-                </div>
-            </div>
-          ) : paginatedParts.length > 0 ? (
-            <div className="space-y-4">
-              {/* Mobile View - Cards */}
-              <div className="md:hidden space-y-4">
-                {paginatedParts.map((part: Part) => {
-                    const brand = getBrandForPart(part);
-                    const category = getCategoryForPart(part);
-                    if (!brand || !category) return null;
-                    const fullPart = {...part, brand, category};
-                    return (
-                        <Card key={part.id} className="overflow-hidden">
-                            <CardContent className="p-4 flex gap-4">
-                            <Image
-                                src={part.imageUrls[0]}
-                                alt={part.name}
-                                width={80}
-                                height={80}
-                                className="rounded-md object-cover"
-                                data-ai-hint="auto part"
-                            />
-                            <div className="flex-grow">
-                                <h3 className="font-medium">{part.name}</h3>
-                                <p className="text-sm text-muted-foreground">{brand?.name}</p>
-                                <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
-                                <div className="flex items-center justify-between mt-2">
-                                <p className="font-semibold">${part.price.toFixed(2)}</p>
-                                <div className='flex items-center gap-2'>
-                                    <AddToCartButton part={fullPart} size="icon" />
-                                    <Button asChild variant="outline" size="sm">
-                                        <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                                    </Button>
-                                </div>
-                                </div>
-                            </div>
-                            </CardContent>
-                        </Card>
-                    )
-                })}
-              </div>
-
-              {/* Desktop View - Table */}
-              <div className="hidden md:block border rounded-lg overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[80px]">Imagen</TableHead>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Marca</TableHead>
-                      <TableHead>SKU</TableHead>
-                      <TableHead className="text-right">Precio</TableHead>
-                      <TableHead className="text-center">Stock</TableHead>
-                      <TableHead />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedParts.map((part: Part) => {
-                        const brand = getBrandForPart(part);
-                        const category = getCategoryForPart(part);
-                        if (!brand || !category) return null;
-                        const fullPart = {...part, brand, category};
-                        return (
-                        <TableRow key={part.id}>
-                            <TableCell>
-                            <Image
-                                src={part.imageUrls[0]}
-                                alt={part.name}
-                                width={60}
-                                height={60}
-                                className="rounded-md object-cover"
-                                data-ai-hint="auto part"
-                            />
-                            </TableCell>
-                            <TableCell className="font-medium">{part.name}</TableCell>
-                            <TableCell>{brand?.name}</TableCell>
-                            <TableCell>{part.sku}</TableCell>
-                            <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
-                            <TableCell className="text-center">{part.stock}</TableCell>
-                            <TableCell className="text-right">
-                            <div className='flex items-center justify-end gap-2'>
-                                <AddToCartButton part={fullPart} size="icon" />
-                                <Button asChild variant="outline" size="sm">
-                                <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                                </Button>
-                            </div>
-                            </TableCell>
-                        </TableRow>
-                        )
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-lg">
-              <h2 className="text-2xl font-semibold">No se encontraron resultados</h2>
-              <p className="mt-2 text-muted-foreground">
-                Intenta ajustar tus filtros o búsqueda.
-              </p>
-              <Button asChild className="mt-6" variant="default">
-                <Link href="/parts">Limpiar Filtros</Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <Filter className="mr-2 h-4 w-4" />
+                Filtrar y Ordenar
               </Button>
-            </div>
-          )}
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
+              <SheetHeader>
+                <SheetTitle>Filtros</SheetTitle>
+              </SheetHeader>
+              <div className="overflow-y-auto">
+                <FilterComponent />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
 
-          {totalPages > 1 && (
-            <div className="mt-12">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      href={createPageURL(page - 1)}
-                      aria-disabled={page <= 1}
-                      className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
-                    />
-                  </PaginationItem>
-                  {[...Array(totalPages)].map((_, i) => (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        href={createPageURL(i + 1)}
-                        isActive={page === i + 1}
-                      >
-                        {i + 1}
-                      </PaginationLink>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+          <aside className="lg:col-span-1 hidden lg:block">
+            <FilterComponent />
+          </aside>
+
+          <main className="lg:col-span-3">
+            {isLoading ? (
+               <div className="space-y-4">
+                  <div className="md:hidden space-y-4">
+                      {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)}
+                  </div>
+                  <div className="hidden md:block border rounded-lg">
+                      {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                  </div>
+              </div>
+            ) : paginatedParts.length > 0 ? (
+              <div className="space-y-4">
+                {/* Mobile View - Cards */}
+                <div className="md:hidden space-y-4">
+                  {paginatedParts.map((part: Part) => {
+                      const brand = getBrandForPart(part);
+                      const category = getCategoryForPart(part);
+                      if (!brand || !category) return null;
+                      const fullPart = {...part, brand, category};
+                      return (
+                          <Card key={part.id} className="overflow-hidden">
+                              <CardContent className="p-4 flex gap-4">
+                              <Image
+                                  src={part.imageUrls[0]}
+                                  alt={part.name}
+                                  width={80}
+                                  height={80}
+                                  className="rounded-md object-cover"
+                                  data-ai-hint="auto part"
+                              />
+                              <div className="flex-grow">
+                                  <h3 className="font-medium">{part.name}</h3>
+                                  <p className="text-sm text-muted-foreground">{brand?.name}</p>
+                                  <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+                                  <div className="flex items-center justify-between mt-2">
+                                  <p className="font-semibold">${part.price.toFixed(2)}</p>
+                                  <div className='flex items-center gap-2'>
+                                      <AddToCartButton part={fullPart} size="icon" />
+                                      <Button asChild variant="outline" size="sm">
+                                          <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                                      </Button>
+                                  </div>
+                                  </div>
+                              </div>
+                              </CardContent>
+                          </Card>
+                      )
+                  })}
+                </div>
+
+                {/* Desktop View - Table */}
+                <div className="hidden md:block border rounded-lg overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[80px]">Imagen</TableHead>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Marca</TableHead>
+                        <TableHead>SKU</TableHead>
+                        <TableHead className="text-right">Precio</TableHead>
+                        <TableHead className="text-center">Stock</TableHead>
+                        <TableHead />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedParts.map((part: Part) => {
+                          const brand = getBrandForPart(part);
+                          const category = getCategoryForPart(part);
+                          if (!brand || !category) return null;
+                          const fullPart = {...part, brand, category};
+                          return (
+                          <TableRow key={part.id}>
+                              <TableCell>
+                              <Image
+                                  src={part.imageUrls[0]}
+                                  alt={part.name}
+                                  width={60}
+                                  height={60}
+                                  className="rounded-md object-cover"
+                                  data-ai-hint="auto part"
+                              />
+                              </TableCell>
+                              <TableCell className="font-medium">{part.name}</TableCell>
+                              <TableCell>{brand?.name}</TableCell>
+                              <TableCell>{part.sku}</TableCell>
+                              <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
+                              <TableCell className="text-center">{part.stock}</TableCell>
+                              <TableCell className="text-right">
+                              <div className='flex items-center justify-end gap-2'>
+                                  <AddToCartButton part={fullPart} size="icon" />
+                                  <Button asChild variant="outline" size="sm">
+                                  <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
+                                  </Button>
+                              </div>
+                              </TableCell>
+                          </TableRow>
+                          )
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-lg">
+                <h2 className="text-2xl font-semibold">No se encontraron resultados</h2>
+                <p className="mt-2 text-muted-foreground">
+                  Intenta ajustar tus filtros o búsqueda.
+                </p>
+                <Button asChild className="mt-6" variant="default">
+                  <Link href="/parts">Limpiar Filtros</Link>
+                </Button>
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href={createPageURL(page - 1)}
+                        aria-disabled={page <= 1}
+                        className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
+                      />
                     </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <PaginationNext 
-                      href={createPageURL(page + 1)} 
-                      aria-disabled={page >= totalPages}
-                      className={page >= totalPages ? "pointer-events-none opacity-50" : undefined}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
-        </main>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          href={createPageURL(i + 1)}
+                          isActive={page === i + 1}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext 
+                        href={createPageURL(page + 1)} 
+                        aria-disabled={page >= totalPages}
+                        className={page >= totalPages ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );
@@ -306,7 +309,7 @@ function PartsPageContent() {
 
 export default function PartsPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">Cargando...</div>}>
+    <Suspense fallback={<div className="bg-white"><div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">Cargando...</div></div>}>
       <PartsPageContent />
     </Suspense>
   )
