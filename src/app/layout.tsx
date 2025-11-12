@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
-import { CartProvider } from "@/context/cart-context";
 import CartSheet from "@/components/cart/cart-sheet";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
+import { Button } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -36,6 +38,17 @@ export default function RootLayout({
                     <Header />
                     <main className="flex-1">{children}</main>
                     <Footer />
+                </div>
+                <div className="fixed bottom-28 right-4 z-50">
+                   <Button
+                    size="icon"
+                    className="h-14 w-14 rounded-full shadow-lg bg-green-600 hover:bg-green-700"
+                    asChild
+                   >
+                     <Link href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+                       <MessageSquare className="h-6 w-6 text-white" />
+                     </Link>
+                   </Button>
                 </div>
                 <CartSheet />
             </CartProviderWrapper>
