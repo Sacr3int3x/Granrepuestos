@@ -21,6 +21,7 @@ import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
+import HeroImage from "@/components/hero.jpeg";
 
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
@@ -177,34 +178,23 @@ export default function Home() {
     <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-            <Icons.logo className="w-full h-full text-primary opacity-5 scale-125" />
+            <Image
+                src={HeroImage}
+                alt="Repuestos de automoviles"
+                layout="fill"
+                objectFit="cover"
+                quality={100}
+                priority
+            />
+            <div className="absolute inset-0 bg-black/40" />
         </div>
-        <Carousel className="w-full h-full" opts={{ loop: true }}>
-          <CarouselContent className="h-full">
-            {heroImages.map((image) => (
-              <CarouselItem key={image.id} className="h-full">
-                <div className="relative h-full w-full">
-                  <Image
-                    src={image.imageUrl}
-                    alt={image.description}
-                    fill
-                    className="object-cover"
-                    priority
-                    data-ai-hint={image.imageHint}
-                  />
-                   <div className="absolute inset-0 bg-white/40" />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
 
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
-          <div className="flex-grow flex flex-col items-center justify-center text-foreground" style={{ textShadow: '0 1px 10px rgba(255, 255, 255, 0.6)' }}>
+          <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline">
               GranRepuestos
             </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/90 drop-shadow-md">
+            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md">
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
             <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90">
@@ -292,7 +282,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
