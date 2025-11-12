@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { getFeaturedParts } from "@/lib/data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
-import { Mail, MessageSquare, MapPin } from "lucide-react";
+import { Mail, MessageSquare, MapPin, Instagram } from "lucide-react";
 import type { Part, Brand } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
@@ -251,7 +251,7 @@ export default function Home() {
               ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
                 <MessageSquare className="h-8 w-8" />
@@ -272,6 +272,15 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
+                <Instagram className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold">Instagram</h3>
+               <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground mt-2 hover:underline">
+                @granrepuestos
+              </a>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
                 <MapPin className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">Ubicación</h3>
@@ -283,3 +292,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
