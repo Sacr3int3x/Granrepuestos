@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CartProvider } from "@/context/cart-context";
 import CartSheet from "@/components/cart/cart-sheet";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -30,15 +31,15 @@ export default function RootLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
-          <CartProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <CartSheet />
-            <Toaster />
-          </CartProvider>
+            <CartProviderWrapper>
+                <div className="relative flex min-h-screen flex-col">
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                </div>
+                <CartSheet />
+            </CartProviderWrapper>
+          <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>
