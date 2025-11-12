@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -111,12 +112,12 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6 p-1 lg:p-6">
-        <form onSubmit={handleSearch} className="relative">
+        <form onSubmit={handleSearch} className="relative hidden lg:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
             name="query"
             placeholder="Buscar por nombre o SKU..." 
-            className="pl-10" 
+            className="pl-10 pr-20" 
             defaultValue={searchParams.get('query') || ''}
           />
           <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>

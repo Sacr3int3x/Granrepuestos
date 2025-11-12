@@ -19,17 +19,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { Filter, Search } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 
 const PARTS_PER_PAGE = 15;
 
 function PartsPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   
   const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
@@ -68,6 +71,27 @@ function PartsPageContent() {
   const categories = getCategories();
   const vehicleBrands = getVehicleBrands();
 
+  const createQueryString = (paramsToUpdate: Record<string, string | number | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(paramsToUpdate).forEach(([key, value]) => {
+        if (value === undefined || value === '' || value === 'all') {
+          params.delete(key);
+        } else {
+          params.set(key, String(value));
+        }
+      });
+      // Reset page to 1 when filters change
+      params.set('page', '1');
+      return params.toString();
+  };
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = formData.get('query') as string;
+    router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+  };
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', pageNumber.toString());
@@ -93,13 +117,24 @@ function PartsPageContent() {
           Encuentra la pieza perfecta para tu vehículo.
         </p>
       </div>
+      
+       <div className="lg:hidden mb-4 space-y-4">
+        <form onSubmit={handleSearch} className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            name="query"
+            placeholder="Buscar por nombre o SKU..." 
+            className="pl-10 pr-20" 
+            defaultValue={searchParams.get('query') || ''}
+          />
+          <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
+        </form>
 
-       <div className="lg:hidden mb-4">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" className="w-full">
               <Filter className="mr-2 h-4 w-4" />
-              Filtrar
+              Filtrar y Ordenar
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
