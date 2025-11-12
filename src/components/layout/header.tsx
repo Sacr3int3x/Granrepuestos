@@ -36,6 +36,7 @@ export default function Header() {
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/parts", label: "Repuestos" },
+    { href: "/quienes-somos", label: "Quiénes Somos" },
   ];
 
   const handleLinkClick = () => {
@@ -99,7 +100,7 @@ export default function Header() {
           >
             <ShoppingCart className="h-5 w-5" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
                 {cartItemCount}
               </span>
             )}
