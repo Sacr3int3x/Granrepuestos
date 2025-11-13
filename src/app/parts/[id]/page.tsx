@@ -52,6 +52,36 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
     const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
+    const compatibilityInfo = useMemo(() => {
+      const info = {
+        brands: new Set<string>(),
+        models: new Set<string>(),
+        years: new Set<string>(),
+      };
+
+      if (part.vehicleBrandId) {
+        info.brands.add(getBrandName(part.vehicleBrandId));
+      }
+      if (part.vehicleModelId) {
+        info.models.add(getModelName(part.vehicleModelId));
+      }
+
+      if (part.vehicleCompatibility) {
+        part.vehicleCompatibility.forEach(comp => {
+          info.brands.add(getBrandName(comp.brandId));
+          info.models.add(getModelName(comp.modelId));
+          info.years.add(comp.yearRange);
+        });
+      }
+
+      return {
+        brands: Array.from(info.brands).join(', ') || 'N/A',
+        models: Array.from(info.models).join(', ') || 'Varios',
+        years: Array.from(info.years).join(', ') || 'Consultar',
+      };
+    }, [part, vehicleBrands, vehicleModels]);
+
+
     return (
     <>
       <div className="grid md:grid-cols-2 gap-12">
@@ -100,51 +130,36 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         </div>
       </div>
       
-      <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight font-headline">Detalles Técnicos</h2>
-          <Card className="mt-4">
-              <Table>
-                  <TableBody>
-                  <TableRow>
-                      <TableCell className="font-medium">SKU</TableCell>
-                      <TableCell>{fullPart.sku}</TableCell>
-                  </TableRow>
-                  {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
-                      <TableRow key={key}>
-                      <TableCell className="font-medium">{key}</TableCell>
-                      <TableCell>{value}</TableCell>
-                      </TableRow>
-                  ))}
-                  </TableBody>
-              </Table>
-          </Card>
-        </div>
-        {fullPart.vehicleCompatibility && fullPart.vehicleCompatibility.length > 0 && (
-            <div>
-                 <h2 className="text-2xl font-bold tracking-tight font-headline">Compatibilidad del Vehículo</h2>
-                 <Card className="mt-4">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Marca</TableHead>
-                                <TableHead>Modelo</TableHead>
-                                <TableHead>Año</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {fullPart.vehicleCompatibility.map((comp, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{getBrandName(comp.brandId)}</TableCell>
-                                    <TableCell>{getModelName(comp.modelId)}</TableCell>
-                                    <TableCell>{comp.yearRange}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                 </Card>
-            </div>
-        )}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold tracking-tight font-headline">Detalles Técnicos</h2>
+        <Card className="mt-4">
+            <Table>
+                <TableBody>
+                <TableRow>
+                    <TableCell className="font-medium">Código de parte</TableCell>
+                    <TableCell>{fullPart.sku}</TableCell>
+                </TableRow>
+                {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
+                    <TableRow key={key}>
+                    <TableCell className="font-medium">{key}</TableCell>
+                    <TableCell>{value}</TableCell>
+                    </TableRow>
+                ))}
+                 <TableRow>
+                    <TableCell className="font-medium">Marca del Vehículo</TableCell>
+                    <TableCell>{compatibilityInfo.brands}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell className="font-medium">Modelos a los que aplica</TableCell>
+                    <TableCell>{compatibilityInfo.models}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell className="font-medium">Año</TableCell>
+                    <TableCell>{compatibilityInfo.years}</TableCell>
+                </TableRow>
+                </TableBody>
+            </Table>
+        </Card>
       </div>
 
       {relatedParts && relatedParts.length > 0 && (
