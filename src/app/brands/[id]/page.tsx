@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
 import { Globe } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
 
 function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: Part[], categories: Category[] }) {
     const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
@@ -103,10 +105,6 @@ function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: P
     );
 }
 
-function Separator() {
-    return <div className="h-px w-full bg-border my-8" />
-}
-
 
 function BrandPageClient({ brandId }: { brandId: string }) {
     const firestore = useFirestore();
@@ -147,11 +145,14 @@ function BrandPageClient({ brandId }: { brandId: string }) {
         );
     }
     
-    if (!brand || !parts) {
+    if (!brand) {
         notFound();
     }
+    
+    // Parts can be an empty array if a brand has no parts yet.
+    const validParts = parts || [];
 
-    return <BrandPageContent brand={brand} parts={parts} categories={categories} />;
+    return <BrandPageContent brand={brand} parts={validParts} categories={categories} />;
 }
 
 
