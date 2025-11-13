@@ -2,6 +2,9 @@ export type Brand = {
   id: string;
   name: string;
   logoUrl: string;
+  description?: string;
+  countryOfOrigin?: string;
+  heroImageUrl?: string;
 };
 
 export type Category = {

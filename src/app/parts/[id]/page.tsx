@@ -25,7 +25,7 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase
 import { doc, collection, query, where } from "firebase/firestore";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -49,7 +49,6 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
     const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
-    // This calculation no longer needs useMemo as it's directly derived from props
     const compatibilityInfo = (() => {
       const info = {
         brands: new Set<string>(),
@@ -110,7 +109,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
             {fullPart.name}
           </h1>
           <div className="mt-2 flex items-center gap-4">
-             <Link href={`/parts?brand=${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
+             <Link href={`/brands/${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
              <Badge variant="secondary">{fullPart.category.name}</Badge>
           </div>
           <p className="mt-6 text-base text-muted-foreground">{fullPart.description}</p>

@@ -36,6 +36,7 @@ export default function Header() {
   const navItems = [
     { href: "/", label: "Inicio" },
     { href: "/parts", label: "Repuestos" },
+    { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
   ];
 

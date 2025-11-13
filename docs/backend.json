@@ -18,6 +18,19 @@
           "type": "string",
           "description": "URL of the brand's logo.",
           "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the brand."
+        },
+        "countryOfOrigin": {
+          "type": "string",
+          "description": "The country of origin for the brand."
+        },
+        "heroImageUrl": {
+          "type": "string",
+          "description": "URL for a hero image for the brand's detail page.",
+          "format": "uri"
         }
       },
       "required": [
