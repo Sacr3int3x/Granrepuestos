@@ -228,7 +228,7 @@ function PartsPageContent() {
                                   alt={part.name}
                                   width={60}
                                   height={60}
-                                  className="rounded-md object-cover"
+                                  className="rounded-md object-cover h-auto"
                                   data-ai-hint="auto part"
                               />
                               </TableCell>

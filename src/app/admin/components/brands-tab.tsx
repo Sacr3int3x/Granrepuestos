@@ -173,7 +173,7 @@ export default function BrandsTab() {
                     alt={brand.name}
                     width={80}
                     height={40}
-                    className="rounded-md object-contain"
+                    className="rounded-md object-contain h-10 w-auto"
                   />
                 </TableCell>
                 <TableCell className="font-medium">{brand.name}</TableCell>

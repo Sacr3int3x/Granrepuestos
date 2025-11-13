@@ -190,6 +190,7 @@ export default function Home() {
                 className="object-cover"
                 quality={100}
                 priority
+                sizes="100vw"
             />
             <div className="absolute inset-0 bg-black/60" />
         </div>

@@ -167,7 +167,7 @@ export default function ProductsTab() {
                     alt={part.name}
                     width={40}
                     height={40}
-                    className="rounded-md object-cover"
+                    className="rounded-md object-cover h-10 w-auto"
                   />
                   ) : <div className="h-10 w-10 bg-muted rounded-md" />}
                 </TableCell>
