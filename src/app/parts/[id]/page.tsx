@@ -16,19 +16,16 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  TableHeader,
-  TableHead,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
 import AddToCartButton from "../components/add-to-cart-button";
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -52,7 +49,8 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
     const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
-    const compatibilityInfo = useMemo(() => {
+    // This calculation no longer needs useMemo as it's directly derived from props
+    const compatibilityInfo = (() => {
       const info = {
         brands: new Set<string>(),
         models: new Set<string>(),
@@ -79,7 +77,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         models: Array.from(info.models).join(', ') || 'Varios',
         years: Array.from(info.years).join(', ') || 'Consultar',
       };
-    }, [part, vehicleBrands, vehicleModels]);
+    })();
 
 
     return (
@@ -189,7 +187,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                     </CardContent>
                     <CardFooter className="p-4 flex justify-between items-center">
                       <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
-                      <AddToCartButton part={relatedPart} />
+                      <AddToCartButton part={{...relatedPart, brand: brands.find(b => b.id === relatedPart.brandId), category: categories.find(c => c.id === relatedPart.categoryId)}} />
                     </CardFooter>
                   </Card>
               </Link>
