@@ -152,32 +152,32 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
           <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {relatedParts.map((relatedPart: Part) => (
-              <Card key={relatedPart.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-square w-full">
-                    <Image
-                      src={relatedPart.imageUrls[0]}
-                      alt={relatedPart.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      data-ai-hint="auto part"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 flex-grow">
-                  <h3 className="text-lg font-semibold">{relatedPart.name}</h3>
-                   {brands.find(b => b.id === relatedPart.brandId) && (
-                      <p className="text-sm text-muted-foreground">{brands.find(b => b.id === relatedPart.brandId)?.name}</p>
-                   )}
-                </CardContent>
-                <CardFooter className="p-4 flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/parts/${relatedPart.id}`}>Ver</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+              <Link href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
+                  <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                    <CardHeader className="p-0">
+                      <div className="relative aspect-square w-full">
+                        <Image
+                          src={relatedPart.imageUrls[0]}
+                          alt={relatedPart.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          data-ai-hint="auto part"
+                        />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 flex-grow">
+                      <h3 className="text-lg font-semibold">{relatedPart.name}</h3>
+                      {brands.find(b => b.id === relatedPart.brandId) && (
+                          <p className="text-sm text-muted-foreground">{brands.find(b => b.id === relatedPart.brandId)?.name}</p>
+                      )}
+                    </CardContent>
+                    <CardFooter className="p-4 flex justify-between items-center">
+                      <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
+                      <AddToCartButton part={relatedPart} />
+                    </CardFooter>
+                  </Card>
+              </Link>
             ))}
           </div>
         </div>

@@ -142,32 +142,32 @@ function FeaturedProductsSection() {
               {featuredParts.map((part: Part) => (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1">
-                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col group h-full">
-                      <CardHeader className="p-0">
-                        <Link href={`/parts/${part.id}`}>
-                          <div className="relative aspect-square w-full">
-                            <Image
-                              src={part.imageUrls[0]}
-                              alt={part.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              data-ai-hint="auto part"
-                            />
-                          </div>
-                        </Link>
-                      </CardHeader>
-                      <CardContent className="p-4 flex-grow">
-                        <h3 className="text-lg font-semibold leading-tight">
-                           <Link href={`/parts/${part.id}`}>{part.name}</Link>
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
-                      </CardContent>
-                      <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                        <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
-                        <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
-                      </CardFooter>
-                    </Card>
+                    <Link href={`/parts/${part.id}`} className="block group">
+                        <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                        <CardHeader className="p-0">
+                            <div className="relative aspect-square w-full">
+                                <Image
+                                src={part.imageUrls[0]}
+                                alt={part.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                data-ai-hint="auto part"
+                                />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-4 flex-grow">
+                            <h3 className="text-lg font-semibold leading-tight">
+                                {part.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
+                        </CardContent>
+                        <CardFooter className="p-4 flex justify-between items-center mt-auto">
+                            <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                            <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
+                        </CardFooter>
+                        </Card>
+                    </Link>
                   </div>
                 </CarouselItem>
               ))}

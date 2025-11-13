@@ -21,7 +21,7 @@ export default function AddToCartButton({ part, size = "sm", className, showText
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que se disparen otros eventos de clic (como navegar a la página de detalles)
+    e.stopPropagation(); 
     e.preventDefault();
     
     addToCart(part);
@@ -38,7 +38,7 @@ export default function AddToCartButton({ part, size = "sm", className, showText
 
     const timer = setTimeout(() => {
       setIsAdded(false);
-    }, 2000); // El estado "Añadido" dura 2 segundos
+    }, 2000); 
 
     return () => clearTimeout(timer);
   }, [isAdded]);

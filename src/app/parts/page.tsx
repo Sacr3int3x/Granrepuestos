@@ -173,32 +173,29 @@ function PartsPageContent() {
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
                       return (
-                          <Card key={part.id} className="overflow-hidden">
-                              <CardContent className="p-4 flex gap-4">
-                              <Image
-                                  src={part.imageUrls[0]}
-                                  alt={part.name}
-                                  width={80}
-                                  height={80}
-                                  className="rounded-md object-cover"
-                                  data-ai-hint="auto part"
-                              />
-                              <div className="flex-grow">
-                                  <h3 className="font-medium">{part.name}</h3>
-                                  <p className="text-sm text-muted-foreground">{brand?.name}</p>
-                                  <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
-                                  <div className="flex items-center justify-between mt-2">
-                                  <p className="font-semibold">${part.price.toFixed(2)}</p>
-                                  <div className='flex items-center gap-2'>
+                          <Link href={`/parts/${part.id}`} key={part.id} className="block group">
+                              <Card className="overflow-hidden">
+                                  <CardContent className="p-4 flex gap-4">
+                                  <Image
+                                      src={part.imageUrls[0]}
+                                      alt={part.name}
+                                      width={80}
+                                      height={80}
+                                      className="rounded-md object-cover"
+                                      data-ai-hint="auto part"
+                                  />
+                                  <div className="flex-grow">
+                                      <h3 className="font-medium">{part.name}</h3>
+                                      <p className="text-sm text-muted-foreground">{brand?.name}</p>
+                                      <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+                                      <div className="flex items-center justify-between mt-2">
+                                      <p className="font-semibold">${part.price.toFixed(2)}</p>
                                       <AddToCartButton part={fullPart} size="icon" />
-                                      <Button asChild variant="outline" size="sm">
-                                          <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                                      </Button>
+                                      </div>
                                   </div>
-                                  </div>
-                              </div>
-                              </CardContent>
-                          </Card>
+                                  </CardContent>
+                              </Card>
+                          </Link>
                       )
                   })}
                 </div>
