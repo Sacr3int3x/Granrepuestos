@@ -55,7 +55,14 @@ export default function BrandsTab() {
   const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
     if (!firestore || !brandsCollection) return;
     
-    const brandData = { name: data.name, logoUrl: data.logoUrl };
+    // Include all fields from the form
+    const brandData = {
+      name: data.name,
+      logoUrl: data.logoUrl,
+      description: data.description || "",
+      countryOfOrigin: data.countryOfOrigin || "",
+      heroImageUrl: data.heroImageUrl || "",
+    };
 
     if (editingBrand && data.id) {
       const brandDoc = doc(firestore, "brands", data.id);
