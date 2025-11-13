@@ -35,12 +35,13 @@ interface BrandFormProps {
 export function BrandForm({ onSubmit, brand }: BrandFormProps) {
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: brand || {
-      name: "",
-      logoUrl: "",
-      heroImageUrl: "",
-      countryOfOrigin: "",
-      description: "",
+    defaultValues: {
+      name: brand?.name || "",
+      logoUrl: brand?.logoUrl || "",
+      heroImageUrl: brand?.heroImageUrl || "",
+      countryOfOrigin: brand?.countryOfOrigin || "",
+      description: brand?.description || "",
+      id: brand?.id || undefined,
     },
   });
 
