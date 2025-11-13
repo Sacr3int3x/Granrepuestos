@@ -109,7 +109,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
             {fullPart.name}
           </h1>
           <div className="mt-2 flex items-center gap-4">
-             <Link href={`/brands/${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
+             <Link href={`/parts?brand=${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
              <Badge variant="secondary">{fullPart.category.name}</Badge>
           </div>
           <p className="mt-6 text-base text-muted-foreground">{fullPart.description}</p>
