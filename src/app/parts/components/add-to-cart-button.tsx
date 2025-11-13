@@ -1,10 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Part } from "@/lib/types";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AddToCartButtonProps {
   part: Part;
@@ -16,6 +18,7 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ part, size = "sm", className, showText = false }: AddToCartButtonProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation(); // Evita que se disparen otros eventos de clic (como navegar a la página de detalles)
@@ -26,7 +29,19 @@ export default function AddToCartButton({ part, size = "sm", className, showText
       title: "¡Añadido al carrito!",
       description: `${part.name} ha sido añadido a tu carrito.`,
     });
+    
+    setIsAdded(true);
   };
+
+  useEffect(() => {
+    if (!isAdded) return;
+
+    const timer = setTimeout(() => {
+      setIsAdded(false);
+    }, 2000); // El estado "Añadido" dura 2 segundos
+
+    return () => clearTimeout(timer);
+  }, [isAdded]);
 
   if (part.stock === 0) {
     return (
@@ -39,12 +54,25 @@ export default function AddToCartButton({ part, size = "sm", className, showText
   return (
     <Button
       size={size || undefined}
-      className={className}
+      className={cn(
+        className,
+        isAdded && "bg-green-600 hover:bg-green-700 text-white"
+      )}
       onClick={handleAddToCart}
+      disabled={isAdded}
       aria-label="Añadir al carrito"
     >
-      <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-4 w-4"} />
-      {showText && <span>Añadir al Carrito</span>}
+      {isAdded ? (
+        <>
+          <Check className={showText ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+          {showText && <span>Añadido</span>}
+        </>
+      ) : (
+        <>
+          <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+          {showText && <span>Añadir al Carrito</span>}
+        </>
+      )}
     </Button>
   );
 }

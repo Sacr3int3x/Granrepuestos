@@ -16,19 +16,21 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  TableHeader,
+  TableHead,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import type { Part, Brand, Category } from "@/lib/types";
+import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
 import AddToCartButton from "../components/add-to-cart-button";
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
-import { getCategories } from "@/lib/data";
+import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 
-function PartDetailContent({ part, brands, categories }: { part: Part; brands: Brand[]; categories: Category[] }) {
+function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
     
     const brand = brands.find(b => b.id === part.brandId);
@@ -47,6 +49,9 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
 
     const { data: relatedParts } = useCollection<Part>(relatedPartsQuery);
     
+    const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
+    const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
+
     return (
     <>
       <div className="grid md:grid-cols-2 gap-12">
@@ -94,25 +99,52 @@ function PartDetailContent({ part, brands, categories }: { part: Part; brands: B
           </div>
         </div>
       </div>
-
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold tracking-tight font-headline">Detalles Técnicos</h2>
-        <Card className="mt-4">
-            <Table>
-                <TableBody>
-                <TableRow>
-                    <TableCell className="font-medium">SKU</TableCell>
-                    <TableCell>{fullPart.sku}</TableCell>
-                </TableRow>
-                {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
-                    <TableRow key={key}>
-                    <TableCell className="font-medium">{key}</TableCell>
-                    <TableCell>{value}</TableCell>
-                    </TableRow>
-                ))}
-                </TableBody>
-            </Table>
-        </Card>
+      
+      <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight font-headline">Detalles Técnicos</h2>
+          <Card className="mt-4">
+              <Table>
+                  <TableBody>
+                  <TableRow>
+                      <TableCell className="font-medium">SKU</TableCell>
+                      <TableCell>{fullPart.sku}</TableCell>
+                  </TableRow>
+                  {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
+                      <TableRow key={key}>
+                      <TableCell className="font-medium">{key}</TableCell>
+                      <TableCell>{value}</TableCell>
+                      </TableRow>
+                  ))}
+                  </TableBody>
+              </Table>
+          </Card>
+        </div>
+        {fullPart.vehicleCompatibility && fullPart.vehicleCompatibility.length > 0 && (
+            <div>
+                 <h2 className="text-2xl font-bold tracking-tight font-headline">Compatibilidad del Vehículo</h2>
+                 <Card className="mt-4">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Marca</TableHead>
+                                <TableHead>Modelo</TableHead>
+                                <TableHead>Año</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {fullPart.vehicleCompatibility.map((comp, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{getBrandName(comp.brandId)}</TableCell>
+                                    <TableCell>{getModelName(comp.modelId)}</TableCell>
+                                    <TableCell>{comp.yearRange}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                 </Card>
+            </div>
+        )}
       </div>
 
       {relatedParts && relatedParts.length > 0 && (
@@ -170,12 +202,16 @@ function PartDetailClient({ partId }: { partId: string }) {
   const { data: brands, isLoading: areBrandsLoading } = useCollection<Brand>(brandsRef);
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
+  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
   
   useEffect(() => {
       setCategories(getCategories());
+      setVehicleBrands(getVehicleBrands());
+      setVehicleModels(getVehicleModels());
   }, []);
 
-  const isLoading = isPartLoading || areBrandsLoading || categories.length === 0;
+  const isLoading = isPartLoading || areBrandsLoading || categories.length === 0 || vehicleBrands.length === 0 || vehicleModels.length === 0;
 
   if (isLoading) {
     return (
@@ -200,7 +236,7 @@ function PartDetailClient({ partId }: { partId: string }) {
     notFound();
   }
 
-  return <PartDetailContent part={part} brands={brands} categories={categories} />;
+  return <PartDetailContent part={part} brands={brands} categories={categories} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 

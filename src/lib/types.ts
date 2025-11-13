@@ -20,6 +20,12 @@ export type VehicleModel = {
     brandId: string;
 }
 
+export type VehicleCompatibility = {
+    brandId: string;
+    modelId: string;
+    yearRange: string; // e.g., "2015-2020"
+}
+
 export type Part = {
   id: string;
   name: string;
@@ -35,6 +41,7 @@ export type Part = {
     [key: string]: string;
   };
   relatedPartIds: string[];
-  vehicleBrandId?: string;
-  vehicleModelId?: string;
+  vehicleBrandId?: string; // Optional top-level for primary vehicle
+  vehicleModelId?: string; // Optional top-level for primary vehicle
+  vehicleCompatibility?: VehicleCompatibility[];
 };

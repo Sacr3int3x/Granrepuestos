@@ -72,6 +72,10 @@ const parts: Part[] = [
     relatedPartIds: ['p002', 'p003'],
     vehicleBrandId: 'toyota',
     vehicleModelId: 'corolla',
+    vehicleCompatibility: [
+      { brandId: 'toyota', modelId: 'corolla', yearRange: '2014-2019' },
+      { brandId: 'toyota', modelId: 'rav4', yearRange: '2013-2018' },
+    ],
   },
   {
     id: 'p002',
@@ -91,6 +95,9 @@ const parts: Part[] = [
     relatedPartIds: ['p001', 'p004'],
     vehicleBrandId: 'honda',
     vehicleModelId: 'civic',
+     vehicleCompatibility: [
+      { brandId: 'honda', modelId: 'civic', yearRange: '2016-2021' },
+    ],
   },
   {
     id: 'p003',
@@ -108,6 +115,11 @@ const parts: Part[] = [
       'Vida útil': 'Hasta 100,000 km',
     },
     relatedPartIds: ['p005'],
+    vehicleCompatibility: [
+      { brandId: 'toyota', modelId: 'corolla', yearRange: '2009-2019' },
+      { brandId: 'honda', modelId: 'civic', yearRange: '2012-2021' },
+      { brandId: 'mitsubishi', modelId: 'lancer', yearRange: '2008-2017' },
+    ],
   },
   {
     id: 'p004',
@@ -127,6 +139,9 @@ const parts: Part[] = [
     relatedPartIds: ['p002', 'p010'],
     vehicleBrandId: 'mitsubishi',
     vehicleModelId: 'lancer',
+     vehicleCompatibility: [
+      { brandId: 'mitsubishi', modelId: 'lancer', yearRange: '2008-2017' },
+    ],
   },
   {
     id: 'p005',
@@ -143,6 +158,7 @@ const parts: Part[] = [
       Tipo: 'Sellado',
     },
     relatedPartIds: ['p003', 'p006'],
+    vehicleCompatibility: [],
   },
   {
     id: 'p006',
@@ -161,6 +177,9 @@ const parts: Part[] = [
     relatedPartIds: ['p005'],
     vehicleBrandId: 'ford',
     vehicleModelId: 'focus',
+    vehicleCompatibility: [
+        { brandId: 'ford', modelId: 'focus', yearRange: '2012-2018' },
+    ]
   },
   {
     id: 'p007',
@@ -181,6 +200,9 @@ const parts: Part[] = [
     relatedPartIds: ['p001'],
     vehicleBrandId: 'jeep',
     vehicleModelId: 'cherokee',
+    vehicleCompatibility: [
+        { brandId: 'jeep', modelId: 'cherokee', yearRange: '2014-2023' },
+    ]
   },
   {
     id: 'p008',
@@ -199,6 +221,7 @@ const parts: Part[] = [
     relatedPartIds: ['p005', 'p003'],
     vehicleBrandId: 'chevrolet',
     vehicleModelId: 'silverado',
+    vehicleCompatibility: []
   },
   {
     id: 'p009',
@@ -218,6 +241,7 @@ const parts: Part[] = [
     relatedPartIds: ['p010'],
     vehicleBrandId: 'isuzu',
     vehicleModelId: 'dmax',
+    vehicleCompatibility: []
   },
   {
     id: 'p010',
@@ -236,6 +260,7 @@ const parts: Part[] = [
       Capacidad: '70Ah',
     },
     relatedPartIds: ['p009', 'p004'],
+    vehicleCompatibility: []
   },
    {
     id: 'p011',
@@ -255,6 +280,9 @@ const parts: Part[] = [
     relatedPartIds: ['p005'],
     vehicleBrandId: 'ford',
     vehicleModelId: 'ranger',
+    vehicleCompatibility: [
+        { brandId: 'ford', modelId: 'ranger', yearRange: '2012-2022' },
+    ]
   },
   {
     id: 'p012',
@@ -274,6 +302,9 @@ const parts: Part[] = [
     relatedPartIds: ['p002', 'p007', 'p001'],
     vehicleBrandId: 'toyota',
     vehicleModelId: 'hilux',
+    vehicleCompatibility: [
+        { brandId: 'toyota', modelId: 'hilux', yearRange: '2015-2023' },
+    ]
   }
 ];
 
@@ -308,11 +339,27 @@ export function getParts(
   }
   
   if (filters.vehicleBrand) {
-    filteredParts = filteredParts.filter((part) => part.vehicleBrandId === filters.vehicleBrand);
+    filteredParts = filteredParts.filter((part) => {
+        // First check the top-level vehicleBrandId
+        if (part.vehicleBrandId === filters.vehicleBrand) return true;
+        // Then check the vehicleCompatibility array
+        if (part.vehicleCompatibility) {
+            return part.vehicleCompatibility.some(comp => comp.brandId === filters.vehicleBrand);
+        }
+        return false;
+    });
   }
   
   if (filters.vehicleModel) {
-    filteredParts = filteredParts.filter((part) => part.vehicleModelId === filters.vehicleModel);
+     filteredParts = filteredParts.filter((part) => {
+        // First check the top-level vehicleModelId
+        if (part.vehicleModelId === filters.vehicleModel) return true;
+        // Then check the vehicleCompatibility array
+        if (part.vehicleCompatibility) {
+            return part.vehicleCompatibility.some(comp => comp.modelId === filters.vehicleModel);
+        }
+        return false;
+    });
   }
 
   return filteredParts;
