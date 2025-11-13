@@ -55,7 +55,6 @@ export default function BrandsTab() {
   const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
     if (!firestore || !brandsCollection) return;
     
-    // Include all fields from the form
     const brandData = {
       name: data.name,
       logoUrl: data.logoUrl,
@@ -128,29 +127,27 @@ export default function BrandsTab() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Gestionar Marcas</CardTitle>
-        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={openNewDialog}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Añadir Marca
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{editingBrand ? "Editar Marca" : "Añadir Nueva Marca"}</DialogTitle>
-              <DialogDescription>
-                {editingBrand ? "Edita los detalles de la marca." : "Rellena los detalles para añadir una nueva marca."}
-              </DialogDescription>
-            </DialogHeader>
-            <BrandForm
-              key={editingBrand?.id}
-              onSubmit={handleFormSubmit}
-              brand={editingBrand}
-            />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openNewDialog}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Añadir Marca
+        </Button>
       </CardHeader>
       <CardContent>
+        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>{editingBrand ? "Editar Marca" : "Añadir Nueva Marca"}</DialogTitle>
+                    <DialogDescription>
+                    {editingBrand ? "Edita los detalles de la marca." : "Rellena los detalles para añadir una nueva marca."}
+                    </DialogDescription>
+                </DialogHeader>
+                <BrandForm
+                    key={editingBrand?.id}
+                    onSubmit={handleFormSubmit}
+                    brand={editingBrand}
+                />
+            </DialogContent>
+        </Dialog>
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (

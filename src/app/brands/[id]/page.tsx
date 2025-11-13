@@ -30,6 +30,7 @@ function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: P
                             className="object-cover"
                             sizes="100vw"
                             priority
+                            data-ai-hint="auto parts"
                         />
                         <div className="absolute inset-0 bg-black/50" />
                     </>
@@ -128,16 +129,19 @@ function BrandPageClient({ brandId }: { brandId: string }) {
             <div className="space-y-12">
                 <Skeleton className="h-[40vh] w-full rounded-lg" />
                 <div className="max-w-4xl mx-auto space-y-4 text-center">
-                    <Skeleton className="h-6 w-1/4 mx-auto" />
-                    <Skeleton className="h-4 w-3/4 mx-auto" />
-                    <Skeleton className="h-4 w-1/2 mx-auto" />
+                    <Skeleton className="h-8 w-1/3 mx-auto" />
+                    <Skeleton className="h-5 w-1/5 mx-auto" />
+                    <Skeleton className="h-5 w-3/4 mx-auto" />
+                    <Skeleton className="h-5 w-1/2 mx-auto" />
                 </div>
+                 <div className="my-12"><Separator /></div>
+                 <Skeleton className="h-8 w-1/2 mx-auto mb-8" />
                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[...Array(4)].map((_, i) => (
                         <Card key={i}>
-                            <CardHeader><Skeleton className="h-48 w-full" /></CardHeader>
-                            <CardContent className="space-y-2"><Skeleton className="h-4 w-4/5" /><Skeleton className="h-4 w-2/4" /></CardContent>
-                            <CardFooter><Skeleton className="h-8 w-2/4" /></CardFooter>
+                            <CardHeader><Skeleton className="aspect-square w-full" /></CardHeader>
+                            <CardContent className="p-4 space-y-2"><Skeleton className="h-4 w-4/5" /><Skeleton className="h-4 w-2/4" /></CardContent>
+                            <CardFooter className="p-4"><Skeleton className="h-8 w-2/4" /></CardFooter>
                         </Card>
                     ))}
                 </div>
@@ -149,7 +153,6 @@ function BrandPageClient({ brandId }: { brandId: string }) {
         notFound();
     }
     
-    // Parts can be an empty array if a brand has no parts yet.
     const validParts = parts || [];
 
     return <BrandPageContent brand={brand} parts={validParts} categories={categories} />;
@@ -163,7 +166,9 @@ export default function BrandDetailPage() {
     if (!id) {
         return (
            <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-             <Skeleton className="h-screen w-full" />
+             <div className="space-y-12">
+                <Skeleton className="h-[40vh] w-full rounded-lg" />
+             </div>
            </div>
         );
     }
