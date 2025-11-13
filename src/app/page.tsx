@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Image from "next/image";
@@ -66,7 +67,7 @@ function BrandsSection() {
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-${index}`}>
             <div className="relative h-[50px] w-[120px]">
-              <Image src={brand.logoUrl} alt={brand.name} fill className="object-contain" />
+              <Image src={brand.logoUrl} alt={brand.name} fill sizes="120px" className="object-contain" />
             </div>
           </li>
         ))}
@@ -77,7 +78,7 @@ function BrandsSection() {
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-clone-${index}`}>
             <div className="relative h-[50px] w-[120px]">
-                <Image src={brand.logoUrl} alt={brand.name} fill className="object-contain" />
+                <Image src={brand.logoUrl} alt={brand.name} fill sizes="120px" className="object-contain" />
             </div>
           </li>
         ))}
