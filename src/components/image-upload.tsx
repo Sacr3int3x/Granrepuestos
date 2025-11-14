@@ -31,35 +31,48 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
 
         setIsUploading(true);
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        const uploadPromises = Array.from(files).map(async (file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Cloudinary upload error response:", errorData);
+                    throw new Error(`Cloudinary upload failed: ${errorData.error.message}`);
+                }
+
+                const data = await response.json();
+                if (data.secure_url) {
+                    return data.secure_url;
+                } else {
+                    console.error("Cloudinary upload failed: secure_url not found in response", data);
+                    return null;
+                }
+            } catch (error) {
+                console.error("Error uploading to Cloudinary:", error);
+                return null;
+            }
+        });
 
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                method: 'POST',
-                body: formData
+            const uploadedUrls = await Promise.all(uploadPromises);
+            uploadedUrls.forEach(url => {
+                if (url) {
+                    onChange(url);
+                }
             });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Cloudinary upload error response:", errorData);
-                throw new Error(`Cloudinary upload failed: ${errorData.error.message}`);
-            }
-
-            const data = await response.json();
-            if (data.secure_url) {
-                onChange(data.secure_url);
-            } else {
-                console.error("Cloudinary upload failed: secure_url not found in response", data);
-            }
-        } catch (error) {
-            console.error("Error uploading to Cloudinary:", error);
         } finally {
             setIsUploading(false);
             if(fileInputRef.current) {
@@ -97,6 +110,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <input 
                 type="file" 
                 accept="image/*"
+                multiple
                 ref={fileInputRef} 
                 onChange={handleFileSelect}
                 className="hidden"
@@ -109,7 +123,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 disabled={isUploading}
             >
                 <ImagePlus className="h-4 w-4 mr-2" />
-                Subir una Imagen
+                Subir Imagen(es)
             </Button>
         </div>
     )
