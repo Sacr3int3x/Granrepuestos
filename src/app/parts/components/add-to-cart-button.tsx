@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -64,12 +65,12 @@ export default function AddToCartButton({ part, size = "sm", className, showText
     >
       {isAdded ? (
         <>
-          <Check className={showText ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+          <Check className={showText ? "mr-2 h-4 w-4" : "h-5 w-5"} />
           {showText && <span>Añadido</span>}
         </>
       ) : (
         <>
-          <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-4 w-4"} />
+          <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-5 w-5"} />
           {showText && <span>Añadir al Carrito</span>}
         </>
       )}

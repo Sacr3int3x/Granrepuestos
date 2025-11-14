@@ -108,26 +108,17 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
             {fullPart.name}
           </h1>
-          <div className="mt-2 flex items-center gap-4">
-             {brand && brand.websiteUrl ? (
-                <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</a>
-              ) : (
-                <span className="text-lg text-muted-foreground">{fullPart.brand.name}</span>
-              )}
-             <Badge variant="secondary">{fullPart.category.name}</Badge>
-          </div>
-          <p className="mt-6 text-base text-muted-foreground">{fullPart.description}</p>
           
-          <div className="mt-8">
-            <p className="text-4xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
-            <p className={fullPart.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
-              {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
-            </p>
+          <div className="mt-8 flex justify-between items-center">
+            <div>
+              <p className="text-4xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
+              <p className={fullPart.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
+                {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
+              </p>
+            </div>
+             <AddToCartButton part={fullPart} size="lg" className="h-14 w-14 rounded-full" />
           </div>
 
-          <div className="mt-8">
-             <AddToCartButton part={fullPart} size="lg" showText={true} />
-          </div>
         </div>
       </div>
       
@@ -136,6 +127,24 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         <Card className="mt-4">
             <Table>
                 <TableBody>
+                <TableRow>
+                    <TableCell className="font-medium">Descripción</TableCell>
+                    <TableCell>{fullPart.description}</TableCell>
+                </TableRow>
+                 <TableRow>
+                    <TableCell className="font-medium">Marca</TableCell>
+                    <TableCell>
+                       {brand && brand.websiteUrl ? (
+                         <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{fullPart.brand.name}</a>
+                        ) : (
+                          <span>{fullPart.brand.name}</span>
+                        )}
+                    </TableCell>
+                </TableRow>
+                 <TableRow>
+                    <TableCell className="font-medium">Categoría</TableCell>
+                    <TableCell>{fullPart.category.name}</TableCell>
+                </TableRow>
                 <TableRow>
                     <TableCell className="font-medium">Código de parte</TableCell>
                     <TableCell>{fullPart.sku}</TableCell>
@@ -168,7 +177,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
           <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {relatedParts.map((relatedPart: Part) => (
-              <Link href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
+              <a href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
                   <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                     <CardHeader className="p-0">
                       <div className="relative aspect-square w-full">
@@ -193,7 +202,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                       <AddToCartButton part={{...relatedPart, brand: brands.find(b => b.id === relatedPart.brandId), category: categories.find(c => c.id === relatedPart.categoryId)}} />
                     </CardFooter>
                   </Card>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
