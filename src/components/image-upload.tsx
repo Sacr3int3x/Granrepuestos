@@ -22,7 +22,7 @@ interface ImageUploadProps {
 // 6. Pega el nombre de tu preset en la constante CLOUDINARY_UPLOAD_PRESET de abajo.
 // =================================================================================
 const CLOUDINARY_CLOUD_NAME = "dx413fa7v"; // Este es tu Cloud Name. Ya está configurado.
-const CLOUDINARY_UPLOAD_PRESET = "gran_repuestos_preset"; // <-- REEMPLAZA ESTO con el nombre de tu Upload Preset sin firma.
+const CLOUDINARY_UPLOAD_PRESET = "Granrepuesto"; // <-- REEMPLAZA ESTO con el nombre de tu Upload Preset sin firma.
 
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
