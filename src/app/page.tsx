@@ -44,7 +44,7 @@ function BrandsSection() {
              <ul className="flex items-center justify-center [&_li]:mx-8">
                 {[...Array(6)].map((_, i) => (
                   <li key={i}>
-                    <Skeleton className="w-[120px] h-[50px]" />
+                    <Skeleton className="w-[150px] h-[60px]" />
                   </li>
                 ))}
              </ul>
@@ -64,22 +64,22 @@ function BrandsSection() {
     <div
       className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
       <ul
-        className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+        className="flex items-center justify-center [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-${index}`}>
-            <div className="relative h-[50px] w-[120px]">
-              <Image src={brand.logoUrl} alt={brand.name} fill sizes="120px" className="object-contain" />
+            <div className="relative h-[60px] w-[150px]">
+              <Image src={brand.logoUrl} alt={brand.name} fill sizes="150px" className="object-contain" />
             </div>
           </li>
         ))}
       </ul>
       <ul
-        className="flex items-center justify-center [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+        className="flex items-center justify-center [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll"
         aria-hidden="true">
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-clone-${index}`}>
-            <div className="relative h-[50px] w-[120px]">
-                <Image src={brand.logoUrl} alt={brand.name} fill sizes="120px" className="object-contain" />
+            <div className="relative h-[60px] w-[150px]">
+                <Image src={brand.logoUrl} alt={brand.name} fill sizes="150px" className="object-contain" />
             </div>
           </li>
         ))}
