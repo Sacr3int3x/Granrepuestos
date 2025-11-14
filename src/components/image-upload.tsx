@@ -15,7 +15,7 @@ interface ImageUploadProps {
 // IMPORTANT: You need to create an "unsigned" upload preset in your Cloudinary account
 // and name it exactly "gran_repuestos_preset".
 // Also, set your cloud name in the component below.
-const CLOUDINARY_CLOUD_NAME = "TU_CLOUD_NAME_AQUI"; // <-- REEMPLAZA ESTO
+const CLOUDINARY_CLOUD_NAME = "dx413fa7v"; // <-- REEMPLAZA ESTO
 const CLOUDINARY_UPLOAD_PRESET = "gran_repuestos_preset"; // <-- Nombre del preset de carga
 
 
