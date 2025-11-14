@@ -122,7 +122,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         </div>
       </div>
       
-      <div className="mt-16">
+      <div className="mt-12">
         <h2 className="text-2xl font-bold tracking-tight font-headline">Detalles Técnicos</h2>
         <Card className="mt-4">
             <Table>
