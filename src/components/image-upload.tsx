@@ -45,17 +45,23 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 method: 'POST',
                 body: formData
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Cloudinary upload error response:", errorData);
+                throw new Error(`Cloudinary upload failed: ${errorData.error.message}`);
+            }
+
             const data = await response.json();
             if (data.secure_url) {
                 onChange(data.secure_url);
             } else {
-                console.error("Cloudinary upload failed:", data);
+                console.error("Cloudinary upload failed: secure_url not found in response", data);
             }
         } catch (error) {
             console.error("Error uploading to Cloudinary:", error);
         } finally {
             setIsUploading(false);
-            // Reset file input para permitir seleccionar el mismo archivo de nuevo
             if(fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
