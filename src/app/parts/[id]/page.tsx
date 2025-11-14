@@ -26,6 +26,8 @@ import { doc, collection, query, where } from "firebase/firestore";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -176,6 +178,20 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
             </Table>
         </Card>
       </div>
+
+      <div className="mt-12">
+        <Alert>
+            <Info className="h-4 w-4" />
+            <AlertTitle>Información Importante</AlertTitle>
+            <AlertDescription>
+                <p>Asegúrate de que este repuesto sea compatible con tu vehículo antes de comprar. Si tienes dudas, contáctanos.</p>
+                <Link href="/politicas" className="font-semibold text-primary hover:underline mt-2 inline-block">
+                Revisa nuestras políticas de envío y devolución
+                </Link>
+            </AlertDescription>
+        </Alert>
+      </div>
+
 
       {relatedParts && relatedParts.length > 0 && (
         <div className="mt-16">

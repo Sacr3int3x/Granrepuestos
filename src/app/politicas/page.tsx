@@ -1,0 +1,77 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Truck, RotateCw, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+
+export default function PoliciesPage() {
+  return (
+    <div className="bg-background">
+      <section className="relative w-full h-[30vh] md:h-[40vh] flex items-center justify-center overflow-hidden bg-card">
+         <div className="absolute inset-0 z-0">
+            <Image
+                src="https://images.unsplash.com/photo-1588358198983-f5bab9b20755?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Paquetes listos para ser enviados"
+                fill
+                className="object-cover"
+                data-ai-hint="packages shipping"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+        </div>
+        <div className="relative z-10 text-center p-4">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white font-headline">
+            Políticas de Compra
+          </h1>
+          <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
+            Información clara para una compra segura y satisfactoria.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Truck className="h-10 w-10 text-primary" />
+                <CardTitle>Políticas de Envío</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-muted-foreground">
+                <p>Realizamos envíos a todo el territorio nacional a través de las principales empresas de encomiendas (MRW, Zoom, Tealca).</p>
+                <p>El costo del envío es **Cobro a Destino** y será calculado por la empresa de transporte al momento de despachar.</p>
+                <p>El tiempo de entrega estimado es de 2 a 5 días hábiles, dependiendo de su ubicación.</p>
+                <p>Una vez realizado el envío, le proporcionaremos el número de guía para que pueda rastrear su pedido.</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <RotateCw className="h-10 w-10 text-primary" />
+                <CardTitle>Políticas de Devolución</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-muted-foreground">
+                <p>Para solicitar una devolución, el repuesto debe estar en su empaque original, sin haber sido montado o utilizado.</p>
+                <p>Las devoluciones solo se aceptan dentro de los 5 días continuos siguientes a la recepción del producto.</p>
+                <p>No se aceptan devoluciones de partes eléctricas.</p>
+                <p>El cliente es responsable de cubrir los costos de envío asociados a la devolución. En caso de error de nuestra parte, nosotros cubriremos los gastos.</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <ShieldCheck className="h-10 w-10 text-primary" />
+                <CardTitle>Garantías</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-muted-foreground">
+                <p>Todos nuestros productos son de marcas reconocidas y cuentan con garantía por defectos de fábrica.</p>
+                <p>La garantía no cubre daños por mala instalación, uso indebido o desgaste normal.</p>
+                <p>Para procesar una garantía, es indispensable presentar la nota de entrega o factura de la compra.</p>
+                <p>El proceso de garantía está sujeto a la revisión y aprobación por parte del fabricante o distribuidor de la marca.</p>
+              </CardContent>
+            </Card>
+
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

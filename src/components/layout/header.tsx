@@ -37,6 +37,7 @@ export default function Header() {
     { href: "/parts", label: "Repuestos" },
     { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
+    { href: "/politicas", label: "Políticas" },
   ];
 
   const handleLinkClick = () => {
@@ -68,7 +69,7 @@ export default function Header() {
               href={item.href}
               className={cn(
                 "transition-colors hover:text-foreground/80",
-                pathname === item.href
+                pathname.startsWith(item.href)
                   ? "text-foreground"
                   : "text-foreground/60"
               )}
