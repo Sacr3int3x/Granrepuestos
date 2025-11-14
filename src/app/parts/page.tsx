@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -228,8 +227,8 @@ function PartsPageContent() {
                           const fullPart = {...part, brand, category};
                           const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                           return (
-                          <TableRow key={part.id} className="relative">
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="cursor-pointer">
+                          <TableRow key={part.id} className="relative cursor-pointer" onClick={() => router.push(`/parts/${part.id}`)}>
+                              <TableCell>
                                 {part.imageUrls && part.imageUrls[0] && part.imageUrls[0] !== '' ? (
                                     <Image
                                         src={part.imageUrls[0]}
@@ -243,12 +242,12 @@ function PartsPageContent() {
                                     <div className="h-[60px] w-[60px] bg-muted rounded-md" />
                                   )}
                               </TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="font-medium cursor-pointer">{part.name}</TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="cursor-pointer">{brand?.name}</TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="cursor-pointer">{yearInfo || 'N/A'}</TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="cursor-pointer">{part.sku}</TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="text-right font-semibold cursor-pointer">${part.price.toFixed(2)}</TableCell>
-                              <TableCell onClick={() => router.push(`/parts/${part.id}`)} className="text-center cursor-pointer">{part.stock}</TableCell>
+                              <TableCell className="font-medium">{part.name}</TableCell>
+                              <TableCell>{brand?.name}</TableCell>
+                              <TableCell>{yearInfo || 'N/A'}</TableCell>
+                              <TableCell>{part.sku}</TableCell>
+                              <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
+                              <TableCell className="text-center">{part.stock}</TableCell>
                               <TableCell className="text-right">
                               <div className='flex items-center justify-end gap-2' onClick={(e) => e.stopPropagation()}>
                                   <AddToCartButton part={fullPart} size="icon" />
