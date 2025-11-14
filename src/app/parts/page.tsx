@@ -209,6 +209,7 @@ function PartsPageContent() {
                         <TableHead className="w-[80px]">Imagen</TableHead>
                         <TableHead>Nombre</TableHead>
                         <TableHead>Marca</TableHead>
+                        <TableHead>Año(s)</TableHead>
                         <TableHead>SKU</TableHead>
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead className="text-center">Stock</TableHead>
@@ -221,6 +222,7 @@ function PartsPageContent() {
                           const category = getCategoryForPart(part);
                           if (!brand || !category) return null;
                           const fullPart = {...part, brand, category};
+                          const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                           return (
                           <TableRow key={part.id}>
                               <TableCell>
@@ -235,6 +237,7 @@ function PartsPageContent() {
                               </TableCell>
                               <TableCell className="font-medium">{part.name}</TableCell>
                               <TableCell>{brand?.name}</TableCell>
+                              <TableCell>{yearInfo || 'N/A'}</TableCell>
                               <TableCell>{part.sku}</TableCell>
                               <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
                               <TableCell className="text-center">{part.stock}</TableCell>
