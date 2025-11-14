@@ -33,7 +33,6 @@ const vehicleModels: VehicleModel[] = [
     { id: 'prado', name: 'Prado', brandId: 'toyota' },
     { id: 'celica', name: 'Celica', brandId: 'toyota' },
     { id: 'corolla', name: 'Corolla', brandId: 'toyota' },
-    { id: 'robocot', name: 'Robocot', brandId: 'toyota' },
     { id: 'hilux', name: 'Hilux', brandId: 'toyota' },
     { id: 'fortuner', name: 'Fortuner', brandId: 'toyota' },
     { id: 'land-cruiser', name: 'Land Cruiser', brandId: 'toyota' },
@@ -44,14 +43,27 @@ const vehicleModels: VehicleModel[] = [
     { id: 'terios', name: 'Terios', brandId: 'toyota' },
     { id: 'camry', name: 'Camry', brandId: 'toyota' },
     { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
+    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
+    { id: '4runner-meru-prado', name: '4Runner Meru Prado', brandId: 'toyota' },
+    { id: 'prado-4runner', name: 'Prado 4Runner', brandId: 'toyota' },
+    { id: '4runner-prado', name: '4Runner Prado', brandId: 'toyota' },
+    { id: 'baby-camry-pantallita-sapito-celica', name: 'Baby Camry Pantallita Sapito Celica', brandId: 'toyota' },
+    { id: 'corolla-sensacion-celica-pantallita', name: 'Corolla Sensacion Celica Pantallita', brandId: 'toyota' },
+    { id: 'corolla-explocion-robocot', name: 'Corolla Explocion Robocot', brandId: 'toyota' },
+    { id: 'hilux-2.7-fortuner-4.0', name: 'Hilux 2.7 Fortuner 4.0', brandId: 'toyota' },
+    { id: 'tundra-sequoia', name: 'Tundra - Sequoia', brandId: 'toyota' },
+    { id: 'hilux-prado', name: 'Hilux Prado', brandId: 'toyota' },
+    { id: 'hilux-fortuner', name: 'Hilux Fortuner', brandId: 'toyota' },
+    { id: 'prado-lexus', name: 'Prado Lexus', brandId: 'toyota' },
+    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
+    { id: 'corolla-brasil', name: 'Corolla Brasil', brandId: 'toyota' },
+    { id: 'robocot', name: 'Robocot', brandId: 'toyota' },
     { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
     { id: 'pantallita', name: 'Pantallita', brandId: 'toyota' },
     { id: 'sapito', name: 'Sapito', brandId: 'toyota' },
     { id: 'sensacion', name: 'Sensacion', brandId: 'toyota' },
     { id: 'explocion', name: 'Explocion', brandId: 'toyota' },
-    { id: 'corolla-brasil', name: 'Corolla Brasil', brandId: 'toyota' },
     { id: 'vigo', name: 'Vigo', brandId: 'toyota' },
-    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
     { id: 'crv', name: 'CR-V', brandId: 'honda' },
@@ -69,18 +81,6 @@ const vehicleModels: VehicleModel[] = [
     // Jeep
     { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
-    { id: '4runner-meru-prado', name: '4Runner Meru Prado', brandId: 'toyota' },
-    { id: 'prado-4runner', name: 'Prado 4Runner', brandId: 'toyota' },
-    { id: '4runner-prado', name: '4Runner Prado', brandId: 'toyota' },
-    { id: 'baby-camry-pantallita-sapito-celica', name: 'Baby Camry Pantallita Sapito Celica', brandId: 'toyota' },
-    { id: 'corolla-sensacion-celica-pantallita', name: 'Corolla Sensacion Celica Pantallita', brandId: 'toyota' },
-    { id: 'corolla-explocion-robocot', name: 'Corolla Explocion Robocot', brandId: 'toyota' },
-    { id: 'hilux-2.7-fortuner-4.0', name: 'Hilux 2.7 Fortuner 4.0', brandId: 'toyota' },
-    { id: 'tundra-sequoia', name: 'Tundra - Sequoia', brandId: 'toyota' },
-    { id: 'hilux-prado', name: 'Hilux Prado', brandId: 'toyota' },
-    { id: 'hilux-fortuner', name: 'Hilux Fortuner', brandId: 'toyota' },
-    { id: 'prado-lexus', name: 'Prado Lexus', brandId: 'toyota' },
-    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
 ]
 
 const parts: Part[] = [];
@@ -91,15 +91,14 @@ function sanitizeImageUrls(imageUrls: any): string[] {
         return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
     }
     if (typeof imageUrls === 'string') {
+        // If it's a string, first try to extract from <img> tags
         const htmlRegex = /<img[^>]+src="([^">]+)"/g;
-        // Attempt to find all src attributes in img tags
         const matches = [...imageUrls.matchAll(htmlRegex)];
         if (matches.length > 0) {
             return matches.map(match => match[1].trim()).filter(Boolean);
         }
         
         // If no img tags are found, assume it's a list of URLs separated by commas or newlines.
-        // Replace <br> tags with commas for splitting.
         const cleanedString = imageUrls.replace(/<br\s*\/?>/gi, ',');
         return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
     }
