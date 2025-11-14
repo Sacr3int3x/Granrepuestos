@@ -28,6 +28,8 @@ import type { Part, Brand, VehicleBrand, VehicleModel } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -49,7 +51,7 @@ const formSchema = z.object({
   }),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
-  vehicleModelId: z.string().optional(),
+  vehicleModelIds: z.array(z.string()).optional(),
   vehicleCompatibility: z.string().optional(),
 });
 
@@ -76,7 +78,8 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         ...part,
         description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(',\n') : (typeof part.imageUrls === 'string' ? part.imageUrls : ''),
-        vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : ''
+        vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : '',
+        vehicleModelIds: part.vehicleModelIds || [],
       }
     : {
         name: "",
@@ -89,7 +92,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         imageUrls: "",
         isFeatured: false,
         vehicleBrandId: "",
-        vehicleModelId: "",
+        vehicleModelIds: [],
         vehicleCompatibility: "",
       };
 
@@ -102,14 +105,16 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
 
   useEffect(() => {
     if (selectedVehicleBrand) {
-      setAvailableModels(getVehicleModels(selectedVehicleBrand));
-      // Reset model if brand changes and current model is not compatible
-      if(!getVehicleModels(selectedVehicleBrand).find(m => m.id === form.getValues("vehicleModelId"))) {
-        form.setValue("vehicleModelId", "");
-      }
+      const models = getVehicleModels(selectedVehicleBrand);
+      setAvailableModels(models);
+      
+      const currentModels = form.getValues("vehicleModelIds") || [];
+      const validModels = currentModels.filter(modelId => models.some(m => m.id === modelId));
+      form.setValue("vehicleModelIds", validModels);
+
     } else {
       setAvailableModels([]);
-      form.setValue("vehicleModelId", "");
+      form.setValue("vehicleModelIds", []);
     }
   }, [selectedVehicleBrand, form]);
 
@@ -188,28 +193,53 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             />
             <FormField
               control={form.control}
-              name="vehicleModelId"
-              render={({ field }) => (
+              name="vehicleModelIds"
+              render={() => (
                 <FormItem>
-                  <FormLabel>Modelo del Vehículo</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={!selectedVehicleBrand || availableModels.length === 0}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un modelo de vehículo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {availableModels.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          {model.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Modelos del Vehículo</FormLabel>
+                    <Card className="p-2">
+                        <ScrollArea className="h-40">
+                        {availableModels.length > 0 ? (
+                            availableModels.map((model) => (
+                            <FormField
+                                key={model.id}
+                                control={form.control}
+                                name="vehicleModelIds"
+                                render={({ field }) => {
+                                return (
+                                    <FormItem
+                                    key={model.id}
+                                    className="flex flex-row items-start space-x-3 space-y-0 p-2"
+                                    >
+                                    <FormControl>
+                                        <Checkbox
+                                        checked={field.value?.includes(model.id)}
+                                        onCheckedChange={(checked) => {
+                                            return checked
+                                            ? field.onChange([...(field.value || []), model.id])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                    (value) => value !== model.id
+                                                )
+                                                );
+                                        }}
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                        {model.name}
+                                    </FormLabel>
+                                    </FormItem>
+                                );
+                                }}
+                            />
+                            ))
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+                                {selectedVehicleBrand ? "No hay modelos para esta marca." : "Selecciona una marca primero."}
+                            </div>
+                        )}
+                        </ScrollArea>
+                    </Card>
                   <FormMessage />
                 </FormItem>
               )}

@@ -57,11 +57,13 @@ export default function ProductsTab() {
     if (!firestore || !partsCollection) return;
     
     let vehicleCompatibility: VehicleCompatibility[] = [];
-    if (data.vehicleBrandId && data.vehicleModelId && data.vehicleCompatibility) {
-        vehicleCompatibility.push({
-            brandId: data.vehicleBrandId,
-            modelId: data.vehicleModelId,
-            yearRange: data.vehicleCompatibility,
+    if (data.vehicleBrandId && data.vehicleModelIds && data.vehicleModelIds.length > 0 && data.vehicleCompatibility) {
+        data.vehicleModelIds.forEach(modelId => {
+            vehicleCompatibility.push({
+                brandId: data.vehicleBrandId as string,
+                modelId: modelId,
+                yearRange: data.vehicleCompatibility as string,
+            });
         });
     }
 
@@ -76,7 +78,7 @@ export default function ProductsTab() {
         imageUrls: data.imageUrls,
         isFeatured: data.isFeatured,
         vehicleBrandId: data.vehicleBrandId,
-        vehicleModelId: data.vehicleModelId,
+        vehicleModelIds: data.vehicleModelIds,
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
         vehicleCompatibility: vehicleCompatibility,

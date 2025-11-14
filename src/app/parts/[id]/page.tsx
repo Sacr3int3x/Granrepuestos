@@ -23,29 +23,9 @@ import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/ty
 import AddToCartButton from "../components/add-to-cart-button";
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
-import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
+import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
-
-function sanitizeImageUrls(imageUrls: string[] | string): string[] {
-  if (Array.isArray(imageUrls)) {
-    return imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
-  }
-  if (typeof imageUrls === 'string') {
-    const urls: string[] = [];
-    const imgRegex = /<img[^>]+src="([^">]+)"/g;
-    let match;
-    while ((match = imgRegex.exec(imageUrls)) !== null) {
-      urls.push(match[1].trim());
-    }
-    if (urls.length > 0) return urls;
-
-    // Fallback for comma or newline separated strings without HTML
-    return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-  }
-  return [];
-}
-
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -79,8 +59,11 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
       if (part.vehicleBrandId) {
         info.brands.add(getBrandName(part.vehicleBrandId));
       }
-      if (part.vehicleModelId) {
-        info.models.add(getModelName(part.vehicleModelId));
+      
+      if (part.vehicleModelIds) {
+        part.vehicleModelIds.forEach(modelId => {
+            info.models.add(getModelName(modelId));
+        })
       }
 
       if (part.vehicleCompatibility) {
@@ -204,7 +187,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                     <CardHeader className="p-0">
                       <div className="relative aspect-square w-full">
                         <Image
-                          src={relatedPart.imageUrls[0]}
+                          src={sanitizeImageUrls(relatedPart.imageUrls)[0] || ''}
                           alt={relatedPart.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform"
@@ -323,5 +306,3 @@ export default function PartDetailPage() {
     </div>
   );
 }
-
-    

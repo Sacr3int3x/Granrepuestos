@@ -1,5 +1,3 @@
-
-
 import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
@@ -83,7 +81,24 @@ const vehicleModels: VehicleModel[] = [
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
 ]
 
-const parts: Part[] = [];
+export function sanitizeImageUrls(imageUrls: string[] | string | undefined): string[] {
+  if (Array.isArray(imageUrls)) {
+    return imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
+  }
+  if (typeof imageUrls === 'string') {
+    const urls: string[] = [];
+    const imgRegex = /<img[^>]+src="([^">]+)"/g;
+    let match;
+    while ((match = imgRegex.exec(imageUrls)) !== null) {
+      urls.push(match[1].trim());
+    }
+    if (urls.length > 0) return urls;
+
+    // Fallback for comma or newline separated strings without HTML
+    return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
 
 export function getParts(
   allParts: Part[],
@@ -95,7 +110,12 @@ export function getParts(
     vehicleModel?: string;
   } = {}
 ) {
-  let filteredParts = allParts;
+  const sanitizedParts = allParts.map(part => ({
+    ...part,
+    imageUrls: sanitizeImageUrls(part.imageUrls),
+  }));
+
+  let filteredParts = sanitizedParts;
 
   if (filters.query) {
     const lowerCaseQuery = filters.query.toLowerCase();
@@ -103,7 +123,7 @@ export function getParts(
       (part) =>
         part.name.toLowerCase().includes(lowerCaseQuery) ||
         part.sku.toLowerCase().includes(lowerCaseQuery) ||
-        part.description.toLowerCase().includes(lowerCaseQuery)
+        (part.description && part.description.toLowerCase().includes(lowerCaseQuery))
     );
   }
 
@@ -117,9 +137,7 @@ export function getParts(
   
   if (filters.vehicleBrand) {
     filteredParts = filteredParts.filter((part) => {
-        // First check the top-level vehicleBrandId
         if (part.vehicleBrandId === filters.vehicleBrand) return true;
-        // Then check the vehicleCompatibility array
         if (part.vehicleCompatibility) {
             return part.vehicleCompatibility.some(comp => comp.brandId === filters.vehicleBrand);
         }
@@ -129,9 +147,7 @@ export function getParts(
   
   if (filters.vehicleModel) {
      filteredParts = filteredParts.filter((part) => {
-        // First check the top-level vehicleModelId
-        if (part.vehicleModelId === filters.vehicleModel) return true;
-        // Then check the vehicleCompatibility array
+        if (part.vehicleModelIds && part.vehicleModelIds.includes(filters.vehicleModel as string)) return true;
         if (part.vehicleCompatibility) {
             return part.vehicleCompatibility.some(comp => comp.modelId === filters.vehicleModel);
         }
