@@ -41,6 +41,7 @@ const formSchema = z.object({
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
   vehicleModelId: z.string().optional(),
+  vehicleCompatibility: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -65,6 +66,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     ? {
         ...part,
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(', ') : '',
+        vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : ''
       }
     : {
         name: "",
@@ -78,6 +80,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         isFeatured: false,
         vehicleBrandId: "",
         vehicleModelId: "",
+        vehicleCompatibility: "",
       };
 
   const form = useForm<ProductFormValues>({
@@ -202,6 +205,19 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
               )}
             />
         </div>
+         <FormField
+          control={form.control}
+          name="vehicleCompatibility"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Año(s) de compatibilidad</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: 2015-2020" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField control={form.control} name="imageUrls" render={({ field }) => (
             <FormItem>
                 <FormLabel>URLs de Imágenes</FormLabel>

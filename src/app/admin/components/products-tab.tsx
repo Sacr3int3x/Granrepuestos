@@ -34,7 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
-import type { Part } from "@/lib/types";
+import type { Part, VehicleCompatibility } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -52,14 +52,33 @@ export default function ProductsTab() {
   const [editingPart, setEditingPart] = useState<Part | undefined>(undefined);
   const { toast } = useToast();
 
-  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds'> & { id?: string }) => {
+  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string }) => {
     if (!firestore || !partsCollection) return;
     
+    let vehicleCompatibility: VehicleCompatibility[] = [];
+    if (data.vehicleBrandId && data.vehicleModelId && data.vehicleCompatibility) {
+        vehicleCompatibility.push({
+            brandId: data.vehicleBrandId,
+            modelId: data.vehicleModelId,
+            yearRange: data.vehicleCompatibility,
+        });
+    }
+
     const partData = {
-        ...data,
-        // Ensure fields that are not in the form are handled
+        name: data.name,
+        sku: data.sku,
+        description: data.description,
+        price: data.price,
+        stock: data.stock,
+        brandId: data.brandId,
+        categoryId: data.categoryId,
+        imageUrls: data.imageUrls,
+        isFeatured: data.isFeatured,
+        vehicleBrandId: data.vehicleBrandId,
+        vehicleModelId: data.vehicleModelId,
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
+        vehicleCompatibility: vehicleCompatibility,
     };
 
     if (editingPart && data.id) {
