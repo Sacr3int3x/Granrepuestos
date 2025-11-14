@@ -38,7 +38,14 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
-  imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform(val => val.split(/[\n,]+/).map(s => s.trim()).filter(Boolean)),
+  imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform((val) => {
+    const htmlRegex = /<img[^>]+src="([^">]+)"/g;
+    const matches = [...val.matchAll(htmlRegex)];
+    if (matches.length > 0) {
+        return matches.map(match => match[1]).filter(Boolean);
+    }
+    return val.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  }),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
   vehicleModelId: z.string().optional(),

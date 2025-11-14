@@ -333,24 +333,22 @@ const parts: Part[] = [
 
 function sanitizeImageUrls(imageUrls: any): string[] {
     if (Array.isArray(imageUrls)) {
-        // If it's already an array, filter out any empty strings
         return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
     }
     if (typeof imageUrls === 'string') {
-        // If it's a string, it might be HTML. Extract src attributes.
-        const regex = /<img[^>]+src="([^">]+)"/g;
-        const matches = [...imageUrls.matchAll(regex)];
-        const urls = matches.map(match => match[1]);
-
-        if (urls.length > 0) {
-            return urls;
+        const cleanedString = imageUrls.replace(/<br>/g, ',');
+        const htmlRegex = /<img[^>]+src="([^">]+)"/g;
+        const matches = [...cleanedString.matchAll(htmlRegex)];
+        
+        if (matches.length > 0) {
+            return matches.map(match => match[1]).filter(Boolean);
         }
 
-        // Or it could be a comma-separated list
-        return imageUrls.split(',').map(url => url.trim()).filter(url => url !== '');
+        return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
     }
-    return []; // Return empty array if it's not an array or string
+    return [];
 }
+
 
 export function getParts(
   allParts: Part[],
@@ -443,5 +441,6 @@ export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     if (!part || !part.relatedPartIds) return [];
     return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }
+
 
 
