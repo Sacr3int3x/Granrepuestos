@@ -55,7 +55,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             console.error("Error uploading to Cloudinary:", error);
         } finally {
             setIsUploading(false);
-            // Reset file input
+            // Reset file input para permitir seleccionar el mismo archivo de nuevo
             if(fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
@@ -64,7 +64,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
     return (
         <div>
-            <div className="mb-4 flex items-center gap-4">
+            <div className="mb-4 flex items-center gap-4 flex-wrap">
                 {value.map((url) => (
                     <div key={url} className="relative w-[200px] h-[200px] rounded-md overflow-hidden">
                         <div className="z-10 absolute top-2 right-2">
@@ -77,6 +77,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                             className="object-cover"
                             alt="Imagen del repuesto"
                             src={url}
+                            sizes="200px"
                         />
                     </div>
                 ))}
@@ -93,6 +94,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 ref={fileInputRef} 
                 onChange={handleFileSelect}
                 className="hidden"
+                disabled={isUploading}
             />
             <Button
                 type="button"
