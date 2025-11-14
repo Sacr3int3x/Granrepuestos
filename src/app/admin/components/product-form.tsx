@@ -42,9 +42,10 @@ const formSchema = z.object({
     const htmlRegex = /<img[^>]+src="([^">]+)"/g;
     const matches = [...val.matchAll(htmlRegex)];
     if (matches.length > 0) {
-        return matches.map(match => match[1]).filter(Boolean);
+        return matches.map(match => match[1].trim()).filter(Boolean);
     }
-    return val.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    const cleanedString = val.replace(/<br\s*\/?>/gi, ',');
+    return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
   }),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
@@ -230,7 +231,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         <FormField control={form.control} name="imageUrls" render={({ field }) => (
             <FormItem>
                 <FormLabel>URLs de Imágenes</FormLabel>
-                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas o saltos de línea. También puede pegar el bloque HTML." {...field} /></FormControl>
+                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas, saltos de línea o bloques de HTML." {...field} /></FormControl>
                 <FormMessage />
             </FormItem>
         )}/>

@@ -27,7 +27,7 @@ const vehicleBrands: VehicleBrand[] = [
 ]
 
 const vehicleModels: VehicleModel[] = [
-  // Toyota
+    // Toyota
     { id: '4runner', name: '4Runner', brandId: 'toyota' },
     { id: 'meru', name: 'Meru', brandId: 'toyota' },
     { id: 'prado', name: 'Prado', brandId: 'toyota' },
@@ -69,6 +69,18 @@ const vehicleModels: VehicleModel[] = [
     // Jeep
     { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
+    { id: '4runner-meru-prado', name: '4Runner Meru Prado', brandId: 'toyota' },
+    { id: 'prado-4runner', name: 'Prado 4Runner', brandId: 'toyota' },
+    { id: '4runner-prado', name: '4Runner Prado', brandId: 'toyota' },
+    { id: 'baby-camry-pantallita-sapito-celica', name: 'Baby Camry Pantallita Sapito Celica', brandId: 'toyota' },
+    { id: 'corolla-sensacion-celica-pantallita', name: 'Corolla Sensacion Celica Pantallita', brandId: 'toyota' },
+    { id: 'corolla-explocion-robocot', name: 'Corolla Explocion Robocot', brandId: 'toyota' },
+    { id: 'hilux-2.7-fortuner-4.0', name: 'Hilux 2.7 Fortuner 4.0', brandId: 'toyota' },
+    { id: 'tundra-sequoia', name: 'Tundra - Sequoia', brandId: 'toyota' },
+    { id: 'hilux-prado', name: 'Hilux Prado', brandId: 'toyota' },
+    { id: 'hilux-fortuner', name: 'Hilux Fortuner', brandId: 'toyota' },
+    { id: 'prado-lexus', name: 'Prado Lexus', brandId: 'toyota' },
+    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
 ]
 
 const parts: Part[] = [];
@@ -83,7 +95,7 @@ function sanitizeImageUrls(imageUrls: any): string[] {
         // Attempt to find all src attributes in img tags
         const matches = [...imageUrls.matchAll(htmlRegex)];
         if (matches.length > 0) {
-            return matches.map(match => match[1]).filter(Boolean);
+            return matches.map(match => match[1].trim()).filter(Boolean);
         }
         
         // If no img tags are found, assume it's a list of URLs separated by commas or newlines.
@@ -196,8 +208,3 @@ export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     }));
     return sanitizedAllParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }
-
-
-
-
-
