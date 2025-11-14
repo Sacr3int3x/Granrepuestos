@@ -7,18 +7,10 @@ import { ImagePlus, Trash2, Loader2 } from "lucide-react";
 
 interface ImageUploadProps {
     value: string[];
-    onChange: (value: string) => void;
+    onChange: (value: string[]) => void;
     onRemove: (value: string) => void;
 }
 
-// =================================================================================
-// INSTRUCCIONES IMPORTANTES DE CLOUDINARY
-// 1. Inicia sesión en tu cuenta de Cloudinary: https://cloudinary.com/console
-// 2. Ve a Settings (icono de engranaje) > pestaña Upload.
-// 3. Busca la sección "Upload Presets" y haz clic en "Add upload preset".
-// 4. Cambia el "Signing Mode" de "Signed" a "Unsigned".
-// 5. Dale el nombre "granrepuesto" al preset y guárdalo.
-// =================================================================================
 const CLOUDINARY_CLOUD_NAME = "dx413fa7v";
 const CLOUDINARY_UPLOAD_PRESET = "granrepuesto";
 
@@ -57,7 +49,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 if (data.secure_url) {
                     return data.secure_url;
                 } else {
-                    console.error("Cloudinary upload failed: secure_url not found in response", data);
+                    console.error("Cloudinary upload failed: secure_url not found", data);
                     return null;
                 }
             } catch (error) {
@@ -67,14 +59,20 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         });
 
         try {
+            // Wait for all uploads to complete
             const uploadedUrls = await Promise.all(uploadPromises);
-            uploadedUrls.forEach(url => {
-                if (url) {
-                    onChange(url);
-                }
-            });
-        } finally {
+            const successfulUrls = uploadedUrls.filter((url): url is string => url !== null);
+            
+            // Update the form state with the new list of URLs
+            if (successfulUrls.length > 0) {
+              onChange([...value, ...successfulUrls]);
+            }
+        } catch(error) {
+            console.error("An error occurred during multi-file upload", error);
+        }
+        finally {
             setIsUploading(false);
+            // Reset file input to allow selecting the same file again
             if(fileInputRef.current) {
                 fileInputRef.current.value = "";
             }

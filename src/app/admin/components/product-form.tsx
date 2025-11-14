@@ -127,7 +127,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
               <FormControl>
                 <ImageUpload 
                   value={field.value}
-                  onChange={(url) => field.onChange([...field.value, url])}
+                  onChange={(urls) => field.onChange(urls)}
                   onRemove={(url) => field.onChange(field.value.filter(current => current !== url))}
                 />
               </FormControl>
