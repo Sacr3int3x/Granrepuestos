@@ -56,7 +56,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 onSuccess={onUpload}
                 options={{
                     cloudName: CLOUDINARY_CLOUD_NAME,
-                    uploadPreset: CLOUDINARY_UPLOAD_PRESET
+                    uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+                    styles: {
+                        modal: {
+                            zIndex: 9999
+                        }
+                    }
                 }}
             >
                 {({ open }) => {
