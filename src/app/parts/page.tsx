@@ -59,7 +59,20 @@ function PartsPageContent() {
     if (!allParts || !allBrands) {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
     }
-    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
+    
+    // Sanitize image URLs right after fetching
+    const sanitizedParts = allParts.map(part => {
+      if (typeof part.imageUrls === 'string' || !Array.isArray(part.imageUrls)) {
+        const htmlString = part.imageUrls as unknown as string;
+        const imgRegex = /<img[^>]+src="([^">]+)"/g;
+        const matches = [...htmlString.matchAll(imgRegex)];
+        const urls = matches.map(match => match[1].trim()).filter(Boolean);
+        return { ...part, imageUrls: urls };
+      }
+      return part;
+    });
+
+    const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
     const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
     const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
     return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
@@ -175,14 +188,18 @@ function PartsPageContent() {
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  <Image
-                                      src={part.imageUrls[0]}
-                                      alt={part.name}
-                                      width={80}
-                                      height={80}
-                                      className="rounded-md object-cover"
-                                      data-ai-hint="auto part"
-                                  />
+                                  {part.imageUrls && part.imageUrls[0] ? (
+                                    <Image
+                                        src={part.imageUrls[0]}
+                                        alt={part.name}
+                                        width={80}
+                                        height={80}
+                                        className="rounded-md object-cover"
+                                        data-ai-hint="auto part"
+                                    />
+                                  ) : (
+                                    <div className="h-20 w-20 bg-muted rounded-md flex-shrink-0" />
+                                  )}
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
@@ -222,14 +239,18 @@ function PartsPageContent() {
                           <TableRow key={part.id}>
                               <TableCell>
                                 <Link href={`/parts/${part.id}`}>
-                                    <Image
-                                        src={part.imageUrls[0]}
-                                        alt={part.name}
-                                        width={60}
-                                        height={60}
-                                        className="rounded-md object-cover h-auto"
-                                        data-ai-hint="auto part"
-                                    />
+                                  {part.imageUrls && part.imageUrls[0] ? (
+                                      <Image
+                                          src={part.imageUrls[0]}
+                                          alt={part.name}
+                                          width={60}
+                                          height={60}
+                                          className="rounded-md object-cover h-auto"
+                                          data-ai-hint="auto part"
+                                      />
+                                    ) : (
+                                      <div className="h-[60px] w-[60px] bg-muted rounded-md" />
+                                    )}
                                 </Link>
                               </TableCell>
                               <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
