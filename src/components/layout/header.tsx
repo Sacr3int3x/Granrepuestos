@@ -47,13 +47,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <Icons.logo className="h-12 w-20 text-primary" />
           <span className="sr-only sm:inline-block font-bold font-headline">
             GranRepuestos
           </span>
         </Link>
-        <nav className="hidden gap-6 text-sm font-medium md:flex">
+        <nav className="hidden gap-6 text-sm font-medium md:flex md:ml-6">
           {navItems.map((item) => (
             <Link
               key={item.href}
