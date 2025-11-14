@@ -111,7 +111,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
           
           <div className="mt-8 flex justify-between items-center">
             <div>
-              <p className="text-4xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
               <p className={fullPart.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
                 {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
               </p>
@@ -127,10 +127,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         <Card className="mt-4">
             <Table>
                 <TableBody>
-                <TableRow>
-                    <TableCell className="font-medium">Descripción</TableCell>
-                    <TableCell>{fullPart.description}</TableCell>
-                </TableRow>
+                
                  <TableRow>
                     <TableCell className="font-medium">Marca</TableCell>
                     <TableCell>
@@ -141,10 +138,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                         )}
                     </TableCell>
                 </TableRow>
-                 <TableRow>
-                    <TableCell className="font-medium">Categoría</TableCell>
-                    <TableCell>{fullPart.category.name}</TableCell>
-                </TableRow>
+                
                 <TableRow>
                     <TableCell className="font-medium">Código de parte</TableCell>
                     <TableCell>{fullPart.sku}</TableCell>
@@ -166,6 +160,14 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                 <TableRow>
                     <TableCell className="font-medium">Año</TableCell>
                     <TableCell>{compatibilityInfo.years}</TableCell>
+                </TableRow>
+                 <TableRow>
+                    <TableCell className="font-medium">Categoría</TableCell>
+                    <TableCell>{fullPart.category.name}</TableCell>
+                </TableRow>
+                <TableRow>
+                    <TableCell className="font-medium">Descripción</TableCell>
+                    <TableCell>{fullPart.description}</TableCell>
                 </TableRow>
                 </TableBody>
             </Table>
