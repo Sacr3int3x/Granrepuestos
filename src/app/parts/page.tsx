@@ -177,7 +177,7 @@ function PartsPageContent() {
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  {part.imageUrls && part.imageUrls[0] ? (
+                                  {part.imageUrls?.[0] ? (
                                     <Image
                                         src={part.imageUrls[0]}
                                         alt={part.name}
@@ -230,7 +230,7 @@ function PartsPageContent() {
                           return (
                           <TableRow key={part.id} className="relative cursor-pointer" onClick={() => router.push(`/parts/${part.id}`)}>
                               <TableCell>
-                                {part.imageUrls && part.imageUrls[0] ? (
+                                {part.imageUrls?.[0] ? (
                                     <Image
                                         src={part.imageUrls[0]}
                                         alt={part.name}
