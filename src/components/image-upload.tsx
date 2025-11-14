@@ -53,9 +53,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 ))}
             </div>
             <CldUploadWidget
-                cloudName={CLOUDINARY_CLOUD_NAME}
-                uploadPreset={CLOUDINARY_UPLOAD_PRESET}
                 onSuccess={onUpload}
+                options={{
+                    cloudName: CLOUDINARY_CLOUD_NAME,
+                    uploadPreset: CLOUDINARY_UPLOAD_PRESET
+                }}
             >
                 {({ open }) => {
                     const onClick = () => {
