@@ -89,44 +89,47 @@ export default function Header() {
 
         {/* Right Section */}
         <div className="flex items-center justify-end gap-2">
-           <div className="hidden md:flex items-center gap-2">
-             <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              aria-label="Contactar por WhatsApp"
-              className="transition-colors"
-            >
-               <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer">
-                <MessageSquare className="h-5 w-5" />
-              </a>
-            </Button>
-             <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              aria-label="Contactar por correo"
-              className="transition-colors"
-            >
-              <a href="mailto:info@granrepuestos.com">
-                <Mail className="h-5 w-5" />
-              </a>
-            </Button>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden md:flex relative transition-colors"
-            aria-label="Abrir carrito"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
-                {cartItemCount}
-              </span>
+            {pathname !== '/' && (
+               <div className="hidden md:flex items-center gap-2">
+                 <Button
+                  variant="ghost"
+                  size="icon"
+                  asChild
+                  aria-label="Contactar por WhatsApp"
+                  className="transition-colors"
+                >
+                   <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer">
+                    <MessageSquare className="h-5 w-5" />
+                  </a>
+                </Button>
+                 <Button
+                  variant="ghost"
+                  size="icon"
+                  asChild
+                  aria-label="Contactar por correo"
+                  className="transition-colors"
+                >
+                  <a href="mailto:info@granrepuestos.com">
+                    <Mail className="h-5 w-5" />
+                  </a>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hidden md:flex relative transition-colors"
+                  aria-label="Abrir carrito"
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </Button>
+              </div>
             )}
-          </Button>
+
 
           {/* Mobile Menu */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
