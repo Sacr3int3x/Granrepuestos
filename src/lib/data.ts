@@ -1,3 +1,4 @@
+
 import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
@@ -26,8 +27,29 @@ const vehicleBrands: VehicleBrand[] = [
 
 const vehicleModels: VehicleModel[] = [
     // Toyota
+    { id: '4runner', name: '4Runner', brandId: 'toyota' },
+    { id: 'meru', name: 'Meru', brandId: 'toyota' },
+    { id: 'prado', name: 'Prado', brandId: 'toyota' },
+    { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
+    { id: 'pantallita', name: 'Pantallita', brandId: 'toyota' },
+    { id: 'sapito', name: 'Sapito', brandId: 'toyota' },
+    { id: 'celica', name: 'Celica', brandId: 'toyota' },
     { id: 'corolla', name: 'Corolla', brandId: 'toyota' },
+    { id: 'corolla-sensacion', name: 'Corolla Sensacion', brandId: 'toyota' },
+    { id: 'corolla-explocion', name: 'Corolla Explocion', brandId: 'toyota' },
+    { id: 'robocot', name: 'Robocot', brandId: 'toyota' },
     { id: 'hilux', name: 'Hilux', brandId: 'toyota' },
+    { id: 'fortuner', name: 'Fortuner', brandId: 'toyota' },
+    { id: 'land-cruiser', name: 'Land Cruiser', brandId: 'toyota' },
+    { id: 'tundra', name: 'Tundra', brandId: 'toyota' },
+    { id: 'sequoia', name: 'Sequoia', brandId: 'toyota' },
+    { id: 'yaris', name: 'Yaris', brandId: 'toyota' },
+    { id: 'lexus', name: 'Lexus', brandId: 'toyota' },
+    { id: 'terios', name: 'Terios', brandId: 'toyota' },
+    { id: 'corolla-brasil', name: 'Corolla Brasil', brandId: 'toyota' },
+    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
+    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
+    { id: 'camry', name: 'Camry', brandId: 'toyota' },
     { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
@@ -395,3 +417,4 @@ export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     if (!part || !part.relatedPartIds) return [];
     return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }
+
