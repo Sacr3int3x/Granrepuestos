@@ -218,8 +218,11 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
               Marcas con las que trabajamos
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-            Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial. ¡Cero imitaciones, Cero Chino!
+            <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+              Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial.
+            </p>
+             <p className="mt-4 text-xl font-bold text-primary">
+              ¡Cero imitaciones, Cero Chino!
             </p>
           </div>
           <BrandsSection />
@@ -253,11 +256,11 @@ export default function Home() {
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row items-center justify-around gap-6">
                   
-                  <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                  <a href="https://wa.me/58414123707" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">WhatsApp</h3>
-                      <p className="text-muted-foreground group-hover:underline">+58 414-1123707</p>
+                      <p className="text-muted-foreground group-hover:underline">+58 414-123707</p>
                     </div>
                   </a>
 
