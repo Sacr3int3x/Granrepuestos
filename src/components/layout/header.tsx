@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
+import { Menu, ShoppingCart, Mail, MessageSquare, Check } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -46,30 +46,32 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-20 items-center px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center space-x-2">
-          <Icons.logo className="h-12 w-20 text-primary" />
-          <span className="sr-only sm:inline-block font-bold font-headline">
-            GranRepuestos
-          </span>
-        </Link>
-        <nav className="hidden gap-6 text-sm font-medium md:flex md:ml-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-foreground/80",
-                pathname === item.href
-                  ? "text-foreground"
-                  : "text-foreground/60"
-              )}
-            >
-              {item.label}
+      <div className="container flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center space-x-2">
+              <Icons.logo className="h-12 w-20 text-primary" />
+              <span className="sr-only sm:inline-block font-bold font-headline">
+                GranRepuestos
+              </span>
             </Link>
-          ))}
-        </nav>
-        <div className="flex flex-1 items-center justify-end gap-2">
+            <nav className="hidden gap-6 text-sm font-medium md:flex">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "transition-colors hover:text-foreground/80",
+                    pathname === item.href
+                      ? "text-foreground"
+                      : "text-foreground/60"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+        </div>
+        <div className="flex items-center justify-end gap-2">
            <div className="hidden md:flex items-center gap-2">
              <Button
               variant="ghost"
