@@ -224,29 +224,28 @@ function PartsPageContent() {
                           const fullPart = {...part, brand, category};
                           const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                           return (
-                          <TableRow key={part.id}>
+                          <TableRow key={part.id} className="relative cursor-pointer" onClick={() => router.push(`/parts/${part.id}`)}>
                               <TableCell>
-                              <Image
-                                  src={part.imageUrls[0]}
-                                  alt={part.name}
-                                  width={60}
-                                  height={60}
-                                  className="rounded-md object-cover h-auto"
-                                  data-ai-hint="auto part"
-                              />
+                                <Link href={`/parts/${part.id}`} className="block">
+                                  <Image
+                                      src={part.imageUrls[0]}
+                                      alt={part.name}
+                                      width={60}
+                                      height={60}
+                                      className="rounded-md object-cover h-auto"
+                                      data-ai-hint="auto part"
+                                  />
+                                </Link>
                               </TableCell>
-                              <TableCell className="font-medium">{part.name}</TableCell>
-                              <TableCell>{brand?.name}</TableCell>
-                              <TableCell>{yearInfo || 'N/A'}</TableCell>
-                              <TableCell>{part.sku}</TableCell>
-                              <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
-                              <TableCell className="text-center">{part.stock}</TableCell>
+                              <TableCell className="font-medium"><Link href={`/parts/${part.id}`} className="block">{part.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`} className="block">{brand?.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`} className="block">{yearInfo || 'N/A'}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`} className="block">{part.sku}</Link></TableCell>
+                              <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`} className="block">${part.price.toFixed(2)}</Link></TableCell>
+                              <TableCell className="text-center"><Link href={`/parts/${part.id}`} className="block">{part.stock}</Link></TableCell>
                               <TableCell className="text-right">
-                              <div className='flex items-center justify-end gap-2'>
+                              <div className='flex items-center justify-end gap-2' onClick={(e) => e.stopPropagation()}>
                                   <AddToCartButton part={fullPart} size="icon" />
-                                  <Button asChild variant="outline" size="sm">
-                                  <Link href={`/parts/${part.id}`}>Ver Detalles</Link>
-                                  </Button>
                               </div>
                               </TableCell>
                           </TableRow>
