@@ -70,7 +70,7 @@
 
 @layer utilities {
   .animate-infinite-scroll {
-    animation: infinite-scroll 40s linear infinite;
+    animation: infinite-scroll 25s linear infinite;
   }
   
   @keyframes infinite-scroll {
