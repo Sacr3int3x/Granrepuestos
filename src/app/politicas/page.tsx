@@ -36,6 +36,7 @@ export default function PoliciesPage() {
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
                 <p>Para solicitar una devolución, el repuesto debe estar en su empaque original, sin haber sido montado o utilizado.</p>
+                <p className="font-semibold text-foreground">Importante: No realizamos devoluciones de dinero. Ofrecemos el cambio del producto por otra pieza de igual o mayor valor (cubriendo el cliente la diferencia).</p>
                 <p>Las devoluciones solo se aceptan dentro de los 5 días continuos siguientes a la recepción del producto.</p>
                 <p>No se aceptan devoluciones de partes eléctricas.</p>
                 <p>El cliente es responsable de cubrir los costos de envío asociados a la devolución. En caso de error de nuestra parte, nosotros cubriremos los gastos.</p>
