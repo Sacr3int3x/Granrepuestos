@@ -23,6 +23,7 @@ const formSchema = z.object({
   heroImageUrl: z.string().url("Debe ser una URL válida.").optional().or(z.literal('')),
   countryOfOrigin: z.string().optional(),
   description: z.string().optional(),
+  websiteUrl: z.string().url("Debe ser una URL válida.").optional().or(z.literal('')),
 });
 
 type BrandFormValues = z.infer<typeof formSchema>;
@@ -41,6 +42,7 @@ export function BrandForm({ onSubmit, brand }: BrandFormProps) {
       heroImageUrl: brand?.heroImageUrl || "",
       countryOfOrigin: brand?.countryOfOrigin || "",
       description: brand?.description || "",
+      websiteUrl: brand?.websiteUrl || "",
       id: brand?.id || undefined,
     },
   });
@@ -95,6 +97,19 @@ export function BrandForm({ onSubmit, brand }: BrandFormProps) {
               <FormLabel>País de Origen</FormLabel>
               <FormControl>
                 <Input placeholder="Alemania" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="websiteUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sitio Web de la Marca</FormLabel>
+              <FormControl>
+                <Input placeholder="https://www.brand-website.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

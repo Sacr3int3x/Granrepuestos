@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -61,6 +60,7 @@ export default function BrandsTab() {
       description: data.description || "",
       countryOfOrigin: data.countryOfOrigin || "",
       heroImageUrl: data.heroImageUrl || "",
+      websiteUrl: data.websiteUrl || "",
     };
 
     if (editingBrand && data.id) {

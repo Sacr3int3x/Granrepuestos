@@ -25,7 +25,7 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase
 import { doc, collection, query, where } from "firebase/firestore";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -109,7 +109,11 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
             {fullPart.name}
           </h1>
           <div className="mt-2 flex items-center gap-4">
-             <Link href={`/parts?brand=${fullPart.brand.id}`} className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</Link>
+             {brand && brand.websiteUrl ? (
+                <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-lg text-muted-foreground hover:text-primary transition-colors">{fullPart.brand.name}</a>
+              ) : (
+                <span className="text-lg text-muted-foreground">{fullPart.brand.name}</span>
+              )}
              <Badge variant="secondary">{fullPart.category.name}</Badge>
           </div>
           <p className="mt-6 text-base text-muted-foreground">{fullPart.description}</p>

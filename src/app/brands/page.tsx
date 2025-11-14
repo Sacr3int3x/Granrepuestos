@@ -38,7 +38,13 @@ function BrandsList() {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {brands.map((brand) => (
-                <Link href={`/parts?brand=${brand.id}`} key={brand.id} className="group">
+                <a 
+                  href={brand.websiteUrl || '#'}
+                  key={brand.id}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group"
+                >
                     <Card className="flex flex-col items-center justify-center p-6 h-full transition-all duration-300 ease-in-out hover:shadow-lg hover:border-primary/50 hover:-translate-y-1">
                         <div className="relative h-16 w-28 mb-4">
                             <Image
@@ -57,7 +63,7 @@ function BrandsList() {
                            </div>
                         )}
                     </Card>
-                </Link>
+                </a>
             ))}
         </div>
     );

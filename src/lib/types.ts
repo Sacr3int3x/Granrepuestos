@@ -5,6 +5,7 @@ export type Brand = {
   description?: string;
   countryOfOrigin?: string;
   heroImageUrl?: string;
+  websiteUrl?: string;
 };
 
 export type Category = {
