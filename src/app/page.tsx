@@ -23,6 +23,7 @@ import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
 import HeroImage from "@/components/hero.jpeg";
+import { Separator } from "@/components/ui/separator";
 
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
@@ -247,41 +248,55 @@ export default function Home() {
               ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="flex flex-col items-center">
-              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
-                <MessageSquare className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">WhatsApp</h3>
-              <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" className="text-muted-foreground mt-2 hover:underline">
-                +58 414-1123707
-              </a>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
-                <Mail className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">Correo Electrónico</h3>
-              <p className="text-muted-foreground mt-2">
-                <a href="mailto:info@granrepuestos.com" className="hover:underline">info@granrepuestos.com</a>
-              </p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
-                <Instagram className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">Instagram</h3>
-               <a href="#" target="_blank" rel="noopener noreferrer" className="text-muted-foreground mt-2 hover:underline">
-                @granrepuestos
-              </a>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
-                <MapPin className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">Ubicación</h3>
-              <p className="text-muted-foreground mt-2">Guatire Edo. Miranda</p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-center justify-around gap-6">
+                  
+                  <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                    <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                    <div>
+                      <h3 className="text-lg font-semibold">WhatsApp</h3>
+                      <p className="text-muted-foreground group-hover:underline">+58 414-1123707</p>
+                    </div>
+                  </a>
+
+                  <Separator orientation="vertical" className="hidden md:block h-16" />
+                  <Separator orientation="horizontal" className="md:hidden" />
+                  
+                  <a href="mailto:info@granrepuestos.com" className="flex items-center gap-4 group">
+                    <Mail className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Correo Electrónico</h3>
+                      <p className="text-muted-foreground group-hover:underline">info@granrepuestos.com</p>
+                    </div>
+                  </a>
+                  
+                  <Separator orientation="vertical" className="hidden md:block h-16" />
+                  <Separator orientation="horizontal" className="md:hidden" />
+
+                  <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                    <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Instagram</h3>
+                      <p className="text-muted-foreground group-hover:underline">@granrepuestos</p>
+                    </div>
+                  </a>
+                  
+                  <Separator orientation="vertical" className="hidden md:block h-16" />
+                   <Separator orientation="horizontal" className="md:hidden" />
+
+                  <div className="flex items-center gap-4">
+                    <MapPin className="h-8 w-8 text-primary" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Ubicación</h3>
+                      <p className="text-muted-foreground">Guatire Edo. Miranda</p>
+                    </div>
+                  </div>
+
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
