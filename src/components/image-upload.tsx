@@ -1,10 +1,9 @@
 "use client";
 
-import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
-import { useCallback } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { ImagePlus, Trash2, Loader2 } from "lucide-react";
 
 interface ImageUploadProps {
     value: string[];
@@ -28,10 +27,40 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     onRemove,
     value
 }) => {
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const onUpload = useCallback((result: any) => {
-        onChange(result.info.secure_url)
-    }, [onChange]);
+    const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.secure_url) {
+                onChange(data.secure_url);
+            } else {
+                console.error("Cloudinary upload failed:", data);
+            }
+        } catch (error) {
+            console.error("Error uploading to Cloudinary:", error);
+        } finally {
+            setIsUploading(false);
+            // Reset file input
+            if(fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+    };
 
     return (
         <div>
@@ -51,35 +80,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         />
                     </div>
                 ))}
+                 {isUploading && (
+                    <div className="w-[200px] h-[200px] rounded-md bg-muted flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                )}
             </div>
-            <CldUploadWidget
-                onSuccess={onUpload}
-                options={{
-                    cloudName: CLOUDINARY_CLOUD_NAME,
-                    uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-                    styles: {
-                        modal: {
-                            zIndex: 9999
-                        }
-                    }
-                }}
+            
+            <input 
+                type="file" 
+                accept="image/*"
+                ref={fileInputRef} 
+                onChange={handleFileSelect}
+                className="hidden"
+            />
+            <Button
+                type="button"
+                variant="secondary"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
             >
-                {({ open }) => {
-                    const onClick = () => {
-                        open();
-                    }
-                    return (
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={onClick}
-                        >
-                            <ImagePlus className="h-4 w-4 mr-2" />
-                            Subir una Imagen
-                        </Button>
-                    )
-                }}
-            </CldUploadWidget>
+                <ImagePlus className="h-4 w-4 mr-2" />
+                Subir una Imagen
+            </Button>
         </div>
     )
 }
