@@ -1,4 +1,5 @@
 
+
 import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
@@ -43,6 +44,14 @@ const vehicleModels: VehicleModel[] = [
     { id: 'terios', name: 'Terios', brandId: 'toyota' },
     { id: 'camry', name: 'Camry', brandId: 'toyota' },
     { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
+    { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
+    { id: 'pantallita', name: 'Pantallita', brandId: 'toyota' },
+    { id: 'sapito', name: 'Sapito', brandId: 'toyota' },
+    { id: 'sensacion', name: 'Sensacion', brandId: 'toyota' },
+    { id: 'explocion', name: 'Explocion', brandId: 'toyota' },
+    { id: 'corolla-brasil', name: 'Corolla Brasil', brandId: 'toyota' },
+    { id: 'vigo', name: 'Vigo', brandId: 'toyota' },
+    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
     { id: 'crv', name: 'CR-V', brandId: 'honda' },
@@ -322,6 +331,27 @@ const parts: Part[] = [
   }
 ];
 
+function sanitizeImageUrls(imageUrls: any): string[] {
+    if (Array.isArray(imageUrls)) {
+        // If it's already an array, filter out any empty strings
+        return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
+    }
+    if (typeof imageUrls === 'string') {
+        // If it's a string, it might be HTML. Extract src attributes.
+        const regex = /<img[^>]+src="([^">]+)"/g;
+        const matches = [...imageUrls.matchAll(regex)];
+        const urls = matches.map(match => match[1]);
+
+        if (urls.length > 0) {
+            return urls;
+        }
+
+        // Or it could be a comma-separated list
+        return imageUrls.split(',').map(url => url.trim()).filter(url => url !== '');
+    }
+    return []; // Return empty array if it's not an array or string
+}
+
 export function getParts(
   allParts: Part[],
   filters: {
@@ -332,7 +362,11 @@ export function getParts(
     vehicleModel?: string;
   } = {}
 ) {
-  let filteredParts = [...allParts];
+  let filteredParts = allParts.map(part => ({
+    ...part,
+    imageUrls: sanitizeImageUrls(part.imageUrls)
+  }));
+
 
   if (filters.query) {
     const lowerCaseQuery = filters.query.toLowerCase();
@@ -409,4 +443,5 @@ export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     if (!part || !part.relatedPartIds) return [];
     return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }
+
 

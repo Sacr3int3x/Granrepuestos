@@ -38,7 +38,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
-  imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform(val => val.split(',').map(s => s.trim())),
+  imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform(val => val.split(/[\n,]+/).map(s => s.trim()).filter(Boolean)),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
   vehicleModelId: z.string().optional(),
@@ -67,7 +67,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     ? {
         ...part,
         description: part.description || "",
-        imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(', ') : '',
+        imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(',\n') : (typeof part.imageUrls === 'string' ? part.imageUrls : ''),
         vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : ''
       }
     : {
@@ -223,7 +223,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         <FormField control={form.control} name="imageUrls" render={({ field }) => (
             <FormItem>
                 <FormLabel>URLs de Imágenes</FormLabel>
-                <FormControl><Input placeholder="https://.../1.jpg, https://.../2.jpg" {...field} /></FormControl>
+                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas o saltos de línea. También puede pegar el bloque HTML." {...field} /></FormControl>
                 <FormMessage />
             </FormItem>
         )}/>
