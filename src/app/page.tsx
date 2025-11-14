@@ -67,8 +67,8 @@ function BrandsSection() {
         className="flex items-center justify-center [&_li]:mx-4 [&_img]:max-w-none animate-infinite-scroll">
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-${index}`}>
-            <div className="relative h-[60px] w-[150px]">
-              <Image src={brand.logoUrl} alt={brand.name} fill sizes="150px" className="object-contain" />
+            <div className="relative h-[80px] w-[200px]">
+              <Image src={brand.logoUrl} alt={brand.name} fill sizes="200px" className="object-contain" />
             </div>
           </li>
         ))}
@@ -78,8 +78,8 @@ function BrandsSection() {
         aria-hidden="true">
         {extendedBrands.map((brand, index) => (
           <li key={`${brand.id}-clone-${index}`}>
-            <div className="relative h-[60px] w-[150px]">
-                <Image src={brand.logoUrl} alt={brand.name} fill sizes="150px" className="object-contain" />
+            <div className="relative h-[80px] w-[200px]">
+                <Image src={brand.logoUrl} alt={brand.name} fill sizes="200px" className="object-contain" />
             </div>
           </li>
         ))}
