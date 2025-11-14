@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -180,15 +181,18 @@ export default function ProductsTab() {
             {parts?.map((part) => (
               <TableRow key={part.id}>
                 <TableCell>
-                  {part.imageUrls && part.imageUrls[0] ? (
-                  <Image
-                    src={part.imageUrls[0]}
-                    alt={part.name}
-                    width={40}
-                    height={40}
-                    className="rounded-md object-cover h-10 w-auto"
-                  />
-                  ) : <div className="h-10 w-10 bg-muted rounded-md" />}
+                  {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
+                    <Image
+                      src={part.imageUrls[0]}
+                      alt={part.name}
+                      width={60}
+                      height={60}
+                      className="rounded-md object-cover h-auto"
+                      data-ai-hint="auto part"
+                    />
+                  ) : (
+                    <div className="h-[60px] w-[60px] bg-muted rounded-md" />
+                  )}
                 </TableCell>
                 <TableCell className="font-medium">{part.name}</TableCell>
                 <TableCell>{part.sku}</TableCell>
