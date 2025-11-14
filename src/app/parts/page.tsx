@@ -30,6 +30,23 @@ import { Input } from '@/components/ui/input';
 
 const PARTS_PER_PAGE = 15;
 
+function sanitizeImageUrls(imageUrls: any): string[] {
+    if (Array.isArray(imageUrls)) {
+        return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
+    }
+    if (typeof imageUrls === 'string') {
+        const htmlRegex = /<img[^>]+src="([^">]+)"/g;
+        const matches = [...imageUrls.matchAll(htmlRegex)];
+        if (matches.length > 0) {
+            return matches.map(match => match[1].trim()).filter(Boolean);
+        }
+        const cleanedString = imageUrls.replace(/<br\s*\/?>/gi, ',');
+        return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    }
+    return [];
+}
+
+
 function PartsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,7 +76,14 @@ function PartsPageContent() {
     if (!allParts || !allBrands) {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
     }
-    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
+    
+    // Sanitize image URLs right after fetching
+    const sanitizedParts = allParts.map(part => ({
+        ...part,
+        imageUrls: sanitizeImageUrls(part.imageUrls),
+    }));
+
+    const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
     const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
     const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
     return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
