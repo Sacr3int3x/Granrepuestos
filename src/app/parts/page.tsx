@@ -177,14 +177,18 @@ function PartsPageContent() {
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  <Image
-                                      src={part.imageUrls[0]}
-                                      alt={part.name}
-                                      width={80}
-                                      height={80}
-                                      className="rounded-md object-cover"
-                                      data-ai-hint="auto part"
-                                  />
+                                  {part.imageUrls && part.imageUrls[0] ? (
+                                    <Image
+                                        src={part.imageUrls[0]}
+                                        alt={part.name}
+                                        width={80}
+                                        height={80}
+                                        className="rounded-md object-cover"
+                                        data-ai-hint="auto part"
+                                    />
+                                  ) : (
+                                    <div className="h-20 w-20 bg-muted rounded-md flex-shrink-0" />
+                                  )}
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
@@ -226,23 +230,25 @@ function PartsPageContent() {
                           return (
                           <TableRow key={part.id} className="relative cursor-pointer" onClick={() => router.push(`/parts/${part.id}`)}>
                               <TableCell>
-                                <Link href={`/parts/${part.id}`} className="block">
-                                  <Image
-                                      src={part.imageUrls[0]}
-                                      alt={part.name}
-                                      width={60}
-                                      height={60}
-                                      className="rounded-md object-cover h-auto"
-                                      data-ai-hint="auto part"
-                                  />
-                                </Link>
+                                {part.imageUrls && part.imageUrls[0] ? (
+                                    <Image
+                                        src={part.imageUrls[0]}
+                                        alt={part.name}
+                                        width={60}
+                                        height={60}
+                                        className="rounded-md object-cover h-auto"
+                                        data-ai-hint="auto part"
+                                    />
+                                  ) : (
+                                    <div className="h-[60px] w-[60px] bg-muted rounded-md" />
+                                  )}
                               </TableCell>
-                              <TableCell className="font-medium"><Link href={`/parts/${part.id}`} className="block">{part.name}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`} className="block">{brand?.name}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`} className="block">{yearInfo || 'N/A'}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`} className="block">{part.sku}</Link></TableCell>
-                              <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`} className="block">${part.price.toFixed(2)}</Link></TableCell>
-                              <TableCell className="text-center"><Link href={`/parts/${part.id}`} className="block">{part.stock}</Link></TableCell>
+                              <TableCell className="font-medium">{part.name}</TableCell>
+                              <TableCell>{brand?.name}</TableCell>
+                              <TableCell>{yearInfo || 'N/A'}</TableCell>
+                              <TableCell>{part.sku}</TableCell>
+                              <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
+                              <TableCell className="text-center">{part.stock}</TableCell>
                               <TableCell className="text-right">
                               <div className='flex items-center justify-end gap-2' onClick={(e) => e.stopPropagation()}>
                                   <AddToCartButton part={fullPart} size="icon" />
