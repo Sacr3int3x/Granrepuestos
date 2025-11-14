@@ -20,7 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, CalendarDays } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
@@ -172,6 +172,7 @@ function PartsPageContent() {
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
+                      const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
@@ -187,7 +188,7 @@ function PartsPageContent() {
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
-                                      <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+                                      {yearInfo && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1"><CalendarDays className="h-3 w-3" /> {yearInfo}</p>}
                                       <div className="flex items-center justify-between mt-2">
                                       <p className="font-semibold">${part.price.toFixed(2)}</p>
                                       <AddToCartButton part={fullPart} size="icon" />
