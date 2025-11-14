@@ -1,12 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import type { Part } from "@/lib/types";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AddToCartButtonProps {
@@ -17,33 +16,47 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({ part, size = "sm", className, showText = false }: AddToCartButtonProps) {
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const { toast } = useToast();
-  const [isAdded, setIsAdded] = useState(false);
+
+  const itemInCart = cartItems.find((item) => item.part.id === part.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     e.preventDefault();
-    
+
     addToCart(part);
     toast({
       title: "¡Añadido al carrito!",
       description: `${part.name} ha sido añadido a tu carrito.`,
     });
-    
-    setIsAdded(true);
   };
 
-  useEffect(() => {
-    if (!isAdded) return;
+  const handleIncrease = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (itemInCart) {
+      updateQuantity(part.id, itemInCart.quantity + 1);
+    }
+  };
 
-    const timer = setTimeout(() => {
-      setIsAdded(false);
-    }, 2000); 
-
-    return () => clearTimeout(timer);
-  }, [isAdded]);
-
+  const handleDecrease = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (itemInCart) {
+      if (itemInCart.quantity > 1) {
+        updateQuantity(part.id, itemInCart.quantity - 1);
+      } else {
+        removeFromCart(part.id);
+        toast({
+          title: "Eliminado del carrito",
+          description: `${part.name} ha sido eliminado.`,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+  
   if (part.stock === 0) {
     return (
         <Button size={size || undefined} className={className} disabled>
@@ -52,28 +65,43 @@ export default function AddToCartButton({ part, size = "sm", className, showText
     )
   }
 
+  if (itemInCart) {
+    return (
+      <div className={cn("flex items-center gap-1", className)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleDecrease}
+          className="h-9 w-9 shrink-0"
+        >
+          <Minus className="h-4 w-4" />
+          <span className="sr-only">Quitar uno</span>
+        </Button>
+        <span className="text-sm font-medium w-6 text-center">{itemInCart.quantity}</span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleIncrease}
+          disabled={itemInCart.quantity >= part.stock}
+          className="h-9 w-9 shrink-0"
+        >
+          <Plus className="h-4 w-4" />
+          <span className="sr-only">Añadir uno</span>
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <Button
       size={size || undefined}
-      className={cn(
-        className,
-        isAdded && "bg-green-600 hover:bg-green-700 text-white"
-      )}
+      className={className}
       onClick={handleAddToCart}
-      disabled={isAdded}
       aria-label="Añadir al carrito"
     >
-      {isAdded ? (
-        <>
-          <Check className={showText ? "mr-2 h-4 w-4" : "h-5 w-5"} />
-          {showText && <span>Añadido</span>}
-        </>
-      ) : (
-        <>
-          <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-5 w-5"} />
-          {showText && <span>Añadir al Carrito</span>}
-        </>
-      )}
+      <ShoppingCart className={showText ? "mr-2 h-4 w-4" : "h-5 w-5"} />
+      {showText && <span>Añadir al Carrito</span>}
     </Button>
   );
 }
+
