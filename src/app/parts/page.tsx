@@ -67,10 +67,12 @@ function PartsPageContent() {
       if (typeof part.imageUrls === 'string') {
         const htmlString = part.imageUrls;
         const imgRegex = /<img[^>]+src="([^">]+)"/g;
-        const matches = [...htmlString.matchAll(imgRegex)];
-        urls = matches.map(match => match[1].trim()).filter(Boolean);
+        let match;
+        while ((match = imgRegex.exec(htmlString)) !== null) {
+            urls.push(match[1].trim());
+        }
       } else if (Array.isArray(part.imageUrls)) {
-        urls = part.imageUrls;
+        urls = part.imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
       }
       return { ...part, imageUrls: urls };
     });
@@ -334,3 +336,5 @@ export default function PartsPage() {
     </Suspense>
   )
 }
+
+    
