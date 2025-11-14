@@ -85,28 +85,6 @@ const vehicleModels: VehicleModel[] = [
 
 const parts: Part[] = [];
 
-function sanitizeImageUrls(imageUrls: any): string[] {
-    if (Array.isArray(imageUrls)) {
-        // If it's already an array, just filter out any non-string or empty string values.
-        return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
-    }
-    if (typeof imageUrls === 'string') {
-        // If it's a string, first try to extract from <img> tags
-        const htmlRegex = /<img[^>]+src="([^">]+)"/g;
-        const matches = [...imageUrls.matchAll(htmlRegex)];
-        if (matches.length > 0) {
-            return matches.map(match => match[1].trim()).filter(Boolean);
-        }
-        
-        // If no img tags are found, assume it's a list of URLs separated by commas or newlines.
-        const cleanedString = imageUrls.replace(/<br\s*\/?>/gi, ',');
-        return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-    }
-    // If the input is neither an array nor a string, return an empty array.
-    return [];
-}
-
-
 export function getParts(
   allParts: Part[],
   filters: {
@@ -117,16 +95,11 @@ export function getParts(
     vehicleModel?: string;
   } = {}
 ) {
-  // First, sanitize all parts to ensure imageUrls is always a clean string array
-  let sanitizedParts = allParts.map(part => ({
-    ...part,
-    imageUrls: sanitizeImageUrls(part.imageUrls)
-  }));
-
+  let filteredParts = allParts;
 
   if (filters.query) {
     const lowerCaseQuery = filters.query.toLowerCase();
-    sanitizedParts = sanitizedParts.filter(
+    filteredParts = filteredParts.filter(
       (part) =>
         part.name.toLowerCase().includes(lowerCaseQuery) ||
         part.sku.toLowerCase().includes(lowerCaseQuery) ||
@@ -135,15 +108,15 @@ export function getParts(
   }
 
   if (filters.brand) {
-    sanitizedParts = sanitizedParts.filter((part) => part.brandId === filters.brand);
+    filteredParts = filteredParts.filter((part) => part.brandId === filters.brand);
   }
 
   if (filters.category) {
-    sanitizedParts = sanitizedParts.filter((part) => part.categoryId === filters.category);
+    filteredParts = filteredParts.filter((part) => part.categoryId === filters.category);
   }
   
   if (filters.vehicleBrand) {
-    sanitizedParts = sanitizedParts.filter((part) => {
+    filteredParts = filteredParts.filter((part) => {
         // First check the top-level vehicleBrandId
         if (part.vehicleBrandId === filters.vehicleBrand) return true;
         // Then check the vehicleCompatibility array
@@ -155,7 +128,7 @@ export function getParts(
   }
   
   if (filters.vehicleModel) {
-     sanitizedParts = sanitizedParts.filter((part) => {
+     filteredParts = filteredParts.filter((part) => {
         // First check the top-level vehicleModelId
         if (part.vehicleModelId === filters.vehicleModel) return true;
         // Then check the vehicleCompatibility array
@@ -166,7 +139,7 @@ export function getParts(
     });
   }
 
-  return sanitizedParts;
+  return filteredParts;
 }
 
 export function getPartById(allParts: Part[], id: string): Part | undefined {
@@ -174,11 +147,7 @@ export function getPartById(allParts: Part[], id: string): Part | undefined {
 }
 
 export function getFeaturedParts(allParts: Part[]): Part[] {
-  const sanitizedParts = allParts.map(part => ({
-    ...part,
-    imageUrls: sanitizeImageUrls(part.imageUrls)
-  }));
-  return sanitizedParts.filter((part) => part.isFeatured);
+  return allParts.filter((part) => part.isFeatured);
 }
 
 export function getBrands(): Brand[] {
@@ -201,9 +170,5 @@ export function getVehicleModels(brandId?: string): VehicleModel[] {
 
 export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     if (!part || !part.relatedPartIds) return [];
-    const sanitizedAllParts = allParts.map(p => ({
-        ...p,
-        imageUrls: sanitizeImageUrls(p.imageUrls)
-    }));
-    return sanitizedAllParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
+    return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }

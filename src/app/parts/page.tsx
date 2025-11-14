@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, Search, CalendarDays } from 'lucide-react';
+import { Filter, Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
@@ -29,23 +29,6 @@ import { Input } from '@/components/ui/input';
 
 
 const PARTS_PER_PAGE = 15;
-
-function sanitizeImageUrls(imageUrls: any): string[] {
-    if (Array.isArray(imageUrls)) {
-        return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
-    }
-    if (typeof imageUrls === 'string') {
-        const htmlRegex = /<img[^>]+src="([^">]+)"/g;
-        const matches = [...imageUrls.matchAll(htmlRegex)];
-        if (matches.length > 0) {
-            return matches.map(match => match[1].trim()).filter(Boolean);
-        }
-        const cleanedString = imageUrls.replace(/<br\s*\/?>/gi, ',');
-        return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-    }
-    return [];
-}
-
 
 function PartsPageContent() {
   const router = useRouter();
@@ -76,14 +59,7 @@ function PartsPageContent() {
     if (!allParts || !allBrands) {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
     }
-    
-    // Sanitize image URLs right after fetching
-    const sanitizedParts = allParts.map(part => ({
-        ...part,
-        imageUrls: sanitizeImageUrls(part.imageUrls),
-    }));
-
-    const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
+    const filtered = getParts(allParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
     const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
     const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
     return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
@@ -195,27 +171,21 @@ function PartsPageContent() {
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
-                      const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  {part.imageUrls && part.imageUrls[0] && part.imageUrls[0] !== '' ? (
-                                    <Image
-                                        src={part.imageUrls[0]}
-                                        alt={part.name}
-                                        width={80}
-                                        height={80}
-                                        className="rounded-md object-cover"
-                                        data-ai-hint="auto part"
-                                    />
-                                  ) : (
-                                    <div className="h-20 w-20 bg-muted rounded-md flex-shrink-0" />
-                                  )}
+                                  <Image
+                                      src={part.imageUrls[0]}
+                                      alt={part.name}
+                                      width={80}
+                                      height={80}
+                                      className="rounded-md object-cover"
+                                      data-ai-hint="auto part"
+                                  />
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
-                                      {yearInfo && <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1"><CalendarDays className="h-3 w-3" /> {yearInfo}</p>}
                                       <div className="flex items-center justify-between mt-2">
                                       <p className="font-semibold">${part.price.toFixed(2)}</p>
                                       <AddToCartButton part={fullPart} size="icon" />
@@ -236,7 +206,6 @@ function PartsPageContent() {
                         <TableHead className="w-[80px]">Imagen</TableHead>
                         <TableHead>Nombre</TableHead>
                         <TableHead>Marca</TableHead>
-                        <TableHead>Año(s)</TableHead>
                         <TableHead>SKU</TableHead>
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead className="text-center">Stock</TableHead>
@@ -249,11 +218,10 @@ function PartsPageContent() {
                           const category = getCategoryForPart(part);
                           if (!brand || !category) return null;
                           const fullPart = {...part, brand, category};
-                          const yearInfo = part.vehicleCompatibility?.map(vc => vc.yearRange).join(', ');
                           return (
-                          <TableRow key={part.id} className="relative cursor-pointer" onClick={() => router.push(`/parts/${part.id}`)}>
+                          <TableRow key={part.id}>
                               <TableCell>
-                                {part.imageUrls && part.imageUrls[0] && part.imageUrls[0] !== '' ? (
+                                <Link href={`/parts/${part.id}`}>
                                     <Image
                                         src={part.imageUrls[0]}
                                         alt={part.name}
@@ -262,18 +230,15 @@ function PartsPageContent() {
                                         className="rounded-md object-cover h-auto"
                                         data-ai-hint="auto part"
                                     />
-                                  ) : (
-                                    <div className="h-[60px] w-[60px] bg-muted rounded-md" />
-                                  )}
+                                </Link>
                               </TableCell>
-                              <TableCell className="font-medium">{part.name}</TableCell>
-                              <TableCell>{brand?.name}</TableCell>
-                              <TableCell>{yearInfo || 'N/A'}</TableCell>
-                              <TableCell>{part.sku}</TableCell>
-                              <TableCell className="text-right font-semibold">${part.price.toFixed(2)}</TableCell>
-                              <TableCell className="text-center">{part.stock}</TableCell>
+                              <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`}>{brand?.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`}>{part.sku}</Link></TableCell>
+                              <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`}>${part.price.toFixed(2)}</Link></TableCell>
+                              <TableCell className="text-center"><Link href={`/parts/${part.id}`}>{part.stock}</Link></TableCell>
                               <TableCell className="text-right">
-                              <div className='flex items-center justify-end gap-2' onClick={(e) => e.stopPropagation()}>
+                              <div className='flex items-center justify-end gap-2'>
                                   <AddToCartButton part={fullPart} size="icon" />
                               </div>
                               </TableCell>
