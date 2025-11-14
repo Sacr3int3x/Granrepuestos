@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Truck, RotateCw, ShieldCheck } from "lucide-react";
+import { RotateCw, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 
 export default function PoliciesPage() {
@@ -8,11 +8,11 @@ export default function PoliciesPage() {
       <section className="relative w-full h-[30vh] md:h-[40vh] flex items-center justify-center overflow-hidden bg-card">
          <div className="absolute inset-0 z-0">
             <Image
-                src="https://images.unsplash.com/photo-1588358198983-f5bab9b20755?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Paquetes listos para ser enviados"
+                src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Documentos de políticas sobre un escritorio"
                 fill
                 className="object-cover"
-                data-ai-hint="packages shipping"
+                data-ai-hint="policy documents"
             />
             <div className="absolute inset-0 bg-black/50" />
         </div>
@@ -21,28 +21,14 @@ export default function PoliciesPage() {
             Políticas de Compra
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
-            Información clara para una compra segura y satisfactoria.
+            Términos claros para una compra segura y satisfactoria.
           </p>
         </div>
       </section>
 
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <Truck className="h-10 w-10 text-primary" />
-                <CardTitle>Políticas de Envío</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-muted-foreground">
-                <p>Realizamos envíos a todo el territorio nacional a través de las principales empresas de encomiendas (MRW, Zoom, Tealca).</p>
-                <p>El costo del envío es **Cobro a Destino** y será calculado por la empresa de transporte al momento de despachar.</p>
-                <p>El tiempo de entrega estimado es de 2 a 5 días hábiles, dependiendo de su ubicación.</p>
-                <p>Una vez realizado el envío, le proporcionaremos el número de guía para que pueda rastrear su pedido.</p>
-              </CardContent>
-            </Card>
-
+          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
             <Card>
               <CardHeader className="flex flex-row items-center gap-4">
                 <RotateCw className="h-10 w-10 text-primary" />

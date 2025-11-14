@@ -37,7 +37,7 @@ export default function Header() {
     { href: "/parts", label: "Repuestos" },
     { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
-    { href: "/politicas", label: "Políticas" },
+    { href: "/envios", label: "Envíos" },
   ];
 
   const handleLinkClick = () => {
