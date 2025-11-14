@@ -41,17 +41,11 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
-  imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform((val) => {
-    // Regex to find all src attributes within img tags
-    const htmlRegex = /<img[^>]+src="([^">]+)"/g;
-    const matches = [...val.matchAll(htmlRegex)];
-    // If img tags are found, extract their src
-    if (matches.length > 0) {
-        return matches.map(match => match[1].trim()).filter(Boolean);
+  imageUrls: z.any().transform((val) => {
+    if (Array.isArray(val)) {
+        return val.join(',\n');
     }
-    // Otherwise, split by newline or comma for plain text URLs
-    const cleanedString = val.replace(/<br\s*\/?>/gi, ',');
-    return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    return val;
   }),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
@@ -81,7 +75,6 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     ? {
         ...part,
         description: part.description || "",
-        // Join the array back into a string for the textarea
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(',\n') : (typeof part.imageUrls === 'string' ? part.imageUrls : ''),
         vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : '',
         vehicleModelIds: part.vehicleModelIds || [],
@@ -274,7 +267,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
                         </a>
                     </Button>
                 </div>
-                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas, saltos de línea o el código HTML de 'Enlaces directos' de Postimages." {...field} /></FormControl>
+                <FormControl><Textarea rows={5} placeholder="Pegar aquí los 'Enlaces directos para foros' de Postimages." {...field} /></FormControl>
                 <FormMessage />
             </FormItem>
         )}/>

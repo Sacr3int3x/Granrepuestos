@@ -1,3 +1,4 @@
+
 import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
@@ -81,24 +82,30 @@ const vehicleModels: VehicleModel[] = [
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
 ]
 
-export function sanitizeImageUrls(imageUrls: string[] | string | undefined): string[] {
-  if (Array.isArray(imageUrls)) {
-    return imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
-  }
-  if (typeof imageUrls === 'string') {
-    const urls: string[] = [];
-    const imgRegex = /<img[^>]+src="([^">]+)"/g;
-    let match;
-    while ((match = imgRegex.exec(imageUrls)) !== null) {
-      urls.push(match[1].trim());
+export function sanitizeImageUrls(imageUrls: string[] | string | undefined | null): string[] {
+    if (Array.isArray(imageUrls)) {
+        // If it's already an array, filter out any non-string or empty values
+        return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
     }
-    if (urls.length > 0) return urls;
+    if (typeof imageUrls === 'string') {
+        const urls: string[] = [];
+        // Regex to find all src attributes within img tags
+        const imgRegex = /<img[^>]+src="([^">]+)"/g;
+        let match;
+        while ((match = imgRegex.exec(imageUrls)) !== null) {
+            urls.push(match[1].trim());
+        }
 
-    // Fallback for comma or newline separated strings without HTML
-    return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-  }
-  return [];
+        // If we found URLs in img tags, return them
+        if (urls.length > 0) return urls;
+
+        // Otherwise, split by newline or comma for plain text URLs
+        return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    }
+    // Return an empty array if the input is not a string or an array
+    return [];
 }
+
 
 export function getParts(
   allParts: Part[],
@@ -188,3 +195,5 @@ export function getRelatedParts(allParts: Part[], part: Part): Part[] {
     if (!part || !part.relatedPartIds) return [];
     return allParts.filter(p => part.relatedPartIds.includes(p.id) && p.id !== part.id);
 }
+
+    

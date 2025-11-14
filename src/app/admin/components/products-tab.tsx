@@ -39,6 +39,7 @@ import type { Part, VehicleCompatibility } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sanitizeImageUrls } from "@/lib/data";
 
 export default function ProductsTab() {
   const firestore = useFirestore();
@@ -53,7 +54,7 @@ export default function ProductsTab() {
   const [editingPart, setEditingPart] = useState<Part | undefined>(undefined);
   const { toast } = useToast();
 
-  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string }) => {
+  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility' | 'imageUrls'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string }) => {
     if (!firestore || !partsCollection) return;
     
     let vehicleCompatibility: VehicleCompatibility[] = [];
@@ -75,7 +76,7 @@ export default function ProductsTab() {
         stock: data.stock,
         brandId: data.brandId,
         categoryId: data.categoryId,
-        imageUrls: data.imageUrls,
+        imageUrls: sanitizeImageUrls(data.imageUrls),
         isFeatured: data.isFeatured,
         vehicleBrandId: data.vehicleBrandId,
         vehicleModelIds: data.vehicleModelIds,
@@ -241,3 +242,5 @@ export default function ProductsTab() {
     </Card>
   );
 }
+
+    
