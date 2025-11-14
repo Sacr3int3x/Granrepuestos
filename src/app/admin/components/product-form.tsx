@@ -30,7 +30,7 @@ import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Upload } from "lucide-react";
+import ImageUpload from "@/components/image-upload";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -41,12 +41,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
-  imageUrls: z.any().transform((val) => {
-    if (Array.isArray(val)) {
-        return val.join(',\n');
-    }
-    return val;
-  }),
+  imageUrls: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
   vehicleBrandId: z.string().optional(),
   vehicleModelIds: z.array(z.string()).optional(),
@@ -75,7 +70,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     ? {
         ...part,
         description: part.description || "",
-        imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(',\n') : (typeof part.imageUrls === 'string' ? part.imageUrls : ''),
+        imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.filter(u => typeof u === 'string') : [],
         vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : '',
         vehicleModelIds: part.vehicleModelIds || [],
       }
@@ -87,7 +82,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         stock: 0,
         brandId: "",
         categoryId: "",
-        imageUrls: "",
+        imageUrls: [],
         isFeatured: false,
         vehicleBrandId: "",
         vehicleModelIds: [],
@@ -123,6 +118,23 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+        <FormField
+          control={form.control}
+          name="imageUrls"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imágenes del Repuesto</FormLabel>
+              <FormControl>
+                <ImageUpload 
+                  value={field.value}
+                  onChange={(url) => field.onChange([...field.value, url])}
+                  onRemove={(url) => field.onChange(field.value.filter(current => current !== url))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem><FormLabel>Nombre</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -256,21 +268,6 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             </FormItem>
           )}
         />
-        <FormField control={form.control} name="imageUrls" render={({ field }) => (
-            <FormItem>
-                <div className="flex justify-between items-center">
-                    <FormLabel>URLs de Imágenes</FormLabel>
-                    <Button type="button" variant="outline" size="sm" asChild>
-                        <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Subir Imágenes
-                        </a>
-                    </Button>
-                </div>
-                <FormControl><Textarea rows={5} placeholder="Pegar aquí los 'Enlaces directos para foros' de Postimages." {...field} /></FormControl>
-                <FormMessage />
-            </FormItem>
-        )}/>
         <FormField control={form.control} name="isFeatured" render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
