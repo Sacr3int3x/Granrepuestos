@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +33,7 @@ const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
   sku: z.string().min(3, "El SKU debe tener al menos 3 caracteres."),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
+  description: z.string().optional(),
   price: z.coerce.number().min(0, "El precio no puede ser negativo."),
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
@@ -65,6 +66,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   const defaultValues: Partial<ProductFormValues> = part
     ? {
         ...part,
+        description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(', ') : '',
         vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : ''
       }
