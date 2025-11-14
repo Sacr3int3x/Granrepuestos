@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -62,14 +63,16 @@ function PartsPageContent() {
     
     // Sanitize image URLs right after fetching
     const sanitizedParts = allParts.map(part => {
-      if (typeof part.imageUrls === 'string' || !Array.isArray(part.imageUrls)) {
-        const htmlString = part.imageUrls as unknown as string;
+      let urls: string[] = [];
+      if (typeof part.imageUrls === 'string') {
+        const htmlString = part.imageUrls;
         const imgRegex = /<img[^>]+src="([^">]+)"/g;
         const matches = [...htmlString.matchAll(imgRegex)];
-        const urls = matches.map(match => match[1].trim()).filter(Boolean);
-        return { ...part, imageUrls: urls };
+        urls = matches.map(match => match[1].trim()).filter(Boolean);
+      } else if (Array.isArray(part.imageUrls)) {
+        urls = part.imageUrls;
       }
-      return part;
+      return { ...part, imageUrls: urls };
     });
 
     const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
@@ -184,11 +187,12 @@ function PartsPageContent() {
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
+                      const isValidImage = Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && typeof part.imageUrls[0] === 'string' && part.imageUrls[0].startsWith('http');
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  {part.imageUrls && part.imageUrls[0] ? (
+                                  {isValidImage ? (
                                     <Image
                                         src={part.imageUrls[0]}
                                         alt={part.name}
@@ -235,11 +239,12 @@ function PartsPageContent() {
                           const category = getCategoryForPart(part);
                           if (!brand || !category) return null;
                           const fullPart = {...part, brand, category};
+                          const isValidImage = Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && typeof part.imageUrls[0] === 'string' && part.imageUrls[0].startsWith('http');
                           return (
                           <TableRow key={part.id}>
                               <TableCell>
                                 <Link href={`/parts/${part.id}`}>
-                                  {part.imageUrls && part.imageUrls[0] ? (
+                                  {isValidImage ? (
                                       <Image
                                           src={part.imageUrls[0]}
                                           alt={part.name}
