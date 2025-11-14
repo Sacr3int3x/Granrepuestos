@@ -54,12 +54,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </div>
             <CldUploadWidget 
                 onSuccess={onUpload}
-                signatureEndpoint="/api/sign-cloudinary-params"
                 uploadPreset={CLOUDINARY_UPLOAD_PRESET}
-                options={{
-                    cloudName: CLOUDINARY_CLOUD_NAME,
-                    maxFiles: 5,
-                }}
             >
                 {({ open }) => {
                     const onClick = () => {
