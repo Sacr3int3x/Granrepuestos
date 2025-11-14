@@ -219,7 +219,7 @@ export default function Home() {
               Marcas con las que trabajamos
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-            Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial. ¡Cero imitaciones, Cero Chino!.
+            Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial. ¡Cero imitaciones, Cero Chino!
             </p>
           </div>
           <BrandsSection />

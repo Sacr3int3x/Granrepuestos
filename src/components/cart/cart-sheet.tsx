@@ -49,7 +49,10 @@ export default function CartSheet() {
   return (
     <>
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+      <SheetContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="flex w-full flex-col pr-0 sm:max-w-lg"
+      >
         <SheetHeader className="px-6">
           <SheetTitle>Carrito de Compras ({cartItemCount})</SheetTitle>
            {cartItems.length === 0 && (
