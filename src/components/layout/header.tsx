@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart, Mail, MessageSquare, Check } from "lucide-react";
+import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -34,7 +34,6 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const navItems = [
-    { href: "/", label: "Inicio" },
     { href: "/parts", label: "Repuestos" },
     { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
@@ -47,16 +46,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left Section */}
-        <Link href="/" className="flex items-center space-x-2">
-          <Icons.logo className="h-12 w-20 text-primary" />
-          <span className="sr-only sm:inline-block font-bold font-headline">
-            GranRepuestos
-          </span>
-        </Link>
         
-        {/* Center Section (Desktop Navigation) */}
-        <nav className="hidden gap-6 text-sm font-medium md:flex">
+        {/* Left & Center Section (Desktop Navigation with Logo) */}
+        <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+          <Link href="/" className="flex items-center space-x-2">
+            <Icons.logo className="h-12 w-20 text-primary" />
+            <span className="sr-only">GranRepuestos</span>
+          </Link>
+          <Link
+            href="/"
+            className={cn(
+              "transition-colors hover:text-foreground/80",
+              pathname === "/" ? "text-foreground" : "text-foreground/60"
+            )}
+          >
+            Inicio
+          </Link>
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -72,6 +77,15 @@ export default function Header() {
             </Link>
           ))}
         </nav>
+
+        {/* Mobile Logo */}
+         <Link href="/" className="flex items-center space-x-2 md:hidden">
+          <Icons.logo className="h-12 w-20 text-primary" />
+          <span className="sr-only sm:inline-block font-bold font-headline">
+            GranRepuestos
+          </span>
+        </Link>
+
 
         {/* Right Section */}
         <div className="flex items-center justify-end gap-2">
@@ -136,6 +150,9 @@ export default function Header() {
                   <span className="font-bold font-headline">GranRepuestos</span>
                 </Link>
                 <nav className="grid gap-4">
+                     <NavLink href="/" onClick={handleLinkClick}>
+                      Inicio
+                    </NavLink>
                   {navItems.map((item) => (
                      <NavLink key={item.href} href={item.href} onClick={handleLinkClick}>
                       {item.label}
