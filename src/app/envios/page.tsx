@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Truck, Package, MapPin, Clock } from "lucide-react";
+import { Truck, Package, Clock } from "lucide-react";
 import Image from "next/image";
 import ShippingHeroImage from "./fondoenvios.jpeg";
 
@@ -37,8 +37,8 @@ export default function ShippingPage() {
                 <CardTitle>Envíos Nacionales</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
-                <p>Realizamos envíos a todo el territorio nacional a través de las principales empresas de encomiendas como **MRW, Zoom y Tealca**.</p>
-                <p>Todos los envíos se realizan bajo la modalidad de **Cobro a Destino**. El costo será calculado e informado por la empresa de transporte al momento de procesar tu despacho.</p>
+                <p>Realizamos envíos a todo el territorio nacional a través de las principales empresas de encomiendas como <span className="font-semibold text-foreground">MRW, Zoom y Tealca</span>.</p>
+                <p>Todos los envíos se realizan bajo la modalidad de <span className="font-semibold text-foreground">Cobro a Destino</span>. El costo será calculado e informado por la empresa de transporte al momento de procesar tu despacho.</p>
                 <p>Una vez enviado tu pedido, te facilitaremos el número de guía para que puedas hacer seguimiento en tiempo real desde el portal de la empresa de transporte.</p>
               </CardContent>
             </Card>
@@ -50,7 +50,7 @@ export default function ShippingPage() {
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
                 <p>Los pedidos son procesados y despachados en un lapso de 24 a 48 horas hábiles luego de confirmar tu pago.</p>
-                <p>El tiempo de entrega estimado por parte de la empresa de transporte es de **2 a 5 días hábiles**, dependiendo de la ciudad de destino.</p>
+                <p>El tiempo de entrega estimado por parte de la empresa de transporte es de <span className="font-semibold text-foreground">2 a 5 días hábiles</span>, dependiendo de la ciudad de destino.</p>
                 <p>No nos hacemos responsables por retrasos o inconvenientes causados directamente por la empresa de encomiendas, aunque te apoyaremos en el proceso de reclamo si es necesario.</p>
               </CardContent>
             </Card>
