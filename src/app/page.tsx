@@ -247,7 +247,7 @@ export default function Home() {
               ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="flex flex-col items-center">
               <div className="bg-primary text-primary-foreground rounded-full p-4 mb-4">
                 <MessageSquare className="h-8 w-8" />
