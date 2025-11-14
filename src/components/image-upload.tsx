@@ -12,11 +12,17 @@ interface ImageUploadProps {
     onRemove: (value: string) => void;
 }
 
-// IMPORTANT: You need to create an "unsigned" upload preset in your Cloudinary account
-// and name it exactly "gran_repuestos_preset".
-// Also, set your cloud name in the component below.
-const CLOUDINARY_CLOUD_NAME = "dx413fa7v"; // <-- REEMPLAZA ESTO
-const CLOUDINARY_UPLOAD_PRESET = "gran_repuestos_preset"; // <-- Nombre del preset de carga
+// =================================================================================
+// INSTRUCCIONES IMPORTANTES DE CLOUDINARY
+// 1. Inicia sesión en tu cuenta de Cloudinary.
+// 2. Ve a Settings (icono de engranaje) > pestaña Upload.
+// 3. Busca la sección "Upload Presets" y haz clic en "Add upload preset".
+// 4. Cambia el "Signing Mode" de "Signed" a "Unsigned".
+// 5. Guarda el preset y copia su nombre.
+// 6. Pega el nombre de tu preset en la constante CLOUDINARY_UPLOAD_PRESET de abajo.
+// =================================================================================
+const CLOUDINARY_CLOUD_NAME = "dx413fa7v"; // Este es tu Cloud Name. Ya está configurado.
+const CLOUDINARY_UPLOAD_PRESET = "gran_repuestos_preset"; // <-- REEMPLAZA ESTO con el nombre de tu Upload Preset sin firma.
 
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -53,7 +59,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 uploadPreset={CLOUDINARY_UPLOAD_PRESET}
                 options={{
                     cloudName: CLOUDINARY_CLOUD_NAME,
-                    maxFiles: 5, // Puedes ajustar el número máximo de archivos
+                    maxFiles: 5,
                 }}
             >
                 {({ open }) => {
