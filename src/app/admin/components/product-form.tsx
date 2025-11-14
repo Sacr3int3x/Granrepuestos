@@ -30,6 +30,7 @@ import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { Upload } from "lucide-react";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -41,11 +42,14 @@ const formSchema = z.object({
   brandId: z.string({ required_error: "Por favor selecciona una marca." }),
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
   imageUrls: z.string().min(1, "Se necesita al menos una URL de imagen.").transform((val) => {
+    // Regex to find all src attributes within img tags
     const htmlRegex = /<img[^>]+src="([^">]+)"/g;
     const matches = [...val.matchAll(htmlRegex)];
+    // If img tags are found, extract their src
     if (matches.length > 0) {
         return matches.map(match => match[1].trim()).filter(Boolean);
     }
+    // Otherwise, split by newline or comma for plain text URLs
     const cleanedString = val.replace(/<br\s*\/?>/gi, ',');
     return cleanedString.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
   }),
@@ -77,6 +81,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     ? {
         ...part,
         description: part.description || "",
+        // Join the array back into a string for the textarea
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.join(',\n') : (typeof part.imageUrls === 'string' ? part.imageUrls : ''),
         vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : '',
         vehicleModelIds: part.vehicleModelIds || [],
@@ -260,8 +265,16 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         />
         <FormField control={form.control} name="imageUrls" render={({ field }) => (
             <FormItem>
-                <FormLabel>URLs de Imágenes</FormLabel>
-                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas, saltos de línea o bloques de HTML." {...field} /></FormControl>
+                <div className="flex justify-between items-center">
+                    <FormLabel>URLs de Imágenes</FormLabel>
+                    <Button type="button" variant="outline" size="sm" asChild>
+                        <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Subir Imágenes
+                        </a>
+                    </Button>
+                </div>
+                <FormControl><Textarea rows={5} placeholder="Pegar URLs separadas por comas, saltos de línea o el código HTML de 'Enlaces directos' de Postimages." {...field} /></FormControl>
                 <FormMessage />
             </FormItem>
         )}/>
@@ -278,3 +291,5 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     </Form>
   );
 }
+
+    
