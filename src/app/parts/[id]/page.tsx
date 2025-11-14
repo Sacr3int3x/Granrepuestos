@@ -27,6 +27,26 @@ import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 
+function sanitizeImageUrls(imageUrls: string[] | string): string[] {
+  if (Array.isArray(imageUrls)) {
+    return imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
+  }
+  if (typeof imageUrls === 'string') {
+    const urls: string[] = [];
+    const imgRegex = /<img[^>]+src="([^">]+)"/g;
+    let match;
+    while ((match = imgRegex.exec(imageUrls)) !== null) {
+      urls.push(match[1].trim());
+    }
+    if (urls.length > 0) return urls;
+
+    // Fallback for comma or newline separated strings without HTML
+    return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
     
@@ -263,7 +283,12 @@ function PartDetailClient({ partId }: { partId: string }) {
     notFound();
   }
 
-  return <PartDetailContent part={part} brands={brands} categories={categories} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
+  const sanitizedPart = {
+    ...part,
+    imageUrls: sanitizeImageUrls(part.imageUrls),
+  };
+
+  return <PartDetailContent part={sanitizedPart} brands={brands} categories={categories} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 
@@ -298,3 +323,5 @@ export default function PartDetailPage() {
     </div>
   );
 }
+
+    
