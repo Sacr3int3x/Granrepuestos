@@ -124,7 +124,7 @@ export default function Header() {
                  <div className="mt-auto flex flex-col gap-2">
                     <p className="text-sm text-muted-foreground px-1">Contáctanos:</p>
                    <Button asChild variant="outline">
-                     <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
+                     <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
                         <MessageSquare className="mr-2" /> WhatsApp
                       </a>
                    </Button>

@@ -45,7 +45,7 @@ export default function RootLayout({
                     className="h-14 w-14 rounded-full shadow-lg bg-green-600 hover:bg-green-700"
                     asChild
                    >
-                     <Link href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+                     <Link href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
                        <MessageSquare className="h-6 w-6 text-white" />
                      </Link>
                    </Button>

@@ -33,7 +33,7 @@ export default function CartSheet() {
   const handleWhatsAppQuote = () => {
     const message = generateQuoteMessage();
     // Reemplaza YOUR_PHONE_NUMBER con tu número de WhatsApp con código de país
-    const whatsappUrl = `https://wa.me/584141123707?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/584120177075?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

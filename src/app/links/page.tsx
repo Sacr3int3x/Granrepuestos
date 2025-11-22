@@ -24,7 +24,7 @@ export default function LinksPage() {
           </Link>
         </Button>
         <Button asChild size="lg" variant="outline" className="w-full h-14 text-base bg-green-50 hover:bg-green-100 text-green-700 border-green-200 hover:text-green-800">
-          <a href="https://wa.me/584141123707" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer">
             <MessageSquare className="mr-3 h-5 w-5" />
             Consultas por WhatsApp
           </a>

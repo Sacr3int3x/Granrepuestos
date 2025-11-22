@@ -256,11 +256,11 @@ export default function Home() {
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row items-center justify-around gap-6">
                   
-                  <a href="https://wa.me/58414123707" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                  <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">WhatsApp</h3>
-                      <p className="text-muted-foreground group-hover:underline">+58 414-123707</p>
+                      <p className="text-muted-foreground group-hover:underline">+58 412-0177075</p>
                     </div>
                   </a>
 
@@ -282,7 +282,7 @@ export default function Home() {
                     <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">Instagram</h3>
-                      <p className="text-muted-foreground group-hover:underline">@granrepuestos</p>
+                      <p className="text-muted-foreground group-hover:underline">@granrepuesto.ve</p>
                     </div>
                   </a>
                   
