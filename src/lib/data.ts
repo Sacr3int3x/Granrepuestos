@@ -38,45 +38,39 @@ const vehicleModels: VehicleModel[] = [
     { id: 'tundra', name: 'Tundra', brandId: 'toyota' },
     { id: 'sequoia', name: 'Sequoia', brandId: 'toyota' },
     { id: 'yaris', name: 'Yaris', brandId: 'toyota' },
+    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
+    { id: 'yaris-sport', name: 'Yaris Sport', brandId: 'toyota' },
     { id: 'lexus', name: 'Lexus', brandId: 'toyota' },
     { id: 'terios', name: 'Terios', brandId: 'toyota' },
     { id: 'camry', name: 'Camry', brandId: 'toyota' },
-    { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
-    { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
-    { id: '4runner-meru-prado', name: '4Runner Meru Prado', brandId: 'toyota' },
-    { id: 'prado-4runner', name: 'Prado 4Runner', brandId: 'toyota' },
-    { id: '4runner-prado', name: '4Runner Prado', brandId: 'toyota' },
-    { id: 'baby-camry-pantallita-sapito-celica', name: 'Baby Camry Pantallita Sapito Celica', brandId: 'toyota' },
-    { id: 'corolla-sensacion-celica-pantallita', name: 'Corolla Sensacion Celica Pantallita', brandId: 'toyota' },
-    { id: 'corolla-explocion-robocot', name: 'Corolla Explocion Robocot', brandId: 'toyota' },
-    { id: 'hilux-2.7-fortuner-4.0', name: 'Hilux 2.7 Fortuner 4.0', brandId: 'toyota' },
-    { id: 'tundra-sequoia', name: 'Tundra - Sequoia', brandId: 'toyota' },
-    { id: 'hilux-prado', name: 'Hilux Prado', brandId: 'toyota' },
-    { id: 'hilux-fortuner', name: 'Hilux Fortuner', brandId: 'toyota' },
-    { id: 'prado-lexus', name: 'Prado Lexus', brandId: 'toyota' },
-    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
-    { id: 'corolla-brasil', name: 'Corolla Brasil', brandId: 'toyota' },
-    { id: 'robocot', name: 'Robocot', brandId: 'toyota' },
     { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
-    { id: 'pantallita', name: 'Pantallita', brandId: 'toyota' },
-    { id: 'sapito', name: 'Sapito', brandId: 'toyota' },
-    { id: 'sensacion', name: 'Sensacion', brandId: 'toyota' },
-    { id: 'explocion', name: 'Explocion', brandId: 'toyota' },
-    { id: 'vigo', name: 'Vigo', brandId: 'toyota' },
+    { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
+    { id: 'corolla-sensacion', name: 'Corolla Sensación', brandId: 'toyota' },
+    { id: 'corolla-pantallita', name: 'Corolla Pantallita', brandId: 'toyota' },
+    { id: 'corolla-sapito', name: 'Corolla Sapito', brandId: 'toyota' },
+    { id: 'corolla-brasil', name: 'Corolla (Brasil)', brandId: 'toyota' },
+    { id: 'corolla-robocot', name: 'Corolla Robocot (Explosion)', brandId: 'toyota' },
+    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
+
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
     { id: 'crv', name: 'CR-V', brandId: 'honda' },
+
     // Mitsubishi
     { id: 'lancer', name: 'Lancer', brandId: 'mitsubishi' },
     { id: 'l200', name: 'L200', brandId: 'mitsubishi' },
+
     // Chevrolet
     { id: 'spark', name: 'Spark', brandId: 'chevrolet' },
     { id: 'silverado', name: 'Silverado', brandId: 'chevrolet' },
+
     // Ford
     { id: 'focus', name: 'Focus', brandId: 'ford' },
     { id: 'ranger', name: 'Ranger', brandId: 'ford' },
+
     // Isuzu
     { id: 'dmax', name: 'D-Max', brandId: 'isuzu' },
+    
     // Jeep
     { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
