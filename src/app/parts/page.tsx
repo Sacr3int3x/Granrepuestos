@@ -56,6 +56,16 @@ function PartsPageContent() {
   }, [firestore]);
   const { data: allBrands, isLoading: brandsLoading } = useCollection<Brand>(brandsQuery);
 
+  const getCompatibilityYear = (part: Part): string => {
+    if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
+      const years = new Set(part.vehicleCompatibility.map(vc => vc.yearRange).filter(Boolean));
+      if (years.size > 0) {
+        return Array.from(years).join(', ');
+      }
+    }
+    return 'Consultar';
+  };
+
   const { filteredParts, totalPages, paginatedParts } = useMemo(() => {
     if (!allParts || !allBrands) {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
@@ -209,6 +219,7 @@ function PartsPageContent() {
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
+                                      <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                       <div className="flex items-center justify-between mt-2">
                                       <p className="font-semibold">${part.price.toFixed(2)}</p>
                                       <AddToCartButton part={fullPart} size="icon" />
@@ -229,6 +240,7 @@ function PartsPageContent() {
                         <TableHead className="w-[80px]">Imagen</TableHead>
                         <TableHead>Nombre</TableHead>
                         <TableHead>Marca</TableHead>
+                        <TableHead>Año</TableHead>
                         <TableHead>SKU</TableHead>
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead className="text-center">Stock</TableHead>
@@ -262,6 +274,7 @@ function PartsPageContent() {
                               </TableCell>
                               <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
                               <TableCell><Link href={`/parts/${part.id}`}>{brand?.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`}>{getCompatibilityYear(part)}</Link></TableCell>
                               <TableCell><Link href={`/parts/${part.id}`}>{part.sku}</Link></TableCell>
                               <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`}>${part.price.toFixed(2)}</Link></TableCell>
                               <TableCell className="text-center"><Link href={`/parts/${part.id}`}>{part.stock}</Link></TableCell>
@@ -336,5 +349,3 @@ export default function PartsPage() {
     </Suspense>
   )
 }
-
-    
