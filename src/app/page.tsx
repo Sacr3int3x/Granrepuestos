@@ -278,7 +278,7 @@ export default function Home() {
                   <Separator orientation="vertical" className="hidden md:block h-16" />
                   <Separator orientation="horizontal" className="md:hidden" />
 
-                  <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                  <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">Instagram</h3>
