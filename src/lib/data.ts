@@ -39,18 +39,12 @@ const vehicleModels: VehicleModel[] = [
     { id: 'sequoia', name: 'Sequoia', brandId: 'toyota' },
     { id: 'yaris', name: 'Yaris', brandId: 'toyota' },
     { id: 'yaris-advance', name: 'Yaris Advance', brandId: 'toyota' },
-    { id: 'yaris-sport', name: 'Yaris Sport', brandId: 'toyota' },
     { id: 'lexus', name: 'Lexus', brandId: 'toyota' },
     { id: 'terios', name: 'Terios', brandId: 'toyota' },
     { id: 'camry', name: 'Camry', brandId: 'toyota' },
     { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
     { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
     { id: 'corolla-sensacion', name: 'Corolla Sensación', brandId: 'toyota' },
-    { id: 'corolla-pantallita', name: 'Corolla Pantallita', brandId: 'toyota' },
-    { id: 'corolla-sapito', name: 'Corolla Sapito', brandId: 'toyota' },
-    { id: 'corolla-brasil', name: 'Corolla (Brasil)', brandId: 'toyota' },
-    { id: 'corolla-robocot', name: 'Corolla Robocot (Explosion)', brandId: 'toyota' },
-    { id: 'hilux-vigo', name: 'Hilux Vigo', brandId: 'toyota' },
 
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
