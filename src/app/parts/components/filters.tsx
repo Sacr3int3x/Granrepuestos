@@ -89,7 +89,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
     router.push(pathname);
   };
   
-  const hasFilters = !!(searchParams.toString());
+  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true);
 
 
   return (
@@ -97,7 +97,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
       <CardHeader className='hidden lg:flex'>
         <CardTitle className="flex items-center justify-between">
           Filtros
-          {hasFilters && (
+          {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
               <X className="w-4 h-4 mr-1" />
               Limpiar

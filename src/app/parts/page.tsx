@@ -88,9 +88,13 @@ function PartsPageContent() {
     });
 
     const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
-    const total = Math.ceil(filtered.length / PARTS_PER_PAGE);
-    const paginated = filtered.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
-    return { filteredParts: filtered, totalPages: total, paginatedParts: paginated };
+    
+    // Sort alphabetically by name
+    const sorted = filtered.sort((a, b) => a.name.localeCompare(b.name));
+    
+    const total = Math.ceil(sorted.length / PARTS_PER_PAGE);
+    const paginated = sorted.slice((page - 1) * PARTS_PER_PAGE, page * PARTS_PER_PAGE);
+    return { filteredParts: sorted, totalPages: total, paginatedParts: paginated };
   }, [allParts, allBrands, query, brandFilter, categoryFilter, vehicleBrand, vehicleModel, page]);
 
 
@@ -133,6 +137,9 @@ function PartsPageContent() {
 
   const isLoading = partsLoading || brandsLoading;
 
+  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true);
+
+
   return (
     <div className="bg-white">
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -159,9 +166,15 @@ function PartsPageContent() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full relative">
                 <Filter className="mr-2 h-4 w-4" />
                 Filtrar y Ordenar
+                 {hasActiveFilters && (
+                    <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                    </span>
+                 )}
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
