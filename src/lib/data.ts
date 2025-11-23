@@ -44,6 +44,7 @@ const vehicleModels: VehicleModel[] = [
     { id: 'camry', name: 'Camry', brandId: 'toyota' },
     { id: 'baby-camry', name: 'Baby Camry', brandId: 'toyota' },
     { id: 'rav4', name: 'RAV4', brandId: 'toyota' },
+    { id: 'tacoma', name: 'Tacoma', brandId: 'toyota' },
 
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
