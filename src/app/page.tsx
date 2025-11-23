@@ -106,6 +106,16 @@ function FeaturedProductsSection() {
     
     const getBrandForPart = (part: Part) => brands?.find(b => b.id === part.brandId);
 
+    const getCompatibilityYear = (part: Part): string => {
+        if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
+          const years = new Set(part.vehicleCompatibility.map(vc => vc.yearRange).filter(Boolean));
+          if (years.size > 0) {
+            return Array.from(years).join(', ');
+          }
+        }
+        return 'Consultar';
+    };
+
     if (partsLoading || brandsLoading) {
         return (
             <div className="container mx-auto px-4">
@@ -162,6 +172,7 @@ function FeaturedProductsSection() {
                                 {part.name}
                             </h3>
                             <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
+                            <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                         </CardContent>
                         <CardFooter className="p-4 flex justify-between items-center mt-auto">
                             <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
