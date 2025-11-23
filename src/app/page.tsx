@@ -150,21 +150,27 @@ function FeaturedProductsSection() {
             className="w-full"
           >
             <CarouselContent>
-              {featuredParts.map((part: Part) => (
+              {featuredParts.map((part: Part) => {
+                const imageUrl = part.imageUrls?.[0];
+                return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1">
                     <Link href={`/parts/${part.id}`} className="block group">
                         <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                         <CardHeader className="p-0">
                             <div className="relative aspect-square w-full">
-                                <Image
-                                src={part.imageUrls[0]}
-                                alt={part.name}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                data-ai-hint="auto part"
-                                />
+                                {imageUrl ? (
+                                    <Image
+                                    src={imageUrl}
+                                    alt={part.name}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    data-ai-hint="auto part"
+                                    />
+                                ) : (
+                                    <div className="h-full w-full bg-muted" />
+                                )}
                             </div>
                         </CardHeader>
                         <CardContent className="p-4 flex-grow">
@@ -182,7 +188,8 @@ function FeaturedProductsSection() {
                     </Link>
                   </div>
                 </CarouselItem>
-              ))}
+                )
+              })}
             </CarouselContent>
             <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 h-10 w-10" />
             <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 h-10 w-10" />
