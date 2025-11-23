@@ -20,7 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
@@ -128,6 +128,10 @@ function PartsPageContent() {
     return `/parts?${params.toString()}`;
   };
 
+  const clearFilters = () => {
+    router.push(pathname);
+  };
+
   const FilterComponent = () => (
     <Filters categories={categories} vehicleBrands={vehicleBrands} />
   )
@@ -194,6 +198,17 @@ function PartsPageContent() {
           </aside>
 
           <main className="lg:col-span-3">
+            {hasActiveFilters && !isLoading && (
+              <div className="mb-4 flex items-center justify-between bg-muted p-3 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Mostrando {filteredParts.length} resultados filtrados.
+                </p>
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  <X className="w-4 h-4 mr-1" />
+                  Limpiar Filtros
+                </Button>
+              </div>
+            )}
             {isLoading ? (
                <div className="space-y-4">
                   <div className="md:hidden space-y-4">
@@ -309,8 +324,8 @@ function PartsPageContent() {
                 <p className="mt-2 text-muted-foreground">
                   Intenta ajustar tus filtros o búsqueda.
                 </p>
-                <Button asChild className="mt-6" variant="default">
-                  <Link href="/parts">Limpiar Filtros</Link>
+                <Button onClick={clearFilters} className="mt-6" variant="default">
+                  Limpiar Filtros
                 </Button>
               </div>
             )}

@@ -97,12 +97,6 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
       <CardHeader className='hidden lg:flex'>
         <CardTitle className="flex items-center justify-between">
           Filtros
-          {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
-              <X className="w-4 h-4 mr-1" />
-              Limpiar
-            </Button>
-          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6 p-1 lg:p-6">
@@ -181,6 +175,12 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
           </Select>
         </div>
         
+        {hasActiveFilters && (
+            <Button variant="ghost" onClick={clearFilters}>
+              <X className="w-4 h-4 mr-2" />
+              Limpiar todos los filtros
+            </Button>
+          )}
       </CardContent>
     </Card>
   );
