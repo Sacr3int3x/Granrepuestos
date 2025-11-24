@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -34,11 +34,14 @@ import { ProductForm } from "./product-form";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
-import type { Part, VehicleCompatibility } from "@/lib/types";
+import { PlusCircle, Edit, Trash2, Search, X } from "lucide-react";
+import type { Part, VehicleCompatibility, Brand, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getCategories } from "@/lib/data";
 
 export default function ProductsTab() {
   const firestore = useFirestore();
@@ -47,11 +50,55 @@ export default function ProductsTab() {
     return collection(firestore, "parts");
   }, [firestore]);
 
-  const { data: parts, isLoading } = useCollection<Part>(partsCollection);
+  const brandsCollection = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'brands');
+  }, [firestore]);
+
+  const { data: parts, isLoading: partsLoading } = useCollection<Part>(partsCollection);
+  const { data: brands, isLoading: brandsLoading } = useCollection<Brand>(brandsCollection);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<Part | undefined>(undefined);
   const { toast } = useToast();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [brandFilter, setBrandFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+
+  useEffect(() => {
+      setCategories(getCategories());
+  }, []);
+
+  const filteredAndSortedParts = useMemo(() => {
+    if (!parts) return [];
+    
+    let filtered = [...parts];
+
+    // Filter by search query (name or SKU)
+    if (searchQuery) {
+        filtered = filtered.filter(part => 
+            part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            part.sku.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+    
+    // Filter by brand
+    if (brandFilter !== 'all') {
+        filtered = filtered.filter(part => part.brandId === brandFilter);
+    }
+
+    // Filter by category
+    if (categoryFilter !== 'all') {
+        filtered = filtered.filter(part => part.categoryId === categoryFilter);
+    }
+
+    // Sort alphabetically by name
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+  }, [parts, searchQuery, brandFilter, categoryFilter]);
+
 
   const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[] }) => {
     if (!firestore || !partsCollection) return;
@@ -129,6 +176,15 @@ export default function ProductsTab() {
     setIsFormOpen(true);
   };
 
+  const clearFilters = () => {
+    setSearchQuery("");
+    setBrandFilter("all");
+    setCategoryFilter("all");
+  };
+
+  const isLoading = partsLoading || brandsLoading;
+  const hasActiveFilters = searchQuery !== "" || brandFilter !== "all" || categoryFilter !== "all";
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -156,6 +212,41 @@ export default function ProductsTab() {
         </Dialog>
       </CardHeader>
       <CardContent>
+         <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Buscar por nombre o SKU..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                />
+            </div>
+            <Select value={brandFilter} onValueChange={setBrandFilter}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                    <SelectValue placeholder="Filtrar por marca" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todas las marcas</SelectItem>
+                    {brands?.sort((a,b) => a.name.localeCompare(b.name)).map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+                </SelectContent>
+            </Select>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full md:w-[200px]">
+                    <SelectValue placeholder="Filtrar por categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todas las categorías</SelectItem>
+                    {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+            </Select>
+            {hasActiveFilters && (
+                <Button variant="ghost" onClick={clearFilters}>
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar
+                </Button>
+            )}
+        </div>
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
@@ -180,7 +271,7 @@ export default function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {parts?.map((part) => (
+            {filteredAndSortedParts.map((part) => (
               <TableRow key={part.id}>
                 <TableCell>
                   {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
@@ -241,5 +332,3 @@ export default function ProductsTab() {
     </Card>
   );
 }
-
-    

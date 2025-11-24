@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -32,11 +32,12 @@ import { BrandForm } from "./brand-form";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Search } from "lucide-react";
 import type { Brand } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 
 export default function BrandsTab() {
   const firestore = useFirestore();
@@ -49,7 +50,23 @@ export default function BrandsTab() {
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+
+  const filteredAndSortedBrands = useMemo(() => {
+    if (!brands) return [];
+    
+    const sorted = [...brands].sort((a, b) => a.name.localeCompare(b.name));
+
+    if (!searchQuery) {
+      return sorted;
+    }
+
+    return sorted.filter(brand => 
+      brand.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  }, [brands, searchQuery]);
 
   const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
     if (!firestore || !brandsCollection) return;
@@ -148,6 +165,19 @@ export default function BrandsTab() {
                 />
             </DialogContent>
         </Dialog>
+
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nombre de marca..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
@@ -169,7 +199,7 @@ export default function BrandsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {brands?.map((brand) => (
+            {filteredAndSortedBrands.map((brand) => (
               <TableRow key={brand.id}>
                 <TableCell>
                   <Image

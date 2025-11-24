@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
-import type { Part, Brand, VehicleBrand, VehicleModel } from "@/lib/types";
+import type { Part, Brand, VehicleBrand, VehicleModel, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -61,10 +61,16 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     if (!firestore) return null;
     return collection(firestore, 'brands');
   }, [firestore]);
+  
   const { data: brands } = useCollection<Brand>(brandsQuery);
-  const categories = getCategories();
-  const vehicleBrands = getVehicleBrands();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
   const [availableModels, setAvailableModels] = useState<VehicleModel[]>([]);
+
+   useEffect(() => {
+    setCategories(getCategories());
+    setVehicleBrands(getVehicleBrands());
+  }, []);
 
   const defaultValues: Partial<ProductFormValues> = part
     ? {
@@ -160,7 +166,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             <FormLabel>Marca del Repuesto</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl><SelectTrigger><SelectValue placeholder="Selecciona una marca" /></SelectTrigger></FormControl>
-                <SelectContent>{brands?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+                <SelectContent>{brands?.sort((a, b) => a.name.localeCompare(b.name)).map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
             </Select>
             <FormMessage />
             </FormItem>
@@ -281,5 +287,3 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     </Form>
   );
 }
-
-    
