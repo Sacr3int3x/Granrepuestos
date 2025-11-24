@@ -38,7 +38,7 @@ import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePe
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 
 const BRANDS_PER_PAGE = 10;
 
@@ -150,6 +150,44 @@ export default function BrandsTab() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  
+  const generatePagination = () => {
+        if (totalPages <= 1) return [];
+
+        const SIBLING_COUNT = 1;
+        const totalPageNumbers = SIBLING_COUNT + 5;
+
+        if (totalPageNumbers >= totalPages) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
+        }
+
+        const leftSiblingIndex = Math.max(currentPage - SIBLING_COUNT, 1);
+        const rightSiblingIndex = Math.min(currentPage + SIBLING_COUNT, totalPages);
+        
+        const shouldShowLeftDots = leftSiblingIndex > 2;
+        const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+
+        const firstPageIndex = 1;
+        const lastPageIndex = totalPages;
+
+        if (!shouldShowLeftDots && shouldShowRightDots) {
+            let leftItemCount = 3 + 2 * SIBLING_COUNT;
+            let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+            return [...leftRange, '...', totalPages];
+        }
+
+        if (shouldShowLeftDots && !shouldShowRightDots) {
+            let rightItemCount = 3 + 2 * SIBLING_COUNT;
+            let rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - rightItemCount + i + 1);
+            return [firstPageIndex, '...', ...rightRange];
+        }
+
+        if (shouldShowLeftDots && shouldShowRightDots) {
+            let middleRange = Array.from({ length: rightSiblingIndex - leftSiblingIndex + 1 }, (_, i) => leftSiblingIndex + i);
+            return [firstPageIndex, '...', ...middleRange, '...', lastPageIndex];
+        }
+        return [];
+    };
 
   return (
     <Card>
@@ -261,36 +299,40 @@ export default function BrandsTab() {
               </TableBody>
             </Table>
             {totalPages > 1 && (
-              <div className="mt-8">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => handlePageChange(currentPage - 1)} 
-                        aria-disabled={currentPage <= 1}
-                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
-                      />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, i) => (
-                        <PaginationItem key={i}>
-                          <PaginationLink 
-                            onClick={() => handlePageChange(i + 1)}
-                            isActive={currentPage === i + 1}
-                          >
-                            {i + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        aria-disabled={currentPage >= totalPages}
-                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+               <div className="mt-8">
+                 <Pagination>
+                   <PaginationContent>
+                     <PaginationItem>
+                       <PaginationPrevious
+                         onClick={() => handlePageChange(currentPage - 1)}
+                         aria-disabled={currentPage <= 1}
+                         className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
+                       />
+                     </PaginationItem>
+                     {generatePagination().map((pageNumber, index) => (
+                       <PaginationItem key={index}>
+                         {typeof pageNumber === 'string' ? (
+                           <PaginationEllipsis />
+                         ) : (
+                           <PaginationLink
+                             onClick={() => handlePageChange(pageNumber)}
+                             isActive={currentPage === pageNumber}
+                           >
+                             {pageNumber}
+                           </PaginationLink>
+                         )}
+                       </PaginationItem>
+                     ))}
+                     <PaginationItem>
+                       <PaginationNext
+                         onClick={() => handlePageChange(currentPage + 1)}
+                         aria-disabled={currentPage >= totalPages}
+                         className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
+                       />
+                     </PaginationItem>
+                   </PaginationContent>
+                 </Pagination>
+               </div>
             )}
           </>
         )}
