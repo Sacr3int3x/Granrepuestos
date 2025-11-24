@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { Suspense, useMemo } from 'react';
 import Filters from './components/filters';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter, Search, X } from 'lucide-react';
@@ -251,8 +251,19 @@ function PartsPageContent() {
             )}
             {isLoading ? (
                <div className="space-y-4">
-                  <div className="md:hidden space-y-4">
-                      {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)}
+                  <div className="md:hidden grid grid-cols-2 gap-4">
+                      {[...Array(6)].map((_, i) => (
+                        <Card key={i}>
+                           <CardHeader className="p-0"><Skeleton className="h-32 w-full" /></CardHeader>
+                           <CardContent className="p-3 space-y-2">
+                             <Skeleton className="h-4 w-4/5" />
+                             <Skeleton className="h-4 w-2/5" />
+                           </CardContent>
+                           <CardFooter className="p-3">
+                             <Skeleton className="h-8 w-1/2" />
+                           </CardFooter>
+                        </Card>
+                      ))}
                   </div>
                   <div className="hidden md:block border rounded-lg">
                       {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
@@ -261,7 +272,7 @@ function PartsPageContent() {
             ) : paginatedParts.length > 0 ? (
               <div className="space-y-4">
                 {/* Mobile View - Cards */}
-                <div className="md:hidden space-y-4">
+                <div className="md:hidden grid grid-cols-2 gap-4">
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
@@ -270,31 +281,34 @@ function PartsPageContent() {
                       const isValidImage = Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && typeof part.imageUrls[0] === 'string' && part.imageUrls[0].startsWith('http');
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
-                              <Card className="overflow-hidden">
-                                  <CardContent className="p-0 flex h-32">
-                                  <div className='relative w-32 flex-shrink-0'>
-                                    {isValidImage ? (
-                                      <Image
-                                          src={part.imageUrls[0]}
-                                          alt={part.name}
-                                          fill
-                                          className="object-contain"
-                                          data-ai-hint="auto part"
-                                      />
-                                    ) : (
-                                      <div className="h-full w-full bg-muted flex-shrink-0" />
-                                    )}
-                                  </div>
-                                  <div className="flex-grow flex flex-col p-3">
-                                      <h3 className="font-medium line-clamp-2">{part.name}</h3>
-                                      <p className="text-sm text-muted-foreground">{brand?.name}</p>
-                                      <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
-                                      <div className="flex items-center justify-between mt-auto pt-2">
-                                        <p className="font-semibold text-lg">${part.price.toFixed(2)}</p>
-                                        <AddToCartButton part={fullPart} size="icon" />
+                              <Card className="overflow-hidden flex flex-col h-full">
+                                  <CardHeader className="p-0">
+                                      <div className='relative w-full aspect-square'>
+                                        {isValidImage ? (
+                                          <Image
+                                              src={part.imageUrls[0]}
+                                              alt={part.name}
+                                              fill
+                                              className="object-cover group-hover:scale-105 transition-transform"
+                                              sizes="(max-width: 767px) 50vw, 25vw"
+                                              data-ai-hint="auto part"
+                                          />
+                                        ) : (
+                                          <div className="h-full w-full bg-muted flex items-center justify-center">
+                                            <Search className="h-8 w-8 text-muted-foreground"/>
+                                          </div>
+                                        )}
                                       </div>
-                                  </div>
+                                  </CardHeader>
+                                  <CardContent className="p-3 flex-grow flex flex-col">
+                                      <h3 className="font-medium line-clamp-2 text-sm">{part.name}</h3>
+                                      <p className="text-xs text-muted-foreground">{brand?.name}</p>
+                                      <p className="text-xs text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                   </CardContent>
+                                  <CardFooter className="p-3 flex items-center justify-between mt-auto">
+                                    <p className="font-semibold text-base">${part.price.toFixed(2)}</p>
+                                    <AddToCartButton part={fullPart} size="icon" />
+                                  </CardFooter>
                               </Card>
                           </Link>
                       )
@@ -327,13 +341,14 @@ function PartsPageContent() {
                           <TableRow key={part.id}>
                               <TableCell>
                                 <Link href={`/parts/${part.id}`}>
-                                  <div className="relative w-[100px] h-[60px]">
+                                  <div className="relative w-[100px] h-[75px]">
                                     {isValidImage ? (
                                         <Image
                                             src={part.imageUrls[0]}
                                             alt={part.name}
                                             fill
-                                            className="rounded-md object-contain"
+                                            className="rounded-md object-cover"
+                                            sizes="100px"
                                             data-ai-hint="auto part"
                                         />
                                       ) : (
@@ -348,6 +363,7 @@ function PartsPageContent() {
                               <TableCell><Link href={`/parts/${part.id}`}>{part.sku}</Link></TableCell>
                               <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`}>${part.price.toFixed(2)}</Link></TableCell>
                               <TableCell className="text-center"><Link href={`/parts/${part.id}`}>{part.stock}</Link></TableCell>
+      
                               <TableCell className="text-right">
                               <div className='flex items-center justify-end gap-2'>
                                   <AddToCartButton part={fullPart} size="icon" />
