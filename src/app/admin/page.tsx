@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -47,16 +48,10 @@ export default function AdminPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex flex-col items-center mb-8 relative">
+      <div className="flex flex-col items-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight font-headline text-center">
           Panel de Administración
         </h1>
-        <div className="absolute top-0 right-0">
-         <Button onClick={handleLogout} variant="outline" size="sm">
-            <LogOut className="mr-2 h-4 w-4" />
-            Cerrar Sesión
-          </Button>
-        </div>
       </div>
 
       <Tabs defaultValue="products" className="w-full">
@@ -77,6 +72,13 @@ export default function AdminPage() {
           <BrandsTab />
         </TabsContent>
       </Tabs>
+
+      <div className="mt-12 flex justify-center">
+         <Button onClick={handleLogout} variant="outline" size="sm">
+            <LogOut className="mr-2 h-4 w-4" />
+            Cerrar Sesión
+          </Button>
+      </div>
     </div>
   );
 }
