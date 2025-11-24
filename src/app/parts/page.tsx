@@ -272,18 +272,19 @@ function PartsPageContent() {
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
                                   <CardContent className="p-4 flex gap-4">
-                                  {isValidImage ? (
-                                    <Image
-                                        src={part.imageUrls[0]}
-                                        alt={part.name}
-                                        width={80}
-                                        height={80}
-                                        className="rounded-md object-cover"
-                                        data-ai-hint="auto part"
-                                    />
-                                  ) : (
-                                    <div className="h-20 w-20 bg-muted rounded-md flex-shrink-0" />
-                                  )}
+                                  <div className='relative w-28 h-20 flex-shrink-0'>
+                                    {isValidImage ? (
+                                      <Image
+                                          src={part.imageUrls[0]}
+                                          alt={part.name}
+                                          fill
+                                          className="rounded-md object-contain"
+                                          data-ai-hint="auto part"
+                                      />
+                                    ) : (
+                                      <div className="h-full w-full bg-muted rounded-md flex-shrink-0" />
+                                    )}
+                                  </div>
                                   <div className="flex-grow">
                                       <h3 className="font-medium">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
@@ -305,7 +306,7 @@ function PartsPageContent() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[80px]">Imagen</TableHead>
+                        <TableHead className="w-[120px]">Imagen</TableHead>
                         <TableHead>Nombre</TableHead>
                         <TableHead>Marca</TableHead>
                         <TableHead>Año</TableHead>
@@ -326,18 +327,19 @@ function PartsPageContent() {
                           <TableRow key={part.id}>
                               <TableCell>
                                 <Link href={`/parts/${part.id}`}>
-                                  {isValidImage ? (
-                                      <Image
-                                          src={part.imageUrls[0]}
-                                          alt={part.name}
-                                          width={60}
-                                          height={60}
-                                          className="rounded-md object-cover h-auto"
-                                          data-ai-hint="auto part"
-                                      />
-                                    ) : (
-                                      <div className="h-[60px] w-[60px] bg-muted rounded-md" />
-                                    )}
+                                  <div className="relative w-[100px] h-[60px]">
+                                    {isValidImage ? (
+                                        <Image
+                                            src={part.imageUrls[0]}
+                                            alt={part.name}
+                                            fill
+                                            className="rounded-md object-contain"
+                                            data-ai-hint="auto part"
+                                        />
+                                      ) : (
+                                        <div className="h-full w-full bg-muted rounded-md" />
+                                      )}
+                                  </div>
                                 </Link>
                               </TableCell>
                               <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
