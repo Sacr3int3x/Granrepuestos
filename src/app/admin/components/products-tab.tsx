@@ -42,6 +42,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getCategories } from "@/lib/data";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+
+const PARTS_PER_PAGE = 10;
 
 export default function ProductsTab() {
   const firestore = useFirestore();
@@ -66,17 +69,17 @@ export default function ProductsTab() {
   const [searchQuery, setSearchQuery] = useState("");
   const [brandFilter, setBrandFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
       setCategories(getCategories());
   }, []);
 
-  const filteredAndSortedParts = useMemo(() => {
-    if (!parts) return [];
+  const { paginatedParts, totalPages } = useMemo(() => {
+    if (!parts) return { paginatedParts: [], totalPages: 0 };
     
     let filtered = [...parts];
 
-    // Filter by search query (name or SKU)
     if (searchQuery) {
         filtered = filtered.filter(part => 
             part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,20 +87,22 @@ export default function ProductsTab() {
         );
     }
     
-    // Filter by brand
     if (brandFilter !== 'all') {
         filtered = filtered.filter(part => part.brandId === brandFilter);
     }
 
-    // Filter by category
     if (categoryFilter !== 'all') {
         filtered = filtered.filter(part => part.categoryId === categoryFilter);
     }
 
-    // Sort alphabetically by name
-    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted = filtered.sort((a, b) => a.name.localeCompare(b.name));
+    
+    const total = Math.ceil(sorted.length / PARTS_PER_PAGE);
+    const paginated = sorted.slice((currentPage - 1) * PARTS_PER_PAGE, currentPage * PARTS_PER_PAGE);
 
-  }, [parts, searchQuery, brandFilter, categoryFilter]);
+    return { paginatedParts: paginated, totalPages: total };
+
+  }, [parts, searchQuery, brandFilter, categoryFilter, currentPage]);
 
 
   const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[] }) => {
@@ -180,7 +185,17 @@ export default function ProductsTab() {
     setSearchQuery("");
     setBrandFilter("all");
     setCategoryFilter("all");
+    setCurrentPage(1);
   };
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (value: string) => {
+    setter(value);
+    setCurrentPage(1);
+  }
 
   const isLoading = partsLoading || brandsLoading;
   const hasActiveFilters = searchQuery !== "" || brandFilter !== "all" || categoryFilter !== "all";
@@ -218,11 +233,14 @@ export default function ProductsTab() {
                 <Input
                     placeholder="Buscar por nombre o SKU..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     className="pl-10"
                 />
             </div>
-            <Select value={brandFilter} onValueChange={setBrandFilter}>
+            <Select value={brandFilter} onValueChange={handleFilterChange(setBrandFilter)}>
                 <SelectTrigger className="w-full md:w-[200px]">
                     <SelectValue placeholder="Filtrar por marca" />
                 </SelectTrigger>
@@ -231,7 +249,7 @@ export default function ProductsTab() {
                     {brands?.sort((a,b) => a.name.localeCompare(b.name)).map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
                 </SelectContent>
             </Select>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <Select value={categoryFilter} onValueChange={handleFilterChange(setCategoryFilter)}>
                 <SelectTrigger className="w-full md:w-[200px]">
                     <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
@@ -259,74 +277,108 @@ export default function ProductsTab() {
                 ))}
             </div>
         ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[80px]">Imagen</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead>SKU</TableHead>
-              <TableHead>Precio</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredAndSortedParts.map((part) => (
-              <TableRow key={part.id}>
-                <TableCell>
-                  {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
-                    <Image
-                      src={part.imageUrls[0]}
-                      alt={part.name}
-                      width={60}
-                      height={60}
-                      className="rounded-md object-cover h-auto"
-                      data-ai-hint="auto part"
-                    />
-                  ) : (
-                    <div className="h-[60px] w-[60px] bg-muted rounded-md" />
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{part.name}</TableCell>
-                <TableCell>{part.sku}</TableCell>
-                <TableCell>${part.price.toFixed(2)}</TableCell>
-                <TableCell>{part.stock}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(part)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">Imagen</TableHead>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>SKU</TableHead>
+                  <TableHead>Precio</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedParts.map((part) => (
+                  <TableRow key={part.id}>
+                    <TableCell>
+                      {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
+                        <Image
+                          src={part.imageUrls[0]}
+                          alt={part.name}
+                          width={60}
+                          height={60}
+                          className="rounded-md object-cover h-auto"
+                          data-ai-hint="auto part"
+                        />
+                      ) : (
+                        <div className="h-[60px] w-[60px] bg-muted rounded-md" />
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">{part.name}</TableCell>
+                    <TableCell>{part.sku}</TableCell>
+                    <TableCell>${part.price.toFixed(2)}</TableCell>
+                    <TableCell>{part.stock}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end">
+                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(part)}>
+                          <Edit className="h-4 w-4" />
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente el repuesto.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(part.id)}
-                            className="bg-destructive hover:bg-destructive/90"
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente el repuesto.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(part.id)}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        aria-disabled={currentPage <= 1}
+                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                     {[...Array(totalPages)].map((_, i) => (
+                        <PaginationItem key={i}>
+                          <PaginationLink 
+                            onClick={() => handlePageChange(i + 1)}
+                            isActive={currentPage === i + 1}
                           >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        aria-disabled={currentPage >= totalPages}
+                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

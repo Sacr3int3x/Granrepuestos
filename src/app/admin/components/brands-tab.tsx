@@ -38,6 +38,9 @@ import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePe
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+
+const BRANDS_PER_PAGE = 10;
 
 export default function BrandsTab() {
   const firestore = useFirestore();
@@ -51,22 +54,26 @@ export default function BrandsTab() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
-  const filteredAndSortedBrands = useMemo(() => {
-    if (!brands) return [];
+  const { paginatedBrands, totalPages } = useMemo(() => {
+    if (!brands) return { paginatedBrands: [], totalPages: 0 };
     
     const sorted = [...brands].sort((a, b) => a.name.localeCompare(b.name));
 
-    if (!searchQuery) {
-      return sorted;
-    }
+    const filtered = searchQuery
+      ? sorted.filter(brand => 
+          brand.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : sorted;
 
-    return sorted.filter(brand => 
-      brand.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const total = Math.ceil(filtered.length / BRANDS_PER_PAGE);
+    const paginated = filtered.slice((currentPage - 1) * BRANDS_PER_PAGE, currentPage * BRANDS_PER_PAGE);
 
-  }, [brands, searchQuery]);
+    return { paginatedBrands: paginated, totalPages: total };
+
+  }, [brands, searchQuery, currentPage]);
 
   const handleFormSubmit = async (data: Omit<Brand, 'id'> & { id?: string }) => {
     if (!firestore || !brandsCollection) return;
@@ -140,6 +147,10 @@ export default function BrandsTab() {
     setIsFormOpen(true);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -172,7 +183,10 @@ export default function BrandsTab() {
             <Input
               placeholder="Buscar por nombre de marca..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // Reset page on new search
+              }}
               className="pl-10"
             />
           </div>
@@ -180,73 +194,105 @@ export default function BrandsTab() {
 
         {isLoading ? (
             <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                        <Skeleton className="h-12 w-24 rounded-md" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-[250px]" />
-                        </div>
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4 p-2">
+                        <Skeleton className="h-10 w-20 rounded-md" />
+                         <Skeleton className="h-4 w-3/5" />
                     </div>
                 ))}
             </div>
         ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Logo</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredAndSortedBrands.map((brand) => (
-              <TableRow key={brand.id}>
-                <TableCell>
-                  <Image
-                    src={brand.logoUrl}
-                    alt={brand.name}
-                    width={80}
-                    height={40}
-                    className="rounded-md object-contain h-10 w-auto"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{brand.name}</TableCell>
-                <TableCell className="text-right">
-                <div className="flex gap-2 justify-end">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(brand)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Logo</TableHead>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedBrands.map((brand) => (
+                  <TableRow key={brand.id}>
+                    <TableCell>
+                      <Image
+                        src={brand.logoUrl}
+                        alt={brand.name}
+                        width={80}
+                        height={40}
+                        className="rounded-md object-contain h-10 w-auto"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{brand.name}</TableCell>
+                    <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(brand)}>
+                          <Edit className="h-4 w-4" />
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Esto eliminará permanentemente la marca.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(brand.id)}
-                            className="bg-destructive hover:bg-destructive/90"
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente la marca.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(brand.id)}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => handlePageChange(currentPage - 1)} 
+                        aria-disabled={currentPage <= 1}
+                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, i) => (
+                        <PaginationItem key={i}>
+                          <PaginationLink 
+                            onClick={() => handlePageChange(i + 1)}
+                            isActive={currentPage === i + 1}
                           >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        aria-disabled={currentPage >= totalPages}
+                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

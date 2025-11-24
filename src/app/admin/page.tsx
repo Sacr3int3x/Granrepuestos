@@ -74,7 +74,7 @@ export default function AdminPage() {
       </Tabs>
 
       <div className="mt-12 flex justify-center">
-         <Button onClick={handleLogout} variant="outline" size="sm">
+         <Button onClick={handleLogout} variant="outline">
             <LogOut className="mr-2 h-4 w-4" />
             Cerrar Sesión
           </Button>
