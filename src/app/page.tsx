@@ -154,8 +154,8 @@ function FeaturedProductsSection() {
                 const imageUrl = part.imageUrls?.[0];
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
-                   <div className="p-1">
-                    <Link href={`/parts/${part.id}`} className="block group">
+                   <div className="p-1 h-full">
+                    <Link href={`/parts/${part.id}`} className="block group h-full">
                         <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                         <CardHeader className="p-0">
                             <div className="relative aspect-square w-full">
@@ -173,8 +173,8 @@ function FeaturedProductsSection() {
                                 )}
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 flex-grow">
-                            <h3 className="text-lg font-semibold leading-tight">
+                        <CardContent className="p-4 flex-grow min-h-[120px]">
+                            <h3 className="text-lg font-semibold leading-tight line-clamp-2">
                                 {part.name}
                             </h3>
                             <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
