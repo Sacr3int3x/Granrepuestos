@@ -50,6 +50,10 @@ const vehicleModels: VehicleModel[] = [
     // Honda
     { id: 'civic', name: 'Civic', brandId: 'honda' },
     { id: 'crv', name: 'CR-V', brandId: 'honda' },
+    { id: 'accord', name: 'Accord', brandId: 'honda' },
+    { id: 'pilot', name: 'Pilot', brandId: 'honda' },
+    { id: 'element', name: 'Element', brandId: 'honda' },
+    { id: 'fit', name: 'Fit', brandId: 'honda' },
 
     // Mitsubishi
     { id: 'lancer', name: 'Lancer', brandId: 'mitsubishi' },
