@@ -30,7 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 
 
-const PARTS_PER_PAGE = 15;
+const PARTS_PER_PAGE = 16;
 
 function PartsPageContent() {
   const router = useRouter();
