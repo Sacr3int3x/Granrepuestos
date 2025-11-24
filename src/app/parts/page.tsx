@@ -3,7 +3,7 @@
 'use client';
 
 import Link from 'next/link';
-import type { Part, Brand } from '@/lib/types';
+import type { Part, Brand, VehicleBrand } from '@/lib/types';
 import {
   Pagination,
   PaginationContent,
@@ -57,6 +57,30 @@ function PartsPageContent() {
   }, [firestore]);
   const { data: allBrands, isLoading: brandsLoading } = useCollection<Brand>(brandsQuery);
 
+  const categories = getCategories();
+  const vehicleBrands = getVehicleBrands();
+
+  const getCompatibilityBrand = (part: Part, allVehicleBrands: VehicleBrand[]): string => {
+    const brandNames = new Set<string>();
+
+    if (part.vehicleBrandId) {
+      const brand = allVehicleBrands.find(b => b.id === part.vehicleBrandId);
+      if (brand) brandNames.add(brand.name);
+    }
+
+    if (part.vehicleCompatibility) {
+      part.vehicleCompatibility.forEach(comp => {
+        const brand = allVehicleBrands.find(b => b.id === comp.brandId);
+        if (brand) brandNames.add(brand.name);
+      });
+    }
+
+    if (brandNames.size > 0) {
+      return Array.from(brandNames).join(', ');
+    }
+    return 'Varios';
+  };
+
   const getCompatibilityYear = (part: Part): string => {
     if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
       const years = new Set(part.vehicleCompatibility.map(vc => vc.yearRange).filter(Boolean));
@@ -98,9 +122,6 @@ function PartsPageContent() {
     return { filteredParts: sorted, totalPages: total, paginatedParts: paginated };
   }, [allParts, allBrands, query, brandFilter, categoryFilter, vehicleBrand, vehicleModel, page]);
 
-
-  const categories = getCategories();
-  const vehicleBrands = getVehicleBrands();
 
   const createQueryString = (paramsToUpdate: Record<string, string | number | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -258,6 +279,7 @@ function PartsPageContent() {
                            <CardContent className="p-3 space-y-2">
                              <Skeleton className="h-4 w-4/5" />
                              <Skeleton className="h-4 w-2/5" />
+                             <Skeleton className="h-4 w-3/5" />
                            </CardContent>
                            <CardFooter className="p-3">
                              <Skeleton className="h-8 w-1/2" />
@@ -303,6 +325,7 @@ function PartsPageContent() {
                                   <CardContent className="p-3 flex-grow flex flex-col">
                                       <h3 className="font-medium line-clamp-2 text-sm">{part.name}</h3>
                                       <p className="text-xs text-muted-foreground">{brand?.name}</p>
+                                      <p className="text-xs text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                       <p className="text-xs text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                   </CardContent>
                                   <CardFooter className="p-3 flex items-center justify-between mt-auto">
@@ -322,7 +345,8 @@ function PartsPageContent() {
                       <TableRow>
                         <TableHead className="w-[120px]">Imagen</TableHead>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Marca</TableHead>
+                        <TableHead>Marca Repuesto</TableHead>
+                        <TableHead>Marca Vehículo</TableHead>
                         <TableHead>Año</TableHead>
                         <TableHead>SKU</TableHead>
                         <TableHead className="text-right">Precio</TableHead>
@@ -359,6 +383,7 @@ function PartsPageContent() {
                               </TableCell>
                               <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
                               <TableCell><Link href={`/parts/${part.id}`}>{brand?.name}</Link></TableCell>
+                              <TableCell><Link href={`/parts/${part.id}`}>{getCompatibilityBrand(part, vehicleBrands)}</Link></TableCell>
                               <TableCell><Link href={`/parts/${part.id}`}>{getCompatibilityYear(part)}</Link></TableCell>
                               <TableCell><Link href={`/parts/${part.id}`}>{part.sku}</Link></TableCell>
                               <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`}>${part.price.toFixed(2)}</Link></TableCell>
@@ -391,7 +416,7 @@ function PartsPageContent() {
             {totalPages > 1 && (
                <div className="mt-12">
                  <Pagination>
-                   <PaginationContent>
+                   <PaginationContent className="gap-0.5">
                      <PaginationItem>
                        <PaginationPrevious
                          href={createPageURL(page - 1)}
