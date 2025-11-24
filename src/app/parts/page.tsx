@@ -271,27 +271,27 @@ function PartsPageContent() {
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden">
-                                  <CardContent className="p-4 flex gap-4">
-                                  <div className='relative w-28 h-20 flex-shrink-0'>
+                                  <CardContent className="p-0 flex h-32">
+                                  <div className='relative w-32 flex-shrink-0'>
                                     {isValidImage ? (
                                       <Image
                                           src={part.imageUrls[0]}
                                           alt={part.name}
                                           fill
-                                          className="rounded-md object-contain"
+                                          className="object-contain"
                                           data-ai-hint="auto part"
                                       />
                                     ) : (
-                                      <div className="h-full w-full bg-muted rounded-md flex-shrink-0" />
+                                      <div className="h-full w-full bg-muted flex-shrink-0" />
                                     )}
                                   </div>
-                                  <div className="flex-grow">
-                                      <h3 className="font-medium">{part.name}</h3>
+                                  <div className="flex-grow flex flex-col p-3">
+                                      <h3 className="font-medium line-clamp-2">{part.name}</h3>
                                       <p className="text-sm text-muted-foreground">{brand?.name}</p>
                                       <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
-                                      <div className="flex items-center justify-between mt-2">
-                                      <p className="font-semibold">${part.price.toFixed(2)}</p>
-                                      <AddToCartButton part={fullPart} size="icon" />
+                                      <div className="flex items-center justify-between mt-auto pt-2">
+                                        <p className="font-semibold text-lg">${part.price.toFixed(2)}</p>
+                                        <AddToCartButton part={fullPart} size="icon" />
                                       </div>
                                   </div>
                                   </CardContent>
