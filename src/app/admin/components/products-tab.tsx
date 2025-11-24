@@ -319,7 +319,7 @@ export default function ProductsTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">Imagen</TableHead>
+                  <TableHead className="w-[120px]">Imagen</TableHead>
                   <TableHead>Nombre</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead>Precio</TableHead>
@@ -335,13 +335,13 @@ export default function ProductsTab() {
                         <Image
                           src={part.imageUrls[0]}
                           alt={part.name}
-                          width={60}
-                          height={60}
+                          width={100}
+                          height={100}
                           className="rounded-md object-cover h-auto"
                           data-ai-hint="auto part"
                         />
                       ) : (
-                        <div className="h-[60px] w-[60px] bg-muted rounded-md" />
+                        <div className="h-[100px] w-[100px] bg-muted rounded-md" />
                       )}
                     </TableCell>
                     <TableCell className="font-medium">{part.name}</TableCell>
