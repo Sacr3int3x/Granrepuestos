@@ -24,7 +24,9 @@ export default function AdminPage() {
   }, [user, isUserLoading, router]);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/login');
   };
 
@@ -32,9 +34,8 @@ export default function AdminPage() {
     return (
       <div className="container mx-auto py-10">
         <div className="space-y-4">
-          <Skeleton className="h-10 w-1/2" />
-          <Skeleton className="h-6 w-3/4" />
-          <div className="flex gap-4 mt-4">
+          <Skeleton className="h-10 w-1/2 mx-auto" />
+          <div className="flex justify-center gap-4 mt-4">
             <Skeleton className="h-10 w-[200px]" />
             <Skeleton className="h-10 w-[200px]" />
           </div>
@@ -46,23 +47,20 @@ export default function AdminPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight font-headline">
-            Panel de Administración
-          </h1>
-          <p className="text-muted-foreground">
-            Bienvenido, {user.email}. Gestiona los repuestos y marcas de la tienda.
-          </p>
+      <div className="flex flex-col items-center mb-8 relative">
+        <h1 className="text-3xl font-bold tracking-tight font-headline text-center">
+          Panel de Administración
+        </h1>
+        <div className="absolute top-0 right-0">
+         <Button onClick={handleLogout} variant="outline" size="sm">
+            <LogOut className="mr-2 h-4 w-4" />
+            Cerrar Sesión
+          </Button>
         </div>
-        <Button onClick={handleLogout} variant="outline">
-          <LogOut className="mr-2 h-4 w-4" />
-          Cerrar Sesión
-        </Button>
       </div>
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+        <TabsList className="grid w-full grid-cols-2 md:w-[400px] mx-auto">
           <TabsTrigger value="products">
             <Package className="mr-2 h-4 w-4" />
             Repuestos
