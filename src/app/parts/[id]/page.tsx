@@ -36,7 +36,7 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
     const brand = brands.find(b => b.id === part.brandId);
     const category = categories.find(c => c.id === part.categoryId);
 
-    const fullPart = {
+    const fullPart: Part = {
         ...part,
         brand: brand || { id: part.brandId, name: 'Unknown', logoUrl: ''},
         category: category || { id: part.categoryId, name: 'Unknown' }
