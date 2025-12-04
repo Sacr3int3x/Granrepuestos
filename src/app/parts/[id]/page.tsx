@@ -255,9 +255,10 @@ function PartDetailClient({ partId }: { partId: string }) {
   const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
   const brandRef = useMemoFirebase(() => {
+    // **FIX**: Only create the brand reference if `part` is loaded.
     if (!firestore || !part?.brandId) return null;
     return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part?.brandId]);
+  }, [firestore, part]); // Depend on `part` object itself.
   const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
   
   const relatedPartsQuery = useMemoFirebase(() => {
@@ -281,7 +282,12 @@ function PartDetailClient({ partId }: { partId: string }) {
     return categories.find(c => c.id === part.categoryId) || null;
   }, [part, categories]);
   
-  const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading;
+  const isLoading = isPartLoading || (part && isBrandLoading);
+
+  // **FIX**: Only call notFound if loading is complete AND part is null.
+  if (!isPartLoading && !part) {
+    notFound();
+  }
 
   if (isLoading) {
     return (
@@ -301,10 +307,11 @@ function PartDetailClient({ partId }: { partId: string }) {
       </div>
     )
   }
-
-  // This is the critical change. We only call notFound() if, after loading, the `part` is still null.
+  
+  // This check is now safe because isLoading is false and we've handled the notFound case.
   if (!part) {
-    notFound();
+    // This should theoretically not be reached, but as a safeguard:
+    return <p>Error: Repuesto no encontrado.</p>;
   }
 
   // If brand or category are null, we can still render the page with placeholder info.
@@ -342,3 +349,4 @@ export default function PartDetailPage() {
     </div>
   );
 }
+
