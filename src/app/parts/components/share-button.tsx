@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Share2, Copy, Check } from "lucide-react";
