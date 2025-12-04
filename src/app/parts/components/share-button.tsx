@@ -1,17 +1,17 @@
 "use client";
 
 import { Share2, Copy, Check } from "lucide-react";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
-interface ShareButtonProps extends ButtonProps {
+interface ShareButtonProps {
   url: string;
   title?: string;
   text?: string;
 }
 
-export default function ShareButton({ url, title = "Mira este repuesto", text = "Encontré este repuesto y creo que podría interesarte.", ...props }: ShareButtonProps) {
+export default function ShareButton({ url, title = "Mira este repuesto", text = "Encontré este repuesto y creo que podría interesarte." }: ShareButtonProps) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -24,6 +24,10 @@ export default function ShareButton({ url, title = "Mira este repuesto", text = 
           url: url,
         });
       } catch (error) {
+        // Ignore AbortError which is triggered when the user cancels the share dialog
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
         console.error("Error al compartir:", error);
       }
     } else {
@@ -48,7 +52,7 @@ export default function ShareButton({ url, title = "Mira este repuesto", text = 
   };
 
   return (
-    <Button onClick={handleShare} aria-label="Compartir producto" {...props}>
+    <Button onClick={handleShare} size="icon" variant="ghost" aria-label="Compartir producto">
       {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
     </Button>
   );
