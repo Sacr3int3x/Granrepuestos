@@ -30,25 +30,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import ShareButton from "../components/share-button";
 
-function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
-    const firestore = useFirestore();
-    
-    const brand = brands.find(b => b.id === part.brandId);
-    const category = categories.find(c => c.id === part.categoryId);
+function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand; category: Category; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
+    const fullPart = { ...part, brand, category };
 
-    const fullPart: Part = {
-        ...part,
-        brand: brand || { id: part.brandId, name: 'Unknown', logoUrl: ''},
-        category: category || { id: part.categoryId, name: 'Unknown' }
-    };
-
-    const relatedPartsQuery = useMemoFirebase(() => {
-        if (!firestore || !part.relatedPartIds || part.relatedPartIds.length === 0) return null;
-        return query(collection(firestore, 'parts'), where('__name__', 'in', part.relatedPartIds));
-    }, [firestore, part.relatedPartIds]);
-
-    const { data: relatedParts } = useCollection<Part>(relatedPartsQuery);
-    
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
     const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
@@ -203,7 +187,14 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         <div className="mt-16">
           <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedParts.map((relatedPart: Part) => (
+            {relatedParts.map((relatedPart: Part) => {
+              const relatedBrand = vehicleBrands.find(b => b.id === relatedPart.brandId);
+              const relatedCategory = categories.find(c => c.id === relatedPart.categoryId);
+              if (!relatedBrand || !relatedCategory) return null;
+              
+              const fullRelatedPart = {...relatedPart, brand: relatedBrand, category: relatedCategory};
+
+              return (
               <a href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
                   <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                     <CardHeader className="p-0">
@@ -220,17 +211,15 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                     </CardHeader>
                     <CardContent className="p-4 flex-grow">
                       <h3 className="text-lg font-semibold">{relatedPart.name}</h3>
-                      {brands.find(b => b.id === relatedPart.brandId) && (
-                          <p className="text-sm text-muted-foreground">{brands.find(b => b.id === relatedPart.brandId)?.name}</p>
-                      )}
+                      <p className="text-sm text-muted-foreground">{relatedBrand.name}</p>
                     </CardContent>
                     <CardFooter className="p-4 flex justify-between items-center">
                       <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
-                      <AddToCartButton part={{...relatedPart, brand: brands.find(b => b.id === relatedPart.brandId), category: categories.find(c => c.id === relatedPart.categoryId)}} />
+                      <AddToCartButton part={fullRelatedPart} />
                     </CardFooter>
                   </Card>
               </a>
-            ))}
+            )})}
           </div>
         </div>
       )}
@@ -247,11 +236,17 @@ function PartDetailClient({ partId }: { partId: string }) {
   }, [firestore, partId]);
   const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
-  const brandsRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'brands');
-  }, [firestore]);
-  const { data: brands, isLoading: areBrandsLoading } = useCollection<Brand>(brandsRef);
+  const brandRef = useMemoFirebase(() => {
+    if (!firestore || !part?.brandId) return null;
+    return doc(firestore, 'brands', part.brandId);
+  }, [firestore, part]);
+  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+  
+  const relatedPartsQuery = useMemoFirebase(() => {
+    if (!firestore || !part?.relatedPartIds || part.relatedPartIds.length === 0) return null;
+    return query(collection(firestore, 'parts'), where('__name__', 'in', part.relatedPartIds));
+  }, [firestore, part?.relatedPartIds]);
+  const { data: relatedParts, isLoading: areRelatedPartsLoading } = useCollection<Part>(relatedPartsQuery);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
@@ -263,7 +258,7 @@ function PartDetailClient({ partId }: { partId: string }) {
       setVehicleModels(getVehicleModels());
   }, []);
 
-  const isLoading = isPartLoading || areBrandsLoading || categories.length === 0 || vehicleBrands.length === 0 || vehicleModels.length === 0;
+  const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading || categories.length === 0 || vehicleBrands.length === 0 || vehicleModels.length === 0;
 
   if (isLoading) {
     return (
@@ -284,7 +279,7 @@ function PartDetailClient({ partId }: { partId: string }) {
     )
   }
 
-  if (!part || !brands) {
+  if (!part || !brand) {
     notFound();
   }
 
@@ -292,8 +287,13 @@ function PartDetailClient({ partId }: { partId: string }) {
     ...part,
     imageUrls: sanitizeImageUrls(part.imageUrls),
   };
+  
+  const category = categories.find(c => c.id === part.categoryId);
+  if (!category) {
+    notFound();
+  }
 
-  return <PartDetailContent part={sanitizedPart} brands={brands} categories={categories} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
+  return <PartDetailContent part={sanitizedPart} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 
@@ -302,8 +302,6 @@ export default function PartDetailPage() {
   const id = typeof params.id === 'string' ? params.id : '';
   
   if (!id) {
-    // You can return a loading state or null here
-    // while waiting for the router to be ready.
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12">
@@ -328,3 +326,5 @@ export default function PartDetailPage() {
     </div>
   );
 }
+
+    
