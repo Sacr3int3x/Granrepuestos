@@ -198,31 +198,29 @@ function PartDetailLoading() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>
-            <Skeleton className="h-6 w-3/4" />
-        </DialogTitle>
-        <DialogDescription>
-            <Skeleton className="h-4 w-1/4 mt-2" />
-        </DialogDescription>
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
       </DialogHeader>
       <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
         <Skeleton className="aspect-square w-full rounded-lg" />
         <div className="space-y-4">
-            <Skeleton className="h-10 w-1/2" />
-            <Skeleton className="h-6 w-1/4" />
-            <div className="space-y-2 pt-6">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-4/5" />
-                <Skeleton className="h-5 w-2/3" />
-            </div>
-             <div className="pt-8">
-                <Skeleton className="h-12 w-full" />
-             </div>
+          <Skeleton className="h-10 w-1/2" />
+          <Skeleton className="h-6 w-1/4" />
+          <div className="space-y-2 pt-6">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-4/5" />
+            <Skeleton className="h-5 w-2/3" />
+          </div>
+          <div className="pt-8">
+            <Skeleton className="h-12 w-full" />
+          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDialogProps) {
@@ -276,5 +274,3 @@ export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDia
     </Dialog>
   );
 }
-
-    
