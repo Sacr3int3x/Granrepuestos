@@ -32,6 +32,7 @@ export default function ShareButton({ url, title = "Mira este repuesto", text = 
         });
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
+          // User cancelled the share action, do nothing.
           return;
         }
         console.error("Error al compartir:", error);
