@@ -28,6 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import ShareButton from "../components/share-button";
 
 function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleModels }: { part: Part; brands: Brand[]; categories: Category[], vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const firestore = useFirestore();
@@ -123,7 +124,10 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                 {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
               </p>
             </div>
+            <div className="flex items-center gap-2">
+             <ShareButton part={fullPart} size="lg" />
              <AddToCartButton part={fullPart} size="lg" className="h-14 w-14 rounded-full" />
+            </div>
           </div>
 
         </div>

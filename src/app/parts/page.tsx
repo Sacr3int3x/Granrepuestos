@@ -28,6 +28,7 @@ import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import ShareButton from './components/share-button';
 
 
 const PARTS_PER_PAGE = 16;
@@ -266,7 +267,7 @@ function PartsPageContent() {
                   <div className="md:hidden grid grid-cols-2 gap-4">
                       {[...Array(6)].map((_, i) => (
                         <Card key={i}>
-                           <CardHeader className="p-0"><Skeleton className="h-32 w-full" /></CardHeader>
+                           <CardHeader className="p-0"><Skeleton className="h-40 w-full" /></CardHeader>
                            <CardContent className="p-3 space-y-2">
                              <Skeleton className="h-4 w-4/5" />
                              <Skeleton className="h-4 w-2/5" />
@@ -296,7 +297,7 @@ function PartsPageContent() {
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden flex flex-col h-full">
                                   <CardHeader className="p-0">
-                                      <div className='relative w-full aspect-square'>
+                                      <div className='relative w-full aspect-[4/3]'>
                                         {isValidImage ? (
                                           <Image
                                               src={part.imageUrls[0]}
@@ -314,14 +315,17 @@ function PartsPageContent() {
                                       </div>
                                   </CardHeader>
                                   <CardContent className="p-3 flex-grow flex flex-col">
-                                      <h3 className="font-medium line-clamp-2 text-sm">{part.name}</h3>
+                                      <h3 className="font-medium line-clamp-2 text-sm flex-grow">{part.name}</h3>
                                       <p className="text-xs text-muted-foreground">{brand?.name}</p>
                                       <p className="text-xs text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                       <p className="text-xs text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                   </CardContent>
                                   <CardFooter className="p-3 flex items-center justify-between mt-auto">
                                     <p className="font-semibold text-base">${part.price.toFixed(2)}</p>
-                                    <AddToCartButton part={fullPart} size="icon" />
+                                    <div className="flex">
+                                      <ShareButton part={fullPart} size="icon" className="h-8 w-8" />
+                                      <AddToCartButton part={fullPart} size="icon" />
+                                    </div>
                                   </CardFooter>
                               </Card>
                           </Link>
@@ -382,6 +386,7 @@ function PartsPageContent() {
       
                               <TableCell className="text-right">
                               <div className='flex items-center justify-end gap-2'>
+                                  <ShareButton part={fullPart} />
                                   <AddToCartButton part={fullPart} size="icon" />
                               </div>
                               </TableCell>
