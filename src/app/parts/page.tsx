@@ -26,7 +26,6 @@ import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import ShareButton from './components/share-button';
 
 
 const PARTS_PER_PAGE = 16;
@@ -273,10 +272,9 @@ function PartsPageContent() {
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
-                      const productUrl = `/parts/${part.id}`;
                       return (
                          <Card key={part.id} className="overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-                            <a href={productUrl} className="block">
+                            <Link href={`/parts/${part.id}`} className="block">
                                 <CardHeader className="p-0">
                                 <div className="relative aspect-square w-full">
                                     {firstImage ? (
@@ -303,13 +301,10 @@ function PartsPageContent() {
                                 <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
-                            </a>
+                            </Link>
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
                                 <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
-                                <div className="flex items-center gap-1">
-                                    <ShareButton url={productUrl} />
-                                    <AddToCartButton part={fullPart} size="icon" />
-                                </div>
+                                <AddToCartButton part={fullPart} size="icon" />
                             </CardFooter>
                          </Card>
                       )

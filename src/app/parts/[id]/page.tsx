@@ -27,65 +27,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
-import ShareButton from "../components/share-button";
 
-function PartDetailClient({ partId }: { partId: string }) {
-  const firestore = useFirestore();
-
-  const partRef = useMemoFirebase(() => {
-    if (!firestore || !partId) return null;
-    return doc(firestore, 'parts', partId);
-  }, [firestore, partId]);
-  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
-
-  const brandRef = useMemoFirebase(() => {
-    // Execute this query only after 'part' is loaded and has a 'brandId'
-    if (!firestore || !part?.brandId) return null;
-    return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part]); // Dependency on 'part' object itself
-  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels }: { part: Part, brand: Brand, category: Category | null, vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[]}) {
   
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
-  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
-  
-  useEffect(() => {
-      setCategories(getCategories());
-      setVehicleBrands(getVehicleBrands());
-      setVehicleModels(getVehicleModels());
-  }, []);
-
-  const category = useMemo(() => {
-    if (!part || categories.length === 0) return null;
-    return categories.find(c => c.id === part.categoryId) || null;
-  }, [part, categories]);
-  
-  const isLoading = isPartLoading || (part && (isBrandLoading || !category));
-
-  if (!isPartLoading && !part) {
-    notFound();
-  }
-
-  if (isLoading || !part) {
-    return (
-      <div className="grid md:grid-cols-2 gap-12">
-          <div>
-              <Skeleton className="aspect-square w-full rounded-lg" />
-          </div>
-          <div className="space-y-4">
-              <Skeleton className="h-10 w-3/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-10 w-1/2" />
-              <Skeleton className="h-12 w-1/3" />
-          </div>
-      </div>
-    )
-  }
-  
-  const fullPart = { ...part, brand, category };
-  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/parts/${part.id}` : '';
-
   const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
   const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
@@ -124,6 +68,7 @@ function PartDetailClient({ partId }: { partId: string }) {
   })();
 
   const safeImageUrls = sanitizeImageUrls(part.imageUrls);
+  const fullPart = { ...part, brand, category };
 
   return (
     <>
@@ -173,11 +118,9 @@ function PartDetailClient({ partId }: { partId: string }) {
               </p>
             </div>
             <div className="flex items-center gap-2">
-                <ShareButton url={productUrl} />
                 <AddToCartButton part={fullPart as Part} size="lg" />
             </div>
           </div>
-
         </div>
       </div>
       
@@ -247,6 +190,63 @@ function PartDetailClient({ partId }: { partId: string }) {
       </div>
     </>
   );
+}
+
+
+function PartDetailClient({ partId }: { partId: string }) {
+  const firestore = useFirestore();
+
+  const partRef = useMemoFirebase(() => {
+    if (!firestore || !partId) return null;
+    return doc(firestore, 'parts', partId);
+  }, [firestore, partId]);
+  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+
+  const brandRef = useMemoFirebase(() => {
+    if (!firestore || !part?.brandId) return null;
+    return doc(firestore, 'brands', part.brandId);
+  }, [firestore, part]);
+  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+  
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
+  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
+  
+  useEffect(() => {
+      setCategories(getCategories());
+      setVehicleBrands(getVehicleBrands());
+      setVehicleModels(getVehicleModels());
+  }, []);
+
+  const category = useMemo(() => {
+    if (!part || categories.length === 0) return null;
+    return categories.find(c => c.id === part.categoryId) || null;
+  }, [part, categories]);
+  
+  const isLoading = isPartLoading || (part && (isBrandLoading || !brand || !category));
+
+  if (isLoading) {
+    return (
+      <div className="grid md:grid-cols-2 gap-12">
+          <div>
+              <Skeleton className="aspect-square w-full rounded-lg" />
+          </div>
+          <div className="space-y-4">
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-1/2" />
+              <Skeleton className="h-12 w-1/3" />
+          </div>
+      </div>
+    )
+  }
+
+  if (!part || !brand) {
+    notFound();
+  }
+  
+  return <PartDetailContent part={part} brand={brand} category={category} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 
