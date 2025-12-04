@@ -278,7 +278,7 @@ export default function BrandsTab() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Esto eliminará permanentemente la marca.
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente la marca de la base de datos.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -340,3 +340,5 @@ export default function BrandsTab() {
     </Card>
   );
 }
+
+    
