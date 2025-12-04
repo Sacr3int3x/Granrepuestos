@@ -57,9 +57,9 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
 
       if (part.vehicleCompatibility) {
         part.vehicleCompatibility.forEach(comp => {
-          info.brands.add(getBrandName(comp.brandId));
-          info.models.add(getModelName(comp.modelId));
-          info.years.add(comp.yearRange);
+          if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
+          if(comp.modelId) info.models.add(getModelName(comp.modelId));
+          if(comp.yearRange) info.years.add(comp.yearRange);
         });
       }
 
@@ -196,7 +196,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {relatedParts.map((relatedPart: Part) => {
               const relatedBrand = vehicleBrands.find(b => b.id === relatedPart.brandId);
-              const relatedCategory = categories.find(c => c.id === relatedPart.categoryId);
+              const relatedCategory = getCategories().find(c => c.id === relatedPart.categoryId);
               if (!relatedBrand || !relatedCategory) return null;
               
               const fullRelatedPart = {...relatedPart, brand: relatedBrand, category: relatedCategory};
@@ -270,6 +270,11 @@ function PartDetailClient({ partId }: { partId: string }) {
       setVehicleModels(getVehicleModels());
   }, []);
 
+  const category = useMemo(() => {
+    if (!part || categories.length === 0) return undefined;
+    return categories.find(c => c.id === part.categoryId);
+  }, [part, categories]);
+  
   const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading;
 
   if (isLoading) {
@@ -291,18 +296,18 @@ function PartDetailClient({ partId }: { partId: string }) {
     )
   }
 
+  // After loading, if part or brand don't exist, it's a true 404
   if (!part || !brand) {
     notFound();
   }
 
-  const category = categories.find(c => c.id === part.categoryId);
-  if (!category) {
-    // This could happen if categories are not loaded yet or if the categoryId is invalid
-    // We can show a loading state or a specific error
-     if (categories.length === 0) {
-       return <div>Loading categories...</div>;
-     }
-    notFound();
+  // After loading, if category is still not found, it's also a 404
+  if(!category) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <p>Cargando información de categoría...</p>
+      </div>
+    );
   }
 
   return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
@@ -338,3 +343,5 @@ export default function PartDetailPage() {
     </div>
   );
 }
+
+    
