@@ -93,12 +93,12 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         <div>
           <Carousel className="w-full">
             <CarouselContent>
-              {fullPart.imageUrls.map((url, index) => (
+              {part.imageUrls.map((url, index) => (
                 <CarouselItem key={index}>
                   <div className="aspect-square relative bg-card rounded-lg overflow-hidden border">
                     <Image
                       src={url}
-                      alt={`${fullPart.name} - vista ${index + 1}`}
+                      alt={`${part.name} - vista ${index + 1}`}
                       fill
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -114,14 +114,14 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         </div>
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
-            {fullPart.name}
+            {part.name}
           </h1>
           
           <div className="mt-8 flex justify-between items-center">
             <div>
-              <p className="text-3xl font-bold text-primary">${fullPart.price.toFixed(2)}</p>
-              <p className={fullPart.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
-                {fullPart.stock > 0 ? `${fullPart.stock} en stock` : "Agotado"}
+              <p className="text-3xl font-bold text-primary">${part.price.toFixed(2)}</p>
+              <p className={part.stock > 0 ? "text-green-600 mt-2" : "text-red-600 mt-2"}>
+                {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -143,18 +143,18 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                     <TableCell className="font-medium">Marca</TableCell>
                     <TableCell>
                        {brand && brand.websiteUrl ? (
-                         <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{fullPart.brand.name}</a>
+                         <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
                         ) : (
-                          <span>{fullPart.brand.name}</span>
+                          <span>{brand?.name}</span>
                         )}
                     </TableCell>
                 </TableRow>
                 
                 <TableRow>
                     <TableCell className="font-medium">Código de parte</TableCell>
-                    <TableCell>{fullPart.sku}</TableCell>
+                    <TableCell>{part.sku}</TableCell>
                 </TableRow>
-                {fullPart.specifications && Object.entries(fullPart.specifications).map(([key, value]) => (
+                {part.specifications && Object.entries(part.specifications).map(([key, value]) => (
                     <TableRow key={key}>
                     <TableCell className="font-medium">{key}</TableCell>
                     <TableCell>{value}</TableCell>
@@ -174,11 +174,11 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
                 </TableRow>
                  <TableRow>
                     <TableCell className="font-medium">Categoría</TableCell>
-                    <TableCell>{fullPart.category.name}</TableCell>
+                    <TableCell>{category?.name}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell className="font-medium">Descripción</TableCell>
-                    <TableCell>{fullPart.description}</TableCell>
+                    <TableCell>{part.description}</TableCell>
                 </TableRow>
                 </TableBody>
             </Table>
