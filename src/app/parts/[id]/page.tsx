@@ -33,7 +33,6 @@ import ShareButton from "../components/share-button";
 
 function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand | null; category: Category | null; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     
-    // Fallback to a default object if brand or category is null
     const safeBrand = brand || { id: part.brandId, name: part.brandId, logoUrl: '' };
     const safeCategory = category || { id: part.categoryId, name: part.categoryId };
     const fullPart = { ...part, brand: safeBrand, category: safeCategory };
@@ -252,19 +251,18 @@ function PartDetailClient({ partId }: { partId: string }) {
     if (!firestore || !partId) return null;
     return doc(firestore, 'parts', partId);
   }, [firestore, partId]);
-  const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
+  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
   const brandRef = useMemoFirebase(() => {
-    // **FIX**: Only create the brand reference if `part` is loaded.
     if (!firestore || !part?.brandId) return null;
     return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part]); // Depend on `part` object itself.
+  }, [firestore, part]);
   const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
   
   const relatedPartsQuery = useMemoFirebase(() => {
     if (!firestore || !part?.relatedPartIds || part.relatedPartIds.length === 0) return null;
     return query(collection(firestore, 'parts'), where('__name__', 'in', part.relatedPartIds));
-  }, [firestore, part?.relatedPartIds]);
+  }, [firestore, part]);
   const { data: relatedParts, isLoading: areRelatedPartsLoading } = useCollection<Part>(relatedPartsQuery);
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -282,14 +280,13 @@ function PartDetailClient({ partId }: { partId: string }) {
     return categories.find(c => c.id === part.categoryId) || null;
   }, [part, categories]);
   
-  const isLoading = isPartLoading || (part && isBrandLoading);
+  const isLoading = isPartLoading || (part && isBrandLoading) || areRelatedPartsLoading;
 
-  // **FIX**: Only call notFound if loading is complete AND part is null.
   if (!isPartLoading && !part) {
     notFound();
   }
 
-  if (isLoading) {
+  if (isLoading || !part) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12">
@@ -307,14 +304,7 @@ function PartDetailClient({ partId }: { partId: string }) {
       </div>
     )
   }
-  
-  // This check is now safe because isLoading is false and we've handled the notFound case.
-  if (!part) {
-    // This should theoretically not be reached, but as a safeguard:
-    return <p>Error: Repuesto no encontrado.</p>;
-  }
 
-  // If brand or category are null, we can still render the page with placeholder info.
   return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
@@ -324,7 +314,6 @@ export default function PartDetailPage() {
   const id = typeof params.id === 'string' ? params.id : '';
   
   if (!id) {
-    // Show skeleton if ID is not available on first render
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12">
@@ -349,4 +338,3 @@ export default function PartDetailPage() {
     </div>
   );
 }
-
