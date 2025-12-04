@@ -186,7 +186,7 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
                 <ShareButton 
                     title={part.name}
                     text={`Mira este repuesto: ${part.name}`}
-                    url={`/parts/${part.id}`}
+                    url={`/parts?part=${part.id}`}
                   />
                   <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
                     Ver políticas de devolución
@@ -204,8 +204,8 @@ function PartDetailLoading() {
   return (
     <>
       <DialogHeader>
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-1/4" />
+        <DialogTitle><Skeleton className="h-6 w-3/4" /></DialogTitle>
+        <DialogDescription><Skeleton className="h-4 w-1/4" /></DialogDescription>
       </DialogHeader>
       <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
         <Skeleton className="aspect-square w-full rounded-lg" />
@@ -267,11 +267,16 @@ export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDia
         ) : part && brand ? (
           <PartDetailContent part={part} brand={brand} category={category} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />
         ) : (
-          <div className="text-center py-10">
-            <p className="text-muted-foreground">No se pudo cargar la información del repuesto.</p>
-          </div>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+            <DialogDescription>
+              No se pudo cargar la información del repuesto.
+            </DialogDescription>
+          </DialogHeader>
         )}
       </DialogContent>
     </Dialog>
   );
 }
+
+    
