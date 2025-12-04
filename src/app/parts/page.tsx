@@ -28,7 +28,6 @@ import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import ShareButton from './components/share-button';
 
 
 const PARTS_PER_PAGE = 16;
@@ -283,41 +282,40 @@ function PartsPageContent() {
                       const fullPart = {...part, brand, category};
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
                       return (
-                          <Link href={`/parts/${part.id}`} key={part.id} className="block group">
-                              <Card className="overflow-hidden flex flex-col h-full">
-                                  <CardHeader className="p-0">
-                                      <div className='relative w-full aspect-square bg-muted'>
-                                        {firstImage ? (
-                                          <Image
-                                              src={firstImage}
-                                              alt={part.name}
-                                              fill
-                                              className="object-cover group-hover:scale-105 transition-transform"
-                                              sizes="(max-width: 767px) 50vw, 25vw"
-                                              data-ai-hint="auto part"
-                                          />
-                                        ) : (
-                                          <div className="h-full w-full flex items-center justify-center">
-                                            <Search className="h-8 w-8 text-muted-foreground"/>
-                                          </div>
-                                        )}
-                                      </div>
-                                  </CardHeader>
-                                  <CardContent className="p-3 flex-grow flex flex-col">
-                                      <h3 className="font-medium line-clamp-2 text-sm flex-grow min-h-[40px]">{part.name}</h3>
-                                      <p className="text-xs text-muted-foreground">{brand?.name}</p>
-                                      <p className="text-xs text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
-                                      <p className="text-xs text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
-                                  </CardContent>
-                                  <CardFooter className="p-3 flex items-center justify-between mt-auto">
-                                    <p className="font-semibold text-base">${part.price.toFixed(2)}</p>
-                                    <div className="flex">
-                                      <ShareButton part={fullPart} size="icon" className="h-8 w-8" />
-                                      <AddToCartButton part={fullPart} size="icon" />
+                         <Link href={`/parts/${part.id}`} key={part.id} className="block group">
+                            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                                <CardHeader className="p-0">
+                                <div className="relative aspect-square w-full">
+                                    {firstImage ? (
+                                    <Image
+                                        src={firstImage}
+                                        alt={part.name}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform"
+                                        sizes="(max-width: 767px) 50vw, 25vw"
+                                        data-ai-hint="auto part"
+                                    />
+                                    ) : (
+                                    <div className="h-full w-full bg-muted flex items-center justify-center">
+                                        <Search className="h-8 w-8 text-muted-foreground"/>
                                     </div>
-                                  </CardFooter>
-                              </Card>
-                          </Link>
+                                    )}
+                                </div>
+                                </CardHeader>
+                                <CardContent className="p-4 flex-grow min-h-[120px]">
+                                <h3 className="text-lg font-semibold leading-tight line-clamp-2">
+                                    {part.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mt-1">{brand?.name || part.brandId}</p>
+                                <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
+                                <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
+                                </CardContent>
+                                <CardFooter className="p-4 flex justify-between items-center mt-auto">
+                                <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                                <AddToCartButton part={fullPart} />
+                                </CardFooter>
+                            </Card>
+                         </Link>
                       )
                   })}
                 </div>
@@ -374,10 +372,7 @@ function PartsPageContent() {
                               <TableCell className="text-center"><Link href={`/parts/${part.id}`}>{part.stock}</Link></TableCell>
       
                               <TableCell className="text-right">
-                              <div className='flex items-center justify-end gap-2'>
-                                  <ShareButton part={fullPart} />
-                                  <AddToCartButton part={fullPart} size="icon" />
-                              </div>
+                                <AddToCartButton part={fullPart} size="icon" />
                               </TableCell>
                           </TableRow>
                           )

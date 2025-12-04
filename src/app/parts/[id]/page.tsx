@@ -28,7 +28,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
-import ShareButton from "../components/share-button";
 
 function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand; category: Category; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     const fullPart = { ...part, brand, category };
@@ -115,10 +114,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-             <ShareButton part={fullPart} size="lg" />
-             <AddToCartButton part={fullPart} size="lg" className="h-14 w-14 rounded-full" />
-            </div>
+            <AddToCartButton part={fullPart} size="lg" />
           </div>
 
         </div>
@@ -297,17 +293,8 @@ function PartDetailClient({ partId }: { partId: string }) {
   }
 
   // After loading, if part or brand don't exist, it's a true 404
-  if (!part || !brand) {
+  if (!part || !brand || !category) {
     notFound();
-  }
-
-  // After loading, if category is still not found, it's also a 404
-  if(!category) {
-    return (
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <p>Cargando información de categoría...</p>
-      </div>
-    );
   }
 
   return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
@@ -343,5 +330,3 @@ export default function PartDetailPage() {
     </div>
   );
 }
-
-    
