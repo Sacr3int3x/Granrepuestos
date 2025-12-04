@@ -17,11 +17,11 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
 import AddToCartButton from "../components/add-to-cart-button";
-import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
-import { doc, collection, query, where } from "firebase/firestore";
+import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
@@ -29,51 +29,103 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import ShareButton from "../components/share-button";
 
-function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand; category: Category; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
-    
-    const fullPart = { ...part, brand, category };
-    const productUrl = typeof window !== 'undefined' ? window.location.href : '';
+function PartDetailClient({ partId }: { partId: string }) {
+  const firestore = useFirestore();
 
-    const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
-    const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
+  const partRef = useMemoFirebase(() => {
+    if (!firestore || !partId) return null;
+    return doc(firestore, 'parts', partId);
+  }, [firestore, partId]);
+  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
-    const compatibilityInfo = (() => {
-      const info = {
-        brands: new Set<string>(),
-        models: new Set<string>(),
-        years: new Set<string>(),
-      };
+  const brandRef = useMemoFirebase(() => {
+    // Execute this query only after 'part' is loaded and has a 'brandId'
+    if (!firestore || !part?.brandId) return null;
+    return doc(firestore, 'brands', part.brandId);
+  }, [firestore, part]); // Dependency on 'part' object itself
+  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+  
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
+  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
+  
+  useEffect(() => {
+      setCategories(getCategories());
+      setVehicleBrands(getVehicleBrands());
+      setVehicleModels(getVehicleModels());
+  }, []);
 
-      if (part.vehicleBrandIds) {
-        part.vehicleBrandIds.forEach(brandId => {
-          info.brands.add(getBrandName(brandId));
-        });
-      }
-      
-      if (part.vehicleModelIds) {
-        part.vehicleModelIds.forEach(modelId => {
-            info.models.add(getModelName(modelId));
-        })
-      }
+  const category = useMemo(() => {
+    if (!part || categories.length === 0) return null;
+    return categories.find(c => c.id === part.categoryId) || null;
+  }, [part, categories]);
+  
+  const isLoading = isPartLoading || (part && (isBrandLoading || !category));
 
-      if (part.vehicleCompatibility) {
-        part.vehicleCompatibility.forEach(comp => {
-          if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
-          if(comp.modelId) info.models.add(getModelName(comp.modelId));
-          if(comp.yearRange) info.years.add(comp.yearRange);
-        });
-      }
+  if (!isPartLoading && !part) {
+    notFound();
+  }
 
-      return {
-        brands: Array.from(info.brands).join(', ') || 'N/A',
-        models: Array.from(info.models).join(', ') || 'Varios',
-        years: Array.from(info.years).join(', ') || 'Consultar',
-      };
-    })();
-
-    const safeImageUrls = sanitizeImageUrls(part.imageUrls);
-
+  if (isLoading || !part) {
     return (
+      <div className="grid md:grid-cols-2 gap-12">
+          <div>
+              <Skeleton className="aspect-square w-full rounded-lg" />
+          </div>
+          <div className="space-y-4">
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-1/2" />
+              <Skeleton className="h-12 w-1/3" />
+          </div>
+      </div>
+    )
+  }
+  
+  const fullPart = { ...part, brand, category };
+  const productUrl = typeof window !== 'undefined' ? `${window.location.origin}/parts/${part.id}` : '';
+
+  const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
+  const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
+
+  const compatibilityInfo = (() => {
+    const info = {
+      brands: new Set<string>(),
+      models: new Set<string>(),
+      years: new Set<string>(),
+    };
+
+    if (part.vehicleBrandIds) {
+      part.vehicleBrandIds.forEach(brandId => {
+        info.brands.add(getBrandName(brandId));
+      });
+    }
+    
+    if (part.vehicleModelIds) {
+      part.vehicleModelIds.forEach(modelId => {
+          info.models.add(getModelName(modelId));
+      })
+    }
+
+    if (part.vehicleCompatibility) {
+      part.vehicleCompatibility.forEach(comp => {
+        if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
+        if(comp.modelId) info.models.add(getModelName(comp.modelId));
+        if(comp.yearRange) info.years.add(comp.yearRange);
+      });
+    }
+
+    return {
+      brands: Array.from(info.brands).join(', ') || '-',
+      models: Array.from(info.models).join(', ') || 'Varios',
+      years: Array.from(info.years).join(', ') || 'Consultar',
+    };
+  })();
+
+  const safeImageUrls = sanitizeImageUrls(part.imageUrls);
+
+  return (
     <>
       <div className="grid md:grid-cols-2 gap-12">
         <div>
@@ -122,7 +174,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
             </div>
             <div className="flex items-center gap-2">
                 <ShareButton url={productUrl} />
-                <AddToCartButton part={fullPart} size="lg" />
+                <AddToCartButton part={fullPart as Part} size="lg" />
             </div>
           </div>
 
@@ -138,10 +190,10 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                  <TableRow>
                     <TableCell className="font-medium">Marca</TableCell>
                     <TableCell>
-                       {brand.websiteUrl ? (
+                       {brand?.websiteUrl ? (
                          <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
                         ) : (
-                          <span>{brand.name}</span>
+                          <span>{brand?.name || '-'}</span>
                         )}
                     </TableCell>
                 </TableRow>
@@ -170,7 +222,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 </TableRow>
                  <TableRow>
                     <TableCell className="font-medium">Categoría</TableCell>
-                    <TableCell>{category.name}</TableCell>
+                    <TableCell>{category?.name || '-'}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell className="font-medium">Descripción</TableCell>
@@ -193,117 +245,8 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
             </AlertDescription>
         </Alert>
       </div>
-
-
-      {relatedParts && relatedParts.length > 0 && (
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold tracking-tight text-center font-headline">Repuestos Relacionados</h2>
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedParts.map((relatedPart: Part) => {
-              const relatedBrand = vehicleBrands.find(b => b.id === relatedPart.brandId);
-              const relatedCategory = getCategories().find(c => c.id === relatedPart.categoryId);
-              if (!relatedBrand || !relatedCategory) return null;
-              
-              const fullRelatedPart = {...relatedPart, brand: relatedBrand, category: relatedCategory};
-              const relatedPartImage = sanitizeImageUrls(relatedPart.imageUrls)[0];
-
-              return (
-              <a href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
-                  <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-                    <CardHeader className="p-0">
-                      <div className="relative aspect-square w-full">
-                        {relatedPartImage ? (
-                          <Image
-                            src={relatedPartImage}
-                            alt={relatedPart.name}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                            data-ai-hint="auto part"
-                          />
-                        ) : (
-                          <div className="h-full w-full bg-muted" />
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-4 flex-grow">
-                      <h3 className="text-lg font-semibold">{relatedPart.name}</h3>
-                      <p className="text-sm text-muted-foreground">{relatedBrand.name}</p>
-                    </CardContent>
-                    <CardFooter className="p-4 flex justify-between items-center">
-                      <p className="text-lg font-bold text-primary">${relatedPart.price.toFixed(2)}</p>
-                      <AddToCartButton part={fullRelatedPart} />
-                    </CardFooter>
-                  </Card>
-              </a>
-            )})}
-          </div>
-        </div>
-      )}
     </>
   );
-}
-
-function PartDetailClient({ partId }: { partId: string }) {
-  const firestore = useFirestore();
-
-  const partRef = useMemoFirebase(() => {
-    if (!firestore || !partId) return null;
-    return doc(firestore, 'parts', partId);
-  }, [firestore, partId]);
-  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
-
-  const brandRef = useMemoFirebase(() => {
-    if (!firestore || !part?.brandId) return null;
-    return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part]);
-  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
-  
-  const relatedPartsQuery = useMemoFirebase(() => {
-    if (!firestore || !part?.relatedPartIds || part.relatedPartIds.length === 0) return null;
-    return query(collection(firestore, 'parts'), where('__name__', 'in', part.relatedPartIds));
-  }, [firestore, part]);
-  const { data: relatedParts, isLoading: areRelatedPartsLoading } = useCollection<Part>(relatedPartsQuery);
-
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
-  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
-  
-  useEffect(() => {
-      setCategories(getCategories());
-      setVehicleBrands(getVehicleBrands());
-      setVehicleModels(getVehicleModels());
-  }, []);
-
-  const category = useMemo(() => {
-    if (!part || categories.length === 0) return null;
-    return categories.find(c => c.id === part.categoryId) || null;
-  }, [part, categories]);
-  
-  const isLoading = isPartLoading || (part && (isBrandLoading || areRelatedPartsLoading));
-
-  if (!isPartLoading && !part) {
-    notFound();
-  }
-
-  if (isLoading || !part || !brand || !category) {
-    return (
-      <div className="grid md:grid-cols-2 gap-12">
-          <div>
-              <Skeleton className="aspect-square w-full rounded-lg" />
-          </div>
-          <div className="space-y-4">
-              <Skeleton className="h-10 w-3/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-10 w-1/2" />
-              <Skeleton className="h-12 w-1/3" />
-          </div>
-      </div>
-    )
-  }
-
-  return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 
@@ -311,7 +254,6 @@ export default function PartDetailPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : '';
   
-  // A loading state is needed here while waiting for the id from useParams on initial client render
   if (!id) {
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -337,5 +279,3 @@ export default function PartDetailPage() {
     </div>
   );
 }
-
-    

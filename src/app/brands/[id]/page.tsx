@@ -69,7 +69,7 @@ function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: P
                             const category = getCategoryForPart(part);
                             const fullPart = { ...part, brand, category };
                             return (
-                                <Link href={`/parts/${part.id}`} key={part.id} className="block group">
+                                <a href={`/parts/${part.id}`} key={part.id} className="block group">
                                     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                                         <CardHeader className="p-0">
                                             <div className="relative aspect-square w-full">
@@ -92,7 +92,7 @@ function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: P
                                             <AddToCartButton part={fullPart} />
                                         </CardFooter>
                                     </Card>
-                                </Link>
+                                </a>
                             );
                         })}
                     </div>

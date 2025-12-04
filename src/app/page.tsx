@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import Image from "next/image";
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getFeaturedParts } from "@/lib/data";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin, Instagram } from "lucide-react";
@@ -155,7 +153,7 @@ function FeaturedProductsSection() {
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1 h-full">
-                    <Link href={`/parts/${part.id}`} className="block group h-full">
+                    <a href={`/parts/${part.id}`} className="block group h-full">
                         <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                         <CardHeader className="p-0">
                             <div className="relative aspect-square w-full">
@@ -185,7 +183,7 @@ function FeaturedProductsSection() {
                             <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
                         </CardFooter>
                         </Card>
-                    </Link>
+                    </a>
                   </div>
                 </CarouselItem>
                 )

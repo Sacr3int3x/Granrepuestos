@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -17,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Suspense, useMemo } from 'react';
 import Filters from './components/filters';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -275,10 +273,10 @@ function PartsPageContent() {
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
-                      const productUrl = `${window.location.origin}/parts/${part.id}`;
+                      const productUrl = `/parts/${part.id}`;
                       return (
                          <Card key={part.id} className="overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-                            <Link href={`/parts/${part.id}`} className="block">
+                            <a href={productUrl} className="block">
                                 <CardHeader className="p-0">
                                 <div className="relative aspect-square w-full">
                                     {firstImage ? (
@@ -305,11 +303,11 @@ function PartsPageContent() {
                                 <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
-                            </Link>
+                            </a>
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
                                 <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
                                 <div className="flex items-center gap-1">
-                                    <ShareButton url={productUrl} size="icon" variant="ghost" />
+                                    <ShareButton url={productUrl} />
                                     <AddToCartButton part={fullPart} size="icon" />
                                 </div>
                             </CardFooter>
