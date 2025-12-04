@@ -25,7 +25,7 @@ import { Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { getParts, getCategories, getVehicleBrands } from '@/lib/data';
+import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import ShareButton from './components/share-button';
@@ -90,18 +90,7 @@ function PartsPageContent() {
     
     // Sanitize image URLs right after fetching
     const sanitizedParts = allParts.map(part => {
-      let urls: string[] = [];
-      if (typeof part.imageUrls === 'string') {
-        const htmlString = part.imageUrls;
-        const imgRegex = /<img[^>]+src="([^">]+)"/g;
-        let match;
-        while ((match = imgRegex.exec(htmlString)) !== null) {
-            urls.push(match[1].trim());
-        }
-      } else if (Array.isArray(part.imageUrls)) {
-        urls = part.imageUrls.filter(url => typeof url === 'string' && url.startsWith('http'));
-      }
-      return { ...part, imageUrls: urls };
+      return { ...part, imageUrls: sanitizeImageUrls(part.imageUrls) };
     });
 
     const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
@@ -292,15 +281,15 @@ function PartsPageContent() {
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
-                      const isValidImage = Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && typeof part.imageUrls[0] === 'string' && part.imageUrls[0].startsWith('http');
+                      const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
                       return (
                           <Link href={`/parts/${part.id}`} key={part.id} className="block group">
                               <Card className="overflow-hidden flex flex-col h-full">
                                   <CardHeader className="p-0">
-                                      <div className='relative w-full aspect-[4/3]'>
-                                        {isValidImage ? (
+                                      <div className='relative w-full aspect-square bg-muted'>
+                                        {firstImage ? (
                                           <Image
-                                              src={part.imageUrls[0]}
+                                              src={firstImage}
                                               alt={part.name}
                                               fill
                                               className="object-cover group-hover:scale-105 transition-transform"
@@ -308,14 +297,14 @@ function PartsPageContent() {
                                               data-ai-hint="auto part"
                                           />
                                         ) : (
-                                          <div className="h-full w-full bg-muted flex items-center justify-center">
+                                          <div className="h-full w-full flex items-center justify-center">
                                             <Search className="h-8 w-8 text-muted-foreground"/>
                                           </div>
                                         )}
                                       </div>
                                   </CardHeader>
                                   <CardContent className="p-3 flex-grow flex flex-col">
-                                      <h3 className="font-medium line-clamp-2 text-sm flex-grow">{part.name}</h3>
+                                      <h3 className="font-medium line-clamp-2 text-sm flex-grow min-h-[40px]">{part.name}</h3>
                                       <p className="text-xs text-muted-foreground">{brand?.name}</p>
                                       <p className="text-xs text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                       <p className="text-xs text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
@@ -355,15 +344,15 @@ function PartsPageContent() {
                           const category = getCategoryForPart(part);
                           if (!brand || !category) return null;
                           const fullPart = {...part, brand, category};
-                          const isValidImage = Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && typeof part.imageUrls[0] === 'string' && part.imageUrls[0].startsWith('http');
+                          const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
                           return (
                           <TableRow key={part.id}>
                               <TableCell>
                                 <Link href={`/parts/${part.id}`}>
                                   <div className="relative w-[100px] h-[75px]">
-                                    {isValidImage ? (
+                                    {firstImage ? (
                                         <Image
-                                            src={part.imageUrls[0]}
+                                            src={firstImage}
                                             alt={part.name}
                                             fill
                                             className="rounded-md object-cover"

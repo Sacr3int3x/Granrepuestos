@@ -70,6 +70,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
       };
     })();
 
+    const safeImageUrls = sanitizeImageUrls(part.imageUrls);
 
     return (
     <>
@@ -77,7 +78,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
         <div>
           <Carousel className="w-full">
             <CarouselContent>
-              {part.imageUrls.map((url, index) => (
+              {safeImageUrls.length > 0 ? safeImageUrls.map((url, index) => (
                 <CarouselItem key={index}>
                   <div className="aspect-square relative bg-card rounded-lg overflow-hidden border">
                     <Image
@@ -90,7 +91,13 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                     />
                   </div>
                 </CarouselItem>
-              ))}
+              )) : (
+                <CarouselItem>
+                  <div className="aspect-square relative bg-muted rounded-lg overflow-hidden border flex items-center justify-center">
+                    <Info className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                </CarouselItem>
+              )}
             </CarouselContent>
             <CarouselPrevious className="left-2" />
             <CarouselNext className="right-2" />
@@ -193,20 +200,25 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
               if (!relatedBrand || !relatedCategory) return null;
               
               const fullRelatedPart = {...relatedPart, brand: relatedBrand, category: relatedCategory};
+              const relatedPartImage = sanitizeImageUrls(relatedPart.imageUrls)[0];
 
               return (
               <a href={`/parts/${relatedPart.id}`} key={relatedPart.id} className="block group">
                   <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                     <CardHeader className="p-0">
                       <div className="relative aspect-square w-full">
-                        <Image
-                          src={sanitizeImageUrls(relatedPart.imageUrls)[0] || ''}
-                          alt={relatedPart.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          data-ai-hint="auto part"
-                        />
+                        {relatedPartImage ? (
+                          <Image
+                            src={relatedPartImage}
+                            alt={relatedPart.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            data-ai-hint="auto part"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-muted" />
+                        )}
                       </div>
                     </CardHeader>
                     <CardContent className="p-4 flex-grow">
@@ -239,7 +251,7 @@ function PartDetailClient({ partId }: { partId: string }) {
   const brandRef = useMemoFirebase(() => {
     if (!firestore || !part?.brandId) return null;
     return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part]);
+  }, [firestore, part?.brandId]);
   const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
   
   const relatedPartsQuery = useMemoFirebase(() => {
@@ -258,7 +270,7 @@ function PartDetailClient({ partId }: { partId: string }) {
       setVehicleModels(getVehicleModels());
   }, []);
 
-  const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading || categories.length === 0 || vehicleBrands.length === 0 || vehicleModels.length === 0;
+  const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading;
 
   if (isLoading) {
     return (
@@ -283,17 +295,17 @@ function PartDetailClient({ partId }: { partId: string }) {
     notFound();
   }
 
-  const sanitizedPart = {
-    ...part,
-    imageUrls: sanitizeImageUrls(part.imageUrls),
-  };
-  
   const category = categories.find(c => c.id === part.categoryId);
   if (!category) {
+    // This could happen if categories are not loaded yet or if the categoryId is invalid
+    // We can show a loading state or a specific error
+     if (categories.length === 0) {
+       return <div>Loading categories...</div>;
+     }
     notFound();
   }
 
-  return <PartDetailContent part={sanitizedPart} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
+  return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
 
@@ -326,5 +338,3 @@ export default function PartDetailPage() {
     </div>
   );
 }
-
-    

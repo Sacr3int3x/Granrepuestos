@@ -101,27 +101,45 @@ const vehicleModels: VehicleModel[] = [
     { id: 'soul', name: 'Soul', brandId: 'kia' },
 ]
 
-export function sanitizeImageUrls(imageUrls: string[] | string | undefined | null): string[] {
+export function sanitizeImageUrls(imageUrls: string | string[] | null | undefined): string[] {
+    if (!imageUrls) {
+        return [];
+    }
+
     if (Array.isArray(imageUrls)) {
-        // If it's already an array, filter out any non-string or empty values
+        // Filter out any non-string or empty values, then return
         return imageUrls.filter(url => typeof url === 'string' && url.trim() !== '');
     }
+
     if (typeof imageUrls === 'string') {
         const urls: string[] = [];
+        
         // Regex to find all src attributes within img tags
-        const imgRegex = /<img[^>]+src="([^">]+)"/g;
+        const imgTagRegex = /<img[^>]+src="([^">]+)"/g;
         let match;
-        while ((match = imgRegex.exec(imageUrls)) !== null) {
+        while ((match = imgTagRegex.exec(imageUrls)) !== null) {
             urls.push(match[1].trim());
         }
 
         // If we found URLs in img tags, return them
-        if (urls.length > 0) return urls;
+        if (urls.length > 0) {
+            return urls;
+        }
 
-        // Otherwise, split by newline or comma for plain text URLs
-        return imageUrls.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+        // If no img tags, try splitting by common delimiters for plain text lists
+        // This handles cases like 'url1,url2' or 'url1\nurl2'
+        const plainTextUrls = imageUrls.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
+        if(plainTextUrls.length > 0 && plainTextUrls.every(url => url.startsWith('http'))) {
+            return plainTextUrls;
+        }
+
+        // If it's just a single URL string
+        if (imageUrls.startsWith('http')) {
+            return [imageUrls];
+        }
     }
-    // Return an empty array if the input is not a string or an array
+    
+    // Return an empty array if the input is not a recognized format
     return [];
 }
 
