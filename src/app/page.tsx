@@ -2,7 +2,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -153,7 +152,7 @@ function FeaturedProductsSection() {
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1 h-full">
-                    <Link href={`/parts/${part.id}`} className="block group h-full">
+                    <a href={`/parts/${part.id}`} className="block group h-full">
                         <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                         <CardHeader className="p-0">
                             <div className="relative aspect-square w-full">
@@ -183,7 +182,7 @@ function FeaturedProductsSection() {
                             <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
                         </CardFooter>
                         </Card>
-                    </Link>
+                    </a>
                   </div>
                 </CarouselItem>
                 )
@@ -221,7 +220,7 @@ export default function Home() {
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
             <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s]">
-              <Link href="/parts">Ver Catálogo</Link>
+              <a href="/parts">Ver Catálogo</a>
             </Button>
           </div>
         </div>
@@ -322,3 +321,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

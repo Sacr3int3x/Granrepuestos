@@ -10,7 +10,6 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
-import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -45,9 +44,9 @@ export default function RootLayout({
                     className="h-14 w-14 rounded-full shadow-lg bg-green-600 hover:bg-green-700"
                     asChild
                    >
-                     <Link href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+                     <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
                        <MessageSquare className="h-6 w-6 text-white" />
-                     </Link>
+                     </a>
                    </Button>
                 </div>
                 <CartSheet />
@@ -58,3 +57,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    
