@@ -28,6 +28,7 @@ import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import ShareButton from './components/share-button';
 
 
 const PARTS_PER_PAGE = 16;
@@ -87,14 +88,12 @@ function PartsPageContent() {
         return { filteredParts: [], totalPages: 0, paginatedParts: [] };
     }
     
-    // Sanitize image URLs right after fetching
     const sanitizedParts = allParts.map(part => {
       return { ...part, imageUrls: sanitizeImageUrls(part.imageUrls) };
     });
 
     const filtered = getParts(sanitizedParts, { query, brand: brandFilter, category: categoryFilter, vehicleBrand, vehicleModel });
     
-    // Sort alphabetically by name
     const sorted = filtered.sort((a, b) => a.name.localeCompare(b.name));
     
     const total = Math.ceil(sorted.length / PARTS_PER_PAGE);
@@ -112,7 +111,6 @@ function PartsPageContent() {
           params.set(key, String(value));
         }
       });
-      // Reset page to 1 when filters change
       params.set('page', '1');
       return params.toString();
   };
@@ -252,10 +250,10 @@ function PartsPageContent() {
             )}
             {isLoading ? (
                <div className="space-y-4">
-                  <div className="md:hidden grid grid-cols-2 gap-4">
-                      {[...Array(6)].map((_, i) => (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {[...Array(8)].map((_, i) => (
                         <Card key={i}>
-                           <CardHeader className="p-0"><Skeleton className="h-40 w-full" /></CardHeader>
+                           <CardHeader className="p-0"><Skeleton className="aspect-square w-full" /></CardHeader>
                            <CardContent className="p-3 space-y-2">
                              <Skeleton className="h-4 w-4/5" />
                              <Skeleton className="h-4 w-2/5" />
@@ -267,23 +265,20 @@ function PartsPageContent() {
                         </Card>
                       ))}
                   </div>
-                  <div className="hidden md:block border rounded-lg">
-                      {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
-                  </div>
               </div>
             ) : paginatedParts.length > 0 ? (
               <div className="space-y-4">
-                {/* Mobile View - Cards */}
-                <div className="grid grid-cols-2 gap-4 md:hidden">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
                       const fullPart = {...part, brand, category};
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
+                      const productUrl = `${window.location.origin}/parts/${part.id}`;
                       return (
-                         <Link href={`/parts/${part.id}`} key={part.id} className="block group">
-                            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                         <Card key={part.id} className="overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
+                            <Link href={`/parts/${part.id}`} className="block">
                                 <CardHeader className="p-0">
                                 <div className="relative aspect-square w-full">
                                     {firstImage ? (
@@ -302,84 +297,27 @@ function PartsPageContent() {
                                     )}
                                 </div>
                                 </CardHeader>
-                                <CardContent className="p-4 flex-grow min-h-[120px]">
-                                <h3 className="text-lg font-semibold leading-tight line-clamp-2">
+                                <CardContent className="p-4 flex-grow min-h-[140px]">
+                                <h3 className="text-base font-semibold leading-tight line-clamp-2">
                                     {part.name}
                                 </h3>
                                 <p className="text-sm text-muted-foreground mt-1">{brand?.name || part.brandId}</p>
                                 <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
-                                <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                                <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
-                                <AddToCartButton part={fullPart} />
-                                </CardFooter>
-                            </Card>
-                         </Link>
+                            </Link>
+                            <CardFooter className="p-4 flex justify-between items-center mt-auto">
+                                <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
+                                <div className="flex items-center gap-1">
+                                    <ShareButton url={productUrl} size="icon" variant="ghost" />
+                                    <AddToCartButton part={fullPart} size="icon" />
+                                </div>
+                            </CardFooter>
+                         </Card>
                       )
                   })}
                 </div>
 
-                {/* Desktop View - Table */}
-                <div className="hidden md:block border rounded-lg overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[120px]">Imagen</TableHead>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Marca Repuesto</TableHead>
-                        <TableHead>Marca Vehículo</TableHead>
-                        <TableHead>Año</TableHead>
-                        <TableHead>SKU</TableHead>
-                        <TableHead className="text-right">Precio</TableHead>
-                        <TableHead className="text-center">Stock</TableHead>
-                        <TableHead />
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {paginatedParts.map((part: Part) => {
-                          const brand = getBrandForPart(part);
-                          const category = getCategoryForPart(part);
-                          if (!brand || !category) return null;
-                          const fullPart = {...part, brand, category};
-                          const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
-                          return (
-                          <TableRow key={part.id}>
-                              <TableCell>
-                                <Link href={`/parts/${part.id}`}>
-                                  <div className="relative w-[100px] h-[75px]">
-                                    {firstImage ? (
-                                        <Image
-                                            src={firstImage}
-                                            alt={part.name}
-                                            fill
-                                            className="rounded-md object-cover"
-                                            sizes="100px"
-                                            data-ai-hint="auto part"
-                                        />
-                                      ) : (
-                                        <div className="h-full w-full bg-muted rounded-md" />
-                                      )}
-                                  </div>
-                                </Link>
-                              </TableCell>
-                              <TableCell className="font-medium"><Link href={`/parts/${part.id}`}>{part.name}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`}>{brand?.name}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`}>{getCompatibilityBrand(part, vehicleBrands)}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`}>{getCompatibilityYear(part)}</Link></TableCell>
-                              <TableCell><Link href={`/parts/${part.id}`}>{part.sku}</Link></TableCell>
-                              <TableCell className="text-right font-semibold"><Link href={`/parts/${part.id}`}>${part.price.toFixed(2)}</Link></TableCell>
-                              <TableCell className="text-center"><Link href={`/parts/${part.id}`}>{part.stock}</Link></TableCell>
-      
-                              <TableCell className="text-right">
-                                <AddToCartButton part={fullPart} size="icon" />
-                              </TableCell>
-                          </TableRow>
-                          )
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-lg">

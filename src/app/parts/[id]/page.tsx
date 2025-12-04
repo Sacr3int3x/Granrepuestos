@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { notFound, useParams } from "next/navigation";
@@ -28,9 +29,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import ShareButton from "../components/share-button";
 
-function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand; category: Category; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
-    const fullPart = { ...part, brand, category };
+function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand | null; category: Category | null; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
+    
+    // Fallback to a default object if brand or category is null
+    const safeBrand = brand || { id: part.brandId, name: part.brandId, logoUrl: '' };
+    const safeCategory = category || { id: part.categoryId, name: part.categoryId };
+    const fullPart = { ...part, brand: safeBrand, category: safeCategory };
+    const productUrl = typeof window !== 'undefined' ? window.location.href : '';
 
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
     const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
@@ -114,7 +121,10 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
               </p>
             </div>
-            <AddToCartButton part={fullPart} size="lg" />
+            <div className="flex items-center gap-2">
+                <ShareButton url={productUrl} />
+                <AddToCartButton part={fullPart} size="lg" />
+            </div>
           </div>
 
         </div>
@@ -132,7 +142,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                        {brand && brand.websiteUrl ? (
                          <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
                         ) : (
-                          <span>{brand?.name}</span>
+                          <span>{brand?.name || '-'}</span>
                         )}
                     </TableCell>
                 </TableRow>
@@ -161,7 +171,7 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 </TableRow>
                  <TableRow>
                     <TableCell className="font-medium">Categoría</TableCell>
-                    <TableCell>{category?.name}</TableCell>
+                    <TableCell>{category?.name || '-'}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell className="font-medium">Descripción</TableCell>
@@ -242,7 +252,7 @@ function PartDetailClient({ partId }: { partId: string }) {
     if (!firestore || !partId) return null;
     return doc(firestore, 'parts', partId);
   }, [firestore, partId]);
-  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+  const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
   const brandRef = useMemoFirebase(() => {
     if (!firestore || !part?.brandId) return null;
@@ -267,8 +277,8 @@ function PartDetailClient({ partId }: { partId: string }) {
   }, []);
 
   const category = useMemo(() => {
-    if (!part || categories.length === 0) return undefined;
-    return categories.find(c => c.id === part.categoryId);
+    if (!part || categories.length === 0) return null;
+    return categories.find(c => c.id === part.categoryId) || null;
   }, [part, categories]);
   
   const isLoading = isPartLoading || isBrandLoading || areRelatedPartsLoading;
@@ -292,11 +302,12 @@ function PartDetailClient({ partId }: { partId: string }) {
     )
   }
 
-  // After loading, if part or brand don't exist, it's a true 404
-  if (!part || !brand || !category) {
+  // This is the critical change. We only call notFound() if, after loading, the `part` is still null.
+  if (!part) {
     notFound();
   }
 
+  // If brand or category are null, we can still render the page with placeholder info.
   return <PartDetailContent part={part} brand={brand} category={category} relatedParts={relatedParts} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
 
@@ -306,6 +317,7 @@ export default function PartDetailPage() {
   const id = typeof params.id === 'string' ? params.id : '';
   
   if (!id) {
+    // Show skeleton if ID is not available on first render
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12">
