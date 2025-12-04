@@ -30,8 +30,9 @@ export default function ShareButton({ url, title = "Mira este repuesto", text = 
           url: fullUrl,
         });
       } catch (error) {
+        // Handle AbortError, which occurs when the user cancels the share action
         if (error instanceof Error && error.name === 'AbortError') {
-          // User cancelled the share action, do nothing.
+          // Do nothing, as this is an expected user action.
           return;
         }
         console.error("Error al compartir:", error);
