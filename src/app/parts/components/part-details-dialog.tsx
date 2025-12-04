@@ -28,11 +28,10 @@ import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/ty
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Info, Share2, Eye } from "lucide-react";
+import { Info, Eye } from "lucide-react";
 import AddToCartButton from "./add-to-cart-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
-import ShareButton from "./share-button";
 
 interface PartDetailsDialogProps {
   partId: string;
@@ -179,15 +178,10 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
                   <Info className="h-4 w-4" />
                   <AlertTitle>¿No estás seguro?</AlertTitle>
                   <AlertDescription>
-                      <p>Si tienes dudas sobre la compatibilidad, contáctanos antes de comprar.</p>
+                      Si tienes dudas sobre la compatibilidad, contáctanos antes de comprar.
                   </AlertDescription>
               </Alert>
                <div className="flex items-center gap-2">
-                <ShareButton 
-                    title={part.name}
-                    text={`Mira este repuesto: ${part.name}`}
-                    url={`/parts?part=${part.id}`}
-                  />
                   <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
                     Ver políticas de devolución
                   </Link>
@@ -205,7 +199,7 @@ function PartDetailLoading() {
     <>
       <DialogHeader>
         <DialogTitle>
-           <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-6 w-3/4" />
         </DialogTitle>
         <DialogDescription>
             <Skeleton className="h-4 w-1/4 mt-2" />
@@ -282,3 +276,5 @@ export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDia
     </Dialog>
   );
 }
+
+    
