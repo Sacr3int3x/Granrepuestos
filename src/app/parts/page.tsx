@@ -61,24 +61,15 @@ function PartsPageContent() {
   const vehicleBrands = getVehicleBrands();
 
   const getCompatibilityBrand = (part: Part, allVehicleBrands: VehicleBrand[]): string => {
-    const brandNames = new Set<string>();
-
-    if (part.vehicleBrandId) {
-      const brand = allVehicleBrands.find(b => b.id === part.vehicleBrandId);
-      if (brand) brandNames.add(brand.name);
+    if (!part.vehicleBrandIds || part.vehicleBrandIds.length === 0) {
+      return 'Varios';
     }
+    const brandNames = part.vehicleBrandIds.map(id => {
+      const brand = allVehicleBrands.find(b => b.id === id);
+      return brand ? brand.name : id;
+    });
 
-    if (part.vehicleCompatibility) {
-      part.vehicleCompatibility.forEach(comp => {
-        const brand = allVehicleBrands.find(b => b.id === comp.brandId);
-        if (brand) brandNames.add(brand.name);
-      });
-    }
-
-    if (brandNames.size > 0) {
-      return Array.from(brandNames).join(', ');
-    }
-    return 'Varios';
+    return brandNames.join(', ');
   };
 
   const getCompatibilityYear = (part: Part): string => {
@@ -294,7 +285,7 @@ function PartsPageContent() {
             ) : paginatedParts.length > 0 ? (
               <div className="space-y-4">
                 {/* Mobile View - Cards */}
-                <div className="md:hidden grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:hidden">
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);

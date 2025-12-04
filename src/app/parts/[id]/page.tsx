@@ -58,8 +58,10 @@ function PartDetailContent({ part, brands, categories, vehicleBrands, vehicleMod
         years: new Set<string>(),
       };
 
-      if (part.vehicleBrandId) {
-        info.brands.add(getBrandName(part.vehicleBrandId));
+      if (part.vehicleBrandIds) {
+        part.vehicleBrandIds.forEach(brandId => {
+          info.brands.add(getBrandName(brandId));
+        });
       }
       
       if (part.vehicleModelIds) {

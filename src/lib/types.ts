@@ -46,7 +46,7 @@ export type Part = {
     [key: string]: string;
   };
   relatedPartIds: string[];
-  vehicleBrandId?: string; // Optional top-level for primary vehicle
-  vehicleModelIds?: string[]; // Optional top-level for primary vehicle
+  vehicleBrandIds?: string[];
+  vehicleModelIds?: string[]; 
   vehicleCompatibility?: VehicleCompatibility[];
 };

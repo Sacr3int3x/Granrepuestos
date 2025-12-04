@@ -23,6 +23,8 @@ const vehicleBrands: VehicleBrand[] = [
   { id: 'ford', name: 'Ford' },
   { id: 'isuzu', name: 'Isuzu' },
   { id: 'jeep', name: 'Jeep' },
+  { id: 'hyundai', name: 'Hyundai' },
+  { id: 'kia', name: 'Kia' },
 ]
 
 const vehicleModels: VehicleModel[] = [
@@ -73,6 +75,30 @@ const vehicleModels: VehicleModel[] = [
     // Jeep
     { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
+
+    // Hyundai
+    { id: 'accent', name: 'Accent', brandId: 'hyundai' },
+    { id: 'elantra', name: 'Elantra', brandId: 'hyundai' },
+    { id: 'santa-fe', name: 'Santa Fe', brandId: 'hyundai' },
+    { id: 'tucson', name: 'Tucson', brandId: 'hyundai' },
+    { id: 'getz', name: 'Getz', brandId: 'hyundai' },
+    { id: 'i10', name: 'i10', brandId: 'hyundai' },
+    { id: 'atos', name: 'Atos', brandId: 'hyundai' },
+    { id: 'matrix', name: 'Matrix', brandId: 'hyundai' },
+    { id: 'veracruz', name: 'Veracruz', brandId: 'hyundai' },
+    { id: 'eon', name: 'Eon', brandId: 'hyundai' },
+
+    // Kia
+    { id: 'rio', name: 'Rio', brandId: 'kia' },
+    { id: 'sportage', name: 'Sportage', brandId: 'kia' },
+    { id: 'picanto', name: 'Picanto', brandId: 'kia' },
+    { id: 'sorento', name: 'Sorento', brandId: 'kia' },
+    { id: 'carnival', name: 'Carnival', brandId: 'kia' },
+    { id: 'cerato', name: 'Cerato', brandId: 'kia' },
+    { id: 'carens', name: 'Carens', brandId: 'kia' },
+    { id: 'cadenza', name: 'Cadenza', brandId: 'kia' },
+    { id: 'optima', name: 'Optima', brandId: 'kia' },
+    { id: 'soul', name: 'Soul', brandId: 'kia' },
 ]
 
 export function sanitizeImageUrls(imageUrls: string[] | string | undefined | null): string[] {
@@ -137,7 +163,7 @@ export function getParts(
   
   if (filters.vehicleBrand) {
     filteredParts = filteredParts.filter((part) => {
-        if (part.vehicleBrandId === filters.vehicleBrand) return true;
+        if (part.vehicleBrandIds && part.vehicleBrandIds.includes(filters.vehicleBrand as string)) return true;
         if (part.vehicleCompatibility) {
             return part.vehicleCompatibility.some(comp => comp.brandId === filters.vehicleBrand);
         }
@@ -179,9 +205,12 @@ export function getVehicleBrands(): VehicleBrand[] {
   return vehicleBrands;
 }
 
-export function getVehicleModels(brandId?: string): VehicleModel[] {
-    if (!brandId) return vehicleModels;
-    return vehicleModels.filter(model => model.brandId === brandId);
+export function getVehicleModels(brandIds?: string[] | string): VehicleModel[] {
+    if (!brandIds || (Array.isArray(brandIds) && brandIds.length === 0)) return [];
+    
+    const ids = Array.isArray(brandIds) ? brandIds : [brandIds];
+
+    return vehicleModels.filter(model => ids.includes(model.brandId));
 }
 
 export function getRelatedParts(allParts: Part[], part: Part): Part[] {

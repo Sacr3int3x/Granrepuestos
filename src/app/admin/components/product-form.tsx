@@ -43,7 +43,7 @@ const formSchema = z.object({
   categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
   imageUrls: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
-  vehicleBrandId: z.string().optional(),
+  vehicleBrandIds: z.array(z.string()).optional(),
   vehicleModelIds: z.array(z.string()).optional(),
   vehicleCompatibility: z.string().optional(),
 });
@@ -77,7 +77,8 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         ...part,
         description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.filter(u => typeof u === 'string') : [],
-        vehicleCompatibility: part.vehicleCompatibility && part.vehicleCompatibility.length > 0 ? part.vehicleCompatibility[0].yearRange : '',
+        vehicleCompatibility: (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) ? part.vehicleCompatibility[0].yearRange : '',
+        vehicleBrandIds: part.vehicleBrandIds || [],
         vehicleModelIds: part.vehicleModelIds || [],
       }
     : {
@@ -90,7 +91,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         categoryId: "",
         imageUrls: [],
         isFeatured: false,
-        vehicleBrandId: "",
+        vehicleBrandIds: [],
         vehicleModelIds: [],
         vehicleCompatibility: "",
       };
@@ -100,11 +101,11 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     defaultValues,
   });
 
-  const selectedVehicleBrand = form.watch("vehicleBrandId");
+  const selectedVehicleBrands = form.watch("vehicleBrandIds");
 
   useEffect(() => {
-    if (selectedVehicleBrand) {
-      const models = getVehicleModels(selectedVehicleBrand);
+    if (selectedVehicleBrands && selectedVehicleBrands.length > 0) {
+      const models = getVehicleModels(selectedVehicleBrands);
       setAvailableModels(models);
       
       const currentModels = form.getValues("vehicleModelIds") || [];
@@ -115,7 +116,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
       setAvailableModels([]);
       form.setValue("vehicleModelIds", []);
     }
-  }, [selectedVehicleBrand, form]);
+  }, [selectedVehicleBrands, form]);
 
   const handleSubmit = (data: ProductFormValues) => {
     onSubmit(data);
@@ -185,24 +186,36 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="vehicleBrandId"
-              render={({ field }) => (
+              name="vehicleBrandIds"
+              render={() => (
                 <FormItem>
-                  <FormLabel>Marca del Vehículo</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una marca de vehículo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {vehicleBrands.map((brand) => (
-                        <SelectItem key={brand.id} value={brand.id}>
-                          {brand.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Marcas del Vehículo</FormLabel>
+                    <Card className="p-2">
+                      <ScrollArea className="h-40">
+                        {vehicleBrands.map((brand) => (
+                           <FormField
+                            key={brand.id}
+                            control={form.control}
+                            name="vehicleBrandIds"
+                            render={({ field }) => (
+                                <FormItem key={brand.id} className="flex flex-row items-start space-x-3 space-y-0 p-2">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(brand.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...(field.value || []), brand.id])
+                                          : field.onChange(field.value?.filter((value) => value !== brand.id));
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">{brand.name}</FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </ScrollArea>
+                    </Card>
                   <FormMessage />
                 </FormItem>
               )}
@@ -251,7 +264,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
                             ))
                         ) : (
                             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-                                {selectedVehicleBrand ? "No hay modelos para esta marca." : "Selecciona una marca primero."}
+                                {selectedVehicleBrands && selectedVehicleBrands.length > 0 ? "No hay modelos para esta marca." : "Selecciona una marca primero."}
                             </div>
                         )}
                         </ScrollArea>

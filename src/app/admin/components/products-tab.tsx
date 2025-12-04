@@ -105,17 +105,19 @@ export default function ProductsTab() {
   }, [parts, searchQuery, brandFilter, categoryFilter, currentPage]);
 
 
-  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[] }) => {
+  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[], vehicleBrandIds?: string[] }) => {
     if (!firestore || !partsCollection) return;
     
     let vehicleCompatibility: VehicleCompatibility[] = [];
-    if (data.vehicleBrandId && data.vehicleModelIds && data.vehicleModelIds.length > 0 && data.vehicleCompatibility) {
-        data.vehicleModelIds.forEach(modelId => {
-            vehicleCompatibility.push({
-                brandId: data.vehicleBrandId as string,
-                modelId: modelId,
-                yearRange: data.vehicleCompatibility as string,
-            });
+    if (data.vehicleBrandIds && data.vehicleModelIds && data.vehicleModelIds.length > 0 && data.vehicleCompatibility) {
+        data.vehicleBrandIds.forEach(brandId => {
+            data.vehicleModelIds?.forEach(modelId => {
+                 vehicleCompatibility.push({
+                    brandId: brandId,
+                    modelId: modelId,
+                    yearRange: data.vehicleCompatibility as string,
+                });
+            })
         });
     }
 
@@ -129,7 +131,7 @@ export default function ProductsTab() {
         categoryId: data.categoryId,
         imageUrls: data.imageUrls || [],
         isFeatured: data.isFeatured,
-        vehicleBrandId: data.vehicleBrandId,
+        vehicleBrandIds: data.vehicleBrandIds,
         vehicleModelIds: data.vehicleModelIds,
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
