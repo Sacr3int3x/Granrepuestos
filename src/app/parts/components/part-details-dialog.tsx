@@ -28,7 +28,7 @@ import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/ty
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Info, Share2 } from "lucide-react";
+import { Info, Share2, Eye } from "lucide-react";
 import AddToCartButton from "./add-to-cart-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
@@ -204,8 +204,12 @@ function PartDetailLoading() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle><Skeleton className="h-6 w-3/4" /></DialogTitle>
-        <DialogDescription><Skeleton className="h-4 w-1/4" /></DialogDescription>
+        <DialogTitle>
+           <Skeleton className="h-6 w-3/4" />
+        </DialogTitle>
+        <DialogDescription>
+            <Skeleton className="h-4 w-1/4 mt-2" />
+        </DialogDescription>
       </DialogHeader>
       <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
         <Skeleton className="aspect-square w-full rounded-lg" />
@@ -278,5 +282,3 @@ export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDia
     </Dialog>
   );
 }
-
-    
