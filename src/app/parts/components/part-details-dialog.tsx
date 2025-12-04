@@ -199,9 +199,9 @@ function PartDetailLoading() {
     <>
       <DialogHeader>
         <DialogTitle>Cargando detalles...</DialogTitle>
-        <DialogDescription>
-          <Skeleton className="h-4 w-1/4 mt-2" />
-        </DialogDescription>
+        <div className="text-sm text-muted-foreground pt-1">
+          <Skeleton className="h-4 w-24" />
+        </div>
       </DialogHeader>
       <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
         <Skeleton className="aspect-square w-full rounded-lg" />
