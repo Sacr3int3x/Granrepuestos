@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { notFound, useParams } from "next/navigation";
@@ -18,7 +17,6 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
 import AddToCartButton from "../components/add-to-cart-button";
@@ -31,11 +29,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import ShareButton from "../components/share-button";
 
-function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand | null; category: Category | null; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
+function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands, vehicleModels }: { part: Part; brand: Brand; category: Category; relatedParts: Part[] | null; vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[] }) {
     
-    const safeBrand = brand || { id: part.brandId, name: part.brandId, logoUrl: '' };
-    const safeCategory = category || { id: part.categoryId, name: part.categoryId };
-    const fullPart = { ...part, brand: safeBrand, category: safeCategory };
+    const fullPart = { ...part, brand, category };
     const productUrl = typeof window !== 'undefined' ? window.location.href : '';
 
     const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
@@ -104,8 +100,12 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 </CarouselItem>
               )}
             </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
+            {safeImageUrls.length > 1 && (
+              <>
+                <CarouselPrevious className="left-2" />
+                <CarouselNext className="right-2" />
+              </>
+            )}
           </Carousel>
         </div>
         <div className="flex flex-col">
@@ -138,10 +138,10 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                  <TableRow>
                     <TableCell className="font-medium">Marca</TableCell>
                     <TableCell>
-                       {brand && brand.websiteUrl ? (
+                       {brand.websiteUrl ? (
                          <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
                         ) : (
-                          <span>{brand?.name || '-'}</span>
+                          <span>{brand.name}</span>
                         )}
                     </TableCell>
                 </TableRow>
@@ -170,11 +170,11 @@ function PartDetailContent({ part, brand, category, relatedParts, vehicleBrands,
                 </TableRow>
                  <TableRow>
                     <TableCell className="font-medium">Categoría</TableCell>
-                    <TableCell>{category?.name || '-'}</TableCell>
+                    <TableCell>{category.name}</TableCell>
                 </TableRow>
                 <TableRow>
                     <TableCell className="font-medium">Descripción</TableCell>
-                    <TableCell>{part.description}</TableCell>
+                    <TableCell>{part.description || '-'}</TableCell>
                 </TableRow>
                 </TableBody>
             </Table>
@@ -280,27 +280,25 @@ function PartDetailClient({ partId }: { partId: string }) {
     return categories.find(c => c.id === part.categoryId) || null;
   }, [part, categories]);
   
-  const isLoading = isPartLoading || (part && isBrandLoading) || areRelatedPartsLoading;
+  const isLoading = isPartLoading || (part && (isBrandLoading || areRelatedPartsLoading));
 
   if (!isPartLoading && !part) {
     notFound();
   }
 
-  if (isLoading || !part) {
+  if (isLoading || !part || !brand || !category) {
     return (
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12">
-            <div>
-                <Skeleton className="aspect-square w-full rounded-lg" />
-            </div>
-            <div className="space-y-4">
-                <Skeleton className="h-10 w-3/4" />
-                <Skeleton className="h-6 w-1/4" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-10 w-1/2" />
-                <Skeleton className="h-12 w-1/3" />
-            </div>
-        </div>
+      <div className="grid md:grid-cols-2 gap-12">
+          <div>
+              <Skeleton className="aspect-square w-full rounded-lg" />
+          </div>
+          <div className="space-y-4">
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-1/2" />
+              <Skeleton className="h-12 w-1/3" />
+          </div>
       </div>
     )
   }
@@ -313,6 +311,7 @@ export default function PartDetailPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : '';
   
+  // A loading state is needed here while waiting for the id from useParams on initial client render
   if (!id) {
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -338,3 +337,5 @@ export default function PartDetailPage() {
     </div>
   );
 }
+
+    
