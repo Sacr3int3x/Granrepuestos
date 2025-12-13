@@ -63,11 +63,18 @@ const vehicleModels: VehicleModel[] = [
 
     // Chevrolet
     { id: 'spark', name: 'Spark', brandId: 'chevrolet' },
+    { id: 'spark-lite', name: 'Spark Lite', brandId: 'chevrolet' },
     { id: 'silverado', name: 'Silverado', brandId: 'chevrolet' },
+    { id: 'optra', name: 'Optra', brandId: 'chevrolet' },
+    { id: 'aveo', name: 'Aveo', brandId: 'chevrolet' },
+    { id: 'trax', name: 'Trax', brandId: 'chevrolet' },
+    { id: 'cruze', name: 'Cruze', brandId: 'chevrolet' },
 
     // Ford
     { id: 'focus', name: 'Focus', brandId: 'ford' },
     { id: 'ranger', name: 'Ranger', brandId: 'ford' },
+    { id: 'f-150', name: 'F-150', brandId: 'ford' },
+    { id: 'explorer', name: 'Explorer', brandId: 'ford' },
 
     // Isuzu
     { id: 'dmax', name: 'D-Max', brandId: 'isuzu' },
