@@ -84,6 +84,8 @@ const vehicleModels: VehicleModel[] = [
     // Jeep
     { id: 'wrangler', name: 'Wrangler', brandId: 'jeep' },
     { id: 'cherokee', name: 'Cherokee', brandId: 'jeep' },
+    { id: 'compass', name: 'Compass', brandId: 'jeep' },
+    { id: 'patriot', name: 'Patriot', brandId: 'jeep' },
 
     // Hyundai
     { id: 'accent', name: 'Accent', brandId: 'hyundai' },
