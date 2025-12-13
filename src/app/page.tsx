@@ -271,15 +271,13 @@ export default function Home() {
                 />
             </div>
             <div className="max-w-xl">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline">Encuéntranos en MercadoLibre</h2>
+                <h2 className="text-3xl md:text-4xl font-bold font-headline">También vendemos en MercadoLibre</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
                     Con más de 5 años de trayectoria y reputación impecable, somos tu opción de confianza en la plataforma líder de e-commerce de Latinoamérica.
                 </p>
-                <Button asChild size="lg" className="mt-6">
-                    <a href="https://www.mercadolibre.com.ve/" target="_blank" rel="noopener noreferrer">
-                        Visitar Tienda
-                    </a>
-                </Button>
+                <a href="https://www.mercadolibre.com.ve/" target="_blank" rel="noopener noreferrer" className="mt-6 inline-block text-primary font-semibold hover:underline">
+                    Visita nuestra tienda para ver nuestras calificaciones.
+                </a>
             </div>
           </div>
         </div>
