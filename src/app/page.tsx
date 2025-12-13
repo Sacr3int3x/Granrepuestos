@@ -257,8 +257,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* MercadoLibre Section */}
+      <section id="mercadolibre" className="py-16 lg:py-24 bg-card border-t animate-fade-in-up [animation-delay:1.2s]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 text-center md:text-left">
+            <div className="relative h-20 w-48 shrink-0">
+                <Image 
+                    src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadolibre/logo__large_plus.png"
+                    alt="MercadoLibre Logo"
+                    fill
+                    className="object-contain"
+                    sizes="192px"
+                />
+            </div>
+            <div className="max-w-xl">
+                <h2 className="text-3xl md:text-4xl font-bold font-headline">Encuéntranos en MercadoLibre</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Con más de 5 años de trayectoria y reputación impecable, somos tu opción de confianza en la plataforma líder de e-commerce de Latinoamérica.
+                </p>
+                <Button asChild size="lg" className="mt-6">
+                    <a href="https://www.mercadolibre.com.ve/" target="_blank" rel="noopener noreferrer">
+                        Visitar Tienda
+                    </a>
+                </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
-      <section id="contact" className="py-16 lg:py-24 bg-card border-t animate-fade-in-up [animation-delay:1.2s]">
+      <section id="contact" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1.4s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos</h2>
