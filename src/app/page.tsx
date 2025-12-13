@@ -275,9 +275,6 @@ export default function Home() {
                 <p className="mt-4 text-lg text-muted-foreground">
                     Con más de 5 años de trayectoria y reputación impecable, somos tu opción de confianza en la plataforma líder de e-commerce de Latinoamérica.
                 </p>
-                <p className="mt-6 text-primary font-semibold">
-                    Visita nuestra tienda para ver nuestras calificaciones.
-                </p>
             </div>
           </div>
         </div>
