@@ -275,9 +275,9 @@ export default function Home() {
                 <p className="mt-4 text-lg text-muted-foreground">
                     Con más de 5 años de trayectoria y reputación impecable, somos tu opción de confianza en la plataforma líder de e-commerce de Latinoamérica.
                 </p>
-                <a href="https://www.mercadolibre.com.ve/" target="_blank" rel="noopener noreferrer" className="mt-6 inline-block text-primary font-semibold hover:underline">
+                <p className="mt-6 text-primary font-semibold">
                     Visita nuestra tienda para ver nuestras calificaciones.
-                </a>
+                </p>
             </div>
           </div>
         </div>
