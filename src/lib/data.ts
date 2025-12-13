@@ -60,6 +60,8 @@ const vehicleModels: VehicleModel[] = [
     // Mitsubishi
     { id: 'lancer', name: 'Lancer', brandId: 'mitsubishi' },
     { id: 'l200', name: 'L200', brandId: 'mitsubishi' },
+    { id: 'montero', name: 'Montero', brandId: 'mitsubishi' },
+    { id: 'outlander', name: 'Outlander', brandId: 'mitsubishi' },
 
     // Chevrolet
     { id: 'spark', name: 'Spark', brandId: 'chevrolet' },
