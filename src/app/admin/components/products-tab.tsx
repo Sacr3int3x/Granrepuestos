@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -59,7 +58,6 @@ const getPartStatus = (part: Part): PartStatus => {
 
   if (!part.name) missingFields.push("Nombre");
   if (!part.sku) missingFields.push("SKU");
-  if (!part.description) missingFields.push("Descripción");
   if (part.price <= 0) missingFields.push("Precio");
   if (!part.brandId) missingFields.push("Marca");
   if (!part.categoryId) missingFields.push("Categoría");
@@ -499,5 +497,3 @@ export default function ProductsTab() {
     </Card>
   );
 }
-
-    
