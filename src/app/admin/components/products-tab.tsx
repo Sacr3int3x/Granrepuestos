@@ -34,7 +34,7 @@ import { ProductForm } from "./product-form";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PlusCircle, Edit, Trash2, Search, X } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Search, X, AlertCircle } from "lucide-react";
 import type { Part, VehicleCompatibility, Brand, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
@@ -43,8 +43,33 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getCategories } from "@/lib/data";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 const PARTS_PER_PAGE = 10;
+
+type PartStatus = {
+  isComplete: boolean;
+  missingFields: string[];
+};
+
+const getPartStatus = (part: Part): PartStatus => {
+  const missingFields: string[] = [];
+
+  if (!part.name) missingFields.push("Nombre");
+  if (!part.sku) missingFields.push("SKU");
+  if (!part.description) missingFields.push("Descripción");
+  if (part.price <= 0) missingFields.push("Precio");
+  if (!part.brandId) missingFields.push("Marca");
+  if (!part.categoryId) missingFields.push("Categoría");
+  if (!part.imageUrls || part.imageUrls.length === 0) missingFields.push("Imágenes");
+  
+  return {
+    isComplete: missingFields.length === 0,
+    missingFields,
+  };
+};
 
 export default function ProductsTab() {
   const firestore = useFirestore();
@@ -69,6 +94,7 @@ export default function ProductsTab() {
   const [searchQuery, setSearchQuery] = useState("");
   const [brandFilter, setBrandFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -95,6 +121,11 @@ export default function ProductsTab() {
         filtered = filtered.filter(part => part.categoryId === categoryFilter);
     }
 
+    if (statusFilter !== 'all') {
+      const isCompleteFilter = statusFilter === 'complete';
+      filtered = filtered.filter(part => getPartStatus(part).isComplete === isCompleteFilter);
+    }
+
     const sorted = filtered.sort((a, b) => a.name.localeCompare(b.name));
     
     const total = Math.ceil(sorted.length / PARTS_PER_PAGE);
@@ -102,7 +133,7 @@ export default function ProductsTab() {
 
     return { paginatedParts: paginated, totalPages: total };
 
-  }, [parts, searchQuery, brandFilter, categoryFilter, currentPage]);
+  }, [parts, searchQuery, brandFilter, categoryFilter, statusFilter, currentPage]);
 
 
   const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[], vehicleBrandIds?: string[] }) => {
@@ -187,6 +218,7 @@ export default function ProductsTab() {
     setSearchQuery("");
     setBrandFilter("all");
     setCategoryFilter("all");
+    setStatusFilter("all");
     setCurrentPage(1);
   };
   
@@ -238,7 +270,7 @@ export default function ProductsTab() {
   };
 
   const isLoading = partsLoading || brandsLoading;
-  const hasActiveFilters = searchQuery !== "" || brandFilter !== "all" || categoryFilter !== "all";
+  const hasActiveFilters = searchQuery !== "" || brandFilter !== "all" || categoryFilter !== "all" || statusFilter !== "all";
 
   return (
     <Card>
@@ -267,8 +299,8 @@ export default function ProductsTab() {
         </Dialog>
       </CardHeader>
       <CardContent>
-         <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="relative flex-grow">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            <div className="relative md:col-span-2 lg:col-span-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Buscar por nombre o SKU..."
@@ -281,7 +313,7 @@ export default function ProductsTab() {
                 />
             </div>
             <Select value={brandFilter} onValueChange={handleFilterChange(setBrandFilter)}>
-                <SelectTrigger className="w-full md:w-[200px]">
+                <SelectTrigger>
                     <SelectValue placeholder="Filtrar por marca" />
                 </SelectTrigger>
                 <SelectContent>
@@ -290,7 +322,7 @@ export default function ProductsTab() {
                 </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={handleFilterChange(setCategoryFilter)}>
-                <SelectTrigger className="w-full md:w-[200px]">
+                <SelectTrigger>
                     <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
                 <SelectContent>
@@ -298,13 +330,26 @@ export default function ProductsTab() {
                     {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
             </Select>
-            {hasActiveFilters && (
-                <Button variant="ghost" onClick={clearFilters}>
+            <Select value={statusFilter} onValueChange={handleFilterChange(setStatusFilter)}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Filtrar por estado" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todos los estados</SelectItem>
+                    <SelectItem value="complete">Completos</SelectItem>
+                    <SelectItem value="incomplete">Incompletos</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+
+          {hasActiveFilters && (
+              <div className="mb-4">
+                <Button variant="ghost" onClick={clearFilters} className="text-sm">
                     <X className="w-4 h-4 mr-2" />
-                    Limpiar
+                    Limpiar {Object.values({searchQuery, brandFilter, categoryFilter, statusFilter}).filter(v => v && v !== 'all').length} filtro(s)
                 </Button>
+              </div>
             )}
-        </div>
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
@@ -317,7 +362,7 @@ export default function ProductsTab() {
                 ))}
             </div>
         ) : (
-          <>
+          <TooltipProvider>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -326,67 +371,95 @@ export default function ProductsTab() {
                   <TableHead>SKU</TableHead>
                   <TableHead>Precio</TableHead>
                   <TableHead>Stock</TableHead>
+                  <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedParts.map((part) => (
-                  <TableRow key={part.id}>
-                    <TableCell>
-                      {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
-                        <Image
-                          src={part.imageUrls[0]}
-                          alt={part.name}
-                          width={100}
-                          height={100}
-                          className="rounded-md object-cover h-auto"
-                          data-ai-hint="auto part"
-                        />
-                      ) : (
-                        <div className="h-[100px] w-[100px] bg-muted rounded-md" />
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium">{part.name}</TableCell>
-                    <TableCell>{part.sku}</TableCell>
-                    <TableCell>${part.price.toFixed(2)}</TableCell>
-                    <TableCell>{part.stock}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-2 justify-end">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(part)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                {paginatedParts.map((part) => {
+                  const status = getPartStatus(part);
+                  return (
+                    <TableRow key={part.id}>
+                      <TableCell>
+                        {Array.isArray(part.imageUrls) && part.imageUrls.length > 0 && part.imageUrls[0] ? (
+                          <Image
+                            src={part.imageUrls[0]}
+                            alt={part.name}
+                            width={100}
+                            height={100}
+                            className="rounded-md object-cover h-auto"
+                            data-ai-hint="auto part"
+                          />
+                        ) : (
+                          <div className="h-[100px] w-[100px] bg-muted rounded-md flex items-center justify-center">
+                             <AlertCircle className="h-6 w-6 text-muted-foreground" />
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">{part.name}</TableCell>
+                      <TableCell>{part.sku}</TableCell>
+                      <TableCell>${part.price.toFixed(2)}</TableCell>
+                      <TableCell>{part.stock}</TableCell>
+                       <TableCell>
+                          {status.isComplete ? (
+                            <Badge variant="secondary" className="bg-green-100 text-green-800">Completo</Badge>
+                          ) : (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="destructive" className="bg-yellow-100 text-yellow-800 cursor-help">
+                                  Incompleto
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="font-semibold">Faltan los siguientes campos:</p>
+                                <ul className="list-disc pl-4 mt-1">
+                                  {status.missingFields.map(field => <li key={field}>{field}</li>)}
+                                </ul>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
+                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(part)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
 
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Esto eliminará permanentemente el repuesto.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(part.id)}
-                                className="bg-destructive hover:bg-destructive/90"
-                              >
-                                Eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. Esto eliminará permanentemente el repuesto.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(part.id)}
+                                  className="bg-destructive hover:bg-destructive/90"
+                                >
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
-            {totalPages > 1 && (
+            </TooltipProvider>
+            )}
+
+            {totalPages > 1 && !isLoading && (
                <div className="mt-8">
                  <Pagination>
                    <PaginationContent>
@@ -422,8 +495,6 @@ export default function ProductsTab() {
                  </Pagination>
                </div>
             )}
-          </>
-        )}
       </CardContent>
     </Card>
   );
