@@ -72,21 +72,23 @@ export default function CartSheet() {
                 </div>
             </ScrollArea>
             <Separator />
-            <SheetFooter className="p-6 flex flex-col gap-2 text-center sm:text-left">
-              <div className="text-lg font-semibold w-full flex justify-between items-center mb-4">
+            <SheetFooter className="p-6 flex flex-col gap-4 text-center sm:text-left">
+              <div className="text-lg font-semibold w-full flex justify-between items-center">
                 <span>Subtotal:</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
-              <p className="text-sm text-muted-foreground mb-2">Solicita tu cotización:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <Button onClick={handleWhatsAppQuote} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
-                  <MessageSquare className="mr-2" />
-                  WhatsApp
-                </Button>
-                <Button onClick={handleEmailQuote} variant="outline">
-                  <Mail className="mr-2" />
-                  Correo
-                </Button>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm text-muted-foreground text-center">Solicita tu cotización:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Button onClick={handleWhatsAppQuote} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      WhatsApp
+                    </Button>
+                    <Button onClick={handleEmailQuote} variant="outline">
+                      <Mail className="mr-2 h-4 w-4" />
+                      Correo
+                    </Button>
+                </div>
               </div>
             </SheetFooter>
           </>
