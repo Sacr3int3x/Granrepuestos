@@ -77,14 +77,14 @@ export default function CartSheet() {
                 <span>Subtotal:</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
-              <div className="flex flex-col gap-2">
+               <div className="flex flex-col gap-3">
                 <p className="text-sm text-muted-foreground text-center">Solicita tu cotización:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <Button onClick={handleWhatsAppQuote} variant="outline" className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <Button onClick={handleWhatsAppQuote} variant="outline" className="w-full bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
                       <MessageSquare className="mr-2 h-4 w-4" />
                       WhatsApp
                     </Button>
-                    <Button onClick={handleEmailQuote} variant="outline">
+                    <Button onClick={handleEmailQuote} variant="outline" className="w-full">
                       <Mail className="mr-2 h-4 w-4" />
                       Correo
                     </Button>
