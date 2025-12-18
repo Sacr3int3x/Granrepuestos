@@ -60,7 +60,6 @@ export default function Header() {
   const pathname = usePathname();
   const { cartItemCount, setIsCartOpen } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
   
   const navItems = [
     { href: "/parts", label: "Repuestos" },
@@ -72,19 +71,6 @@ export default function Header() {
     setIsMobileMenuOpen(false);
   };
   
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const query = formData.get('query') as string;
-    setIsSearchSheetOpen(false); // Close sheet on search
-    const router = (event.currentTarget as HTMLFormElement).ownerDocument.defaultView?.history;
-    if (query) {
-      window.location.href = `/parts?query=${encodeURIComponent(query)}`;
-    } else {
-      window.location.href = '/parts';
-    }
-  };
-
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -116,29 +102,9 @@ export default function Header() {
         {/* Right Section */}
         <div className="flex items-center justify-end gap-2">
           {/* Desktop Search */}
-          <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="hidden md:inline-flex" aria-label="Abrir búsqueda">
-                    <Search className="h-5 w-5" />
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="top" className="p-0">
-                <SheetHeader className="sr-only">
-                    <SheetTitle>Búsqueda de productos</SheetTitle>
-                </SheetHeader>
-                <div className="container mx-auto py-12">
-                   <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg mx-auto">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                        name="query"
-                        placeholder="Busca por nombre, SKU o marca..."
-                        className="h-14 pl-12 pr-4 text-lg rounded-lg"
-                        autoFocus
-                        />
-                    </form>
-                </div>
-            </SheetContent>
-          </Sheet>
+          <div className="hidden md:block w-64">
+            <HeaderSearch />
+          </div>
 
           {/* Mobile Menu */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
