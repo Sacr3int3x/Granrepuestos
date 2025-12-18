@@ -18,14 +18,14 @@ import Filters from './components/filters';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Filter, Search, X, Eye } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { PartDetailsDialog } from './components/part-details-dialog';
+import Link from 'next/link';
 
 
 const PARTS_PER_PAGE = 16;
@@ -35,8 +35,6 @@ function PartsPageContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
-
   const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
   const query = searchParams.get('query') || undefined;
   const brandFilter = searchParams.get('brand') || undefined;
@@ -275,8 +273,8 @@ function PartsPageContent() {
                       const fullPart = {...part, brand, category};
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
                       return (
-                         <Card key={part.id} className="overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-                            <div className="cursor-pointer" onClick={() => setSelectedPartId(part.id)}>
+                        <Link href={`/parts/${part.id}`} key={part.id} className="block group">
+                         <Card className="overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                                 <CardHeader className="p-0">
                                 <div className="relative aspect-square w-full">
                                     {firstImage ? (
@@ -303,12 +301,12 @@ function PartsPageContent() {
                                 <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
-                            </div>
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
                                 <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
                                 <AddToCartButton part={fullPart} size="icon" />
                             </CardFooter>
                          </Card>
+                        </Link>
                       )
                   })}
                 </div>
@@ -365,17 +363,6 @@ function PartsPageContent() {
           </main>
         </div>
       </div>
-      {selectedPartId && (
-        <PartDetailsDialog
-          partId={selectedPartId}
-          open={!!selectedPartId}
-          onOpenChange={(isOpen) => {
-            if (!isOpen) {
-              setSelectedPartId(null);
-            }
-          }}
-        />
-      )}
     </div>
   );
 }

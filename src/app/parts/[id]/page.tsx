@@ -1,13 +1,15 @@
 
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { notFound, useParams } from "next/navigation";
+import Image from "next/image";
+import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
+import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
+import AddToCartButton from "@/app/parts/components/add-to-cart-button";
+import { useMemo, useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -21,25 +23,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
-import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
-import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { Info, Eye } from "lucide-react";
-import AddToCartButton from "./add-to-cart-button";
+import { Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import ShareButton from "../components/share-button";
 
-interface PartDetailsDialogProps {
-  partId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
 
-function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels }: { part: Part, brand: Brand, category: Category | null, vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[]}) {
+function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleModels }: { part: Part, brand: Brand, category: Category | null, vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[]}) {
   
   const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
   const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
@@ -82,14 +73,37 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
   const fullPart = { ...part, brand, category };
 
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle className="pr-10">{part.name}</DialogTitle>
-        <DialogDescription>
-          SKU: {part.sku}
-        </DialogDescription>
-      </DialogHeader>
-      <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Breadcrumb className="mb-6">
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                    <Link href="/">Inicio</Link>
+                </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                    <Link href="/parts">Repuestos</Link>
+                </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                {category && (
+                    <>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href={`/parts?category=${category.id}`}>{category.name}</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    </>
+                )}
+                <BreadcrumbItem>
+                <BreadcrumbPage>{part.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+      <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
         <div>
            <Carousel className="w-full">
             <CarouselContent>
@@ -123,15 +137,19 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
           </Carousel>
         </div>
         <div className="flex flex-col">
-           <div className="flex justify-between items-center">
             <div>
-              <p className="text-3xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
+                <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
+            </div>
+           <div className="my-6 flex justify-between items-center">
+            <div>
+              <p className="text-4xl font-bold text-primary">${part.price.toFixed(2)}</p>
               <p className={part.stock > 0 ? "text-green-600 mt-1" : "text-red-600 mt-1"}>
                 {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
               </p>
             </div>
              <div className="flex items-center gap-2">
-                <AddToCartButton part={fullPart as Part} size="lg" />
+                <AddToCartButton part={fullPart as Part} size="lg" showText={true}/>
             </div>
           </div>
 
@@ -174,6 +192,9 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
               </Table>
             </div>
              <div className="mt-auto pt-4 flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
+              </div>
               <Alert>
                   <Info className="h-4 w-4" />
                   <AlertTitle>¿No estás seguro?</AlertTitle>
@@ -189,88 +210,79 @@ function PartDetailContent({ part, brand, category, vehicleBrands, vehicleModels
             </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 
 function PartDetailLoading() {
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>Cargando detalles...</DialogTitle>
-        <div className="text-sm text-muted-foreground pt-1">
-          <Skeleton className="h-4 w-24" />
+     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Skeleton className="h-6 w-2/3 mb-6" />
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
+            <Skeleton className="aspect-square w-full rounded-lg" />
+            <div className="space-y-4">
+                <Skeleton className="h-8 w-4/5" />
+                <Skeleton className="h-5 w-1/4" />
+                <Skeleton className="h-12 w-1/2 mt-6" />
+                <div className="space-y-2 pt-6">
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-4/5" />
+                    <Skeleton className="h-5 w-2/3" />
+                </div>
+                <div className="pt-8 flex gap-4">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </div>
         </div>
-      </DialogHeader>
-      <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-4">
-        <Skeleton className="aspect-square w-full rounded-lg" />
-        <div className="space-y-4">
-          <Skeleton className="h-10 w-1/2" />
-          <Skeleton className="h-6 w-1/4" />
-          <div className="space-y-2 pt-6">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-4/5" />
-            <Skeleton className="h-5 w-2/3" />
-          </div>
-          <div className="pt-8">
-            <Skeleton className="h-12 w-full" />
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
 
-export function PartDetailsDialog({ partId, open, onOpenChange }: PartDetailsDialogProps) {
-  const firestore = useFirestore();
+export default function PartDetailPage() {
+    const params = useParams();
+    const id = typeof params.id === 'string' ? params.id : '';
 
-  const partRef = useMemoFirebase(() => {
-    if (!firestore || !partId) return null;
-    return doc(firestore, 'parts', partId);
-  }, [firestore, partId]);
-  const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+    const firestore = useFirestore();
 
-  const brandRef = useMemoFirebase(() => {
-    if (!firestore || !part?.brandId) return null;
-    return doc(firestore, 'brands', part.brandId);
-  }, [firestore, part]);
-  const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
-  
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
-  const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
-  
-  useEffect(() => {
-      setCategories(getCategories());
-      setVehicleBrands(getVehicleBrands());
-      setVehicleModels(getVehicleModels());
-  }, []);
+    const partRef = useMemoFirebase(() => {
+        if (!firestore || !id) return null;
+        return doc(firestore, 'parts', id);
+    }, [firestore, id]);
+    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
-  const category = useMemo(() => {
-    if (!part || categories.length === 0) return null;
-    return categories.find(c => c.id === part.categoryId) || null;
-  }, [part, categories]);
-  
-  const isLoading = isPartLoading || (part && isBrandLoading);
+    const brandRef = useMemoFirebase(() => {
+        if (!firestore || !part?.brandId) return null;
+        return doc(firestore, 'brands', part.brandId);
+    }, [firestore, part]);
+    const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+    
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
+    const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
+    
+    useEffect(() => {
+        setCategories(getCategories());
+        setVehicleBrands(getVehicleBrands());
+        setVehicleModels(getVehicleModels());
+    }, []);
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        {isLoading ? (
-          <PartDetailLoading />
-        ) : part && brand ? (
-          <PartDetailContent part={part} brand={brand} category={category} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />
-        ) : (
-          <DialogHeader>
-            <DialogTitle>Error</DialogTitle>
-            <DialogDescription>
-              No se pudo cargar la información del repuesto.
-            </DialogDescription>
-          </DialogHeader>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+    const category = useMemo(() => {
+        if (!part || categories.length === 0) return null;
+        return categories.find(c => c.id === part.categoryId) || null;
+    }, [part, categories]);
+    
+    const isLoading = isPartLoading || (part && isBrandLoading);
+
+    if (isLoading) {
+        return <PartDetailLoading />;
+    }
+
+    if (!part || !brand) {
+        notFound();
+    }
+    
+    return <PartDetailPageContent part={part} brand={brand} category={category} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
 }
