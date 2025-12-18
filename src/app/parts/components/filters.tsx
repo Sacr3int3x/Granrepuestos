@@ -114,7 +114,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
         <div className="grid gap-2">
           <label className="font-medium">Marca del Repuesto</label>
           <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue className="truncate" placeholder="Seleccionar marca" />
             </SelectTrigger>
             <SelectContent>
@@ -129,7 +129,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
         <div className="grid gap-2">
           <label className="font-medium">Categoría</label>
           <Select onValueChange={handleSelectChange('category')} defaultValue={searchParams.get('category') || 'all'}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue className="truncate" placeholder="Seleccionar categoría" />
             </SelectTrigger>
             <SelectContent>
@@ -144,7 +144,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
         <div className="grid gap-2">
           <label className="font-medium">Marca del Vehículo</label>
           <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue className="truncate" placeholder="Seleccionar marca" />
             </SelectTrigger>
             <SelectContent>
@@ -163,7 +163,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
             defaultValue={searchParams.get('vehicleModel') || 'all'}
             disabled={!selectedVehicleBrand}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue className="truncate" placeholder="Seleccionar modelo" />
             </SelectTrigger>
             <SelectContent>
