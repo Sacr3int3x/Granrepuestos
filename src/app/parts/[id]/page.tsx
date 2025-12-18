@@ -254,55 +254,46 @@ function PartDetailLoader({ partId }: { partId: string }) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
-    const partRef = useMemoFirebase(() => {
-        if (!firestore) return null;
-        return doc(firestore, 'parts', partId) as DocumentReference<Part>;
-    }, [firestore, partId]);
-    
-    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
-
     useEffect(() => {
-        if (partError) {
-          setError(partError);
-          setIsLoading(false);
-          return;
-        }
+      const fetchPartAndRelatedData = async () => {
+        if (!firestore) return;
 
-        if (!part && !isPartLoading) {
-            setIsLoading(false);
+        const partRef = doc(firestore, 'parts', partId);
+        try {
+          const partSnap = await getDoc(partRef);
+          if (!partSnap.exists()) {
             notFound();
             return;
+          }
+          
+          const part = { ...partSnap.data(), id: partSnap.id } as Part;
+          
+          let brandData: Brand | null = null;
+          if (part.brandId) {
+            const brandRef = doc(firestore, 'brands', part.brandId);
+            const brandSnap = await getDoc(brandRef);
+            if (brandSnap.exists()) {
+              brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
+            }
+          }
+          
+          let categoryData: Category | null = null;
+          const allCategories = getCategories();
+          if (part.categoryIds && part.categoryIds.length > 0) {
+            categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
+          }
+
+          setPartData({ part, brand: brandData, category: categoryData });
+        } catch (e) {
+          console.error("Failed to fetch part details:", e);
+          setError(e as Error);
+        } finally {
+          setIsLoading(false);
         }
+      };
 
-        if (part) {
-            const fetchRelatedData = async () => {
-                let brandData: Brand | null = null;
-                if (part.brandId && firestore) {
-                    try {
-                        const brandRef = doc(firestore, 'brands', part.brandId);
-                        const brandSnap = await getDoc(brandRef);
-                        if (brandSnap.exists()) {
-                            brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
-                        }
-                    } catch (e) {
-                        console.error("Failed to fetch brand", e);
-                    }
-                }
-                
-                let categoryData: Category | null = null;
-                const allCategories = getCategories();
-                if (part.categoryIds && part.categoryIds.length > 0) {
-                  categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
-                }
-
-                setPartData({ part, brand: brandData, category: categoryData });
-                setIsLoading(false);
-            };
-
-            fetchRelatedData();
-        }
-
-    }, [part, isPartLoading, partError, firestore]);
+      fetchPartAndRelatedData();
+    }, [partId, firestore]);
 
     if (isLoading) {
         return <PartDetailLoading />;
