@@ -106,11 +106,8 @@ function FeaturedProductsSection() {
     const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
 
     const getCompatibilityYear = (part: Part): string => {
-        if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
-          const years = new Set(part.vehicleCompatibility.map(vc => vc.yearRange).filter(Boolean));
-          if (years.size > 0) {
-            return Array.from(years).join(', ');
-          }
+        if (part.yearRange) {
+          return part.yearRange;
         }
         return 'Consultar';
     };
@@ -153,7 +150,7 @@ function FeaturedProductsSection() {
                 const imageUrl = part.imageUrls?.[0];
                 const brand = getBrandForPart(part);
                 const category = getCategoryForPart(part);
-                const fullPart = { ...part, brand, category }
+                const fullPart = { ...part, brand, category: category || undefined }
                 
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
@@ -353,5 +350,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

@@ -65,7 +65,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
 
   const category = useMemo(() => {
       return staticData.categories.find(c => c.id === part.categoryId) || null;
-  }, [part, staticData.categories]);
+  }, [part.categoryId, staticData.categories]);
   
   const getBrandName = (brandId: string) => staticData.vehicleBrands.find(b => b.id === brandId)?.name || brandId;
   const getModelName = (modelId: string) => staticData.vehicleModels.find(m => m.id === modelId)?.name || modelId;
@@ -89,18 +89,9 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
       })
     }
     
-    if (part.vehicleCompatibility) {
-      part.vehicleCompatibility.forEach(comp => {
-        if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
-        if(comp.modelId) info.models.add(getModelName(comp.modelId));
-        if(comp.yearRange) info.years.add(comp.yearRange);
-      });
+    if (part.yearRange) {
+        info.years.add(part.yearRange);
     }
-    
-    if ('yearRange' in part && typeof (part as any).yearRange === 'string') {
-        info.years.add((part as any).yearRange);
-    }
-
 
     return {
       brands: Array.from(info.brands).join(', ') || '-',
@@ -110,7 +101,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   })();
 
   const safeImageUrls = sanitizeImageUrls(part.imageUrls);
-  const fullPart = { ...part, brand, category };
+  const fullPart = { ...part, brand, category: category || undefined };
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -258,7 +249,7 @@ function PartWithBrandLoader({ part }: { part: Part }) {
     const firestore = useFirestore();
 
     const brandRef = useMemoFirebase(() => {
-        if (!firestore) return null;
+        if (!firestore || !part.brandId) return null;
         return doc(firestore, 'brands', part.brandId);
     }, [firestore, part.brandId]);
     
@@ -269,10 +260,7 @@ function PartWithBrandLoader({ part }: { part: Part }) {
     }
 
     if (!brand) {
-        // If the brand for a valid part is not found, it's a data integrity issue.
-        // It might be better to show an error message or a partial page than a 404.
-        // For simplicity, we can show a loading state or a specific error component.
-        // Or, for now, let's treat it as not found.
+        console.error(`Brand with ID ${part.brandId} not found for part ${part.id}`);
         notFound();
     }
 
@@ -310,5 +298,3 @@ export default function PartDetailPage() {
     
     return <PartDetailClient partId={id} />;
 }
-
-    

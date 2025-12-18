@@ -1,4 +1,5 @@
 
+
 export type Brand = {
   id: string;
   name: string;
@@ -47,6 +48,7 @@ export type Part = {
   };
   relatedPartIds: string[];
   vehicleBrandIds?: string[];
-  vehicleModelIds?: string[]; 
+  vehicleModelIds?: string[];
+  yearRange?: string; 
   vehicleCompatibility?: VehicleCompatibility[];
 };

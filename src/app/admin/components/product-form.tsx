@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
-import type { Part, Brand, VehicleBrand, VehicleModel, Category } from "@/lib/types";
+import type { Part, Brand, VehicleBrand, VehicleModel, Category, VehicleCompatibility } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -51,7 +51,7 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  onSubmit: (data: ProductFormValues) => void;
+  onSubmit: (data: any) => void;
   part?: Part;
 }
 
@@ -77,7 +77,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         ...part,
         description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.filter(u => typeof u === 'string') : [],
-        yearRange: (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) ? part.vehicleCompatibility[0].yearRange : '',
+        yearRange: part.yearRange || '',
         vehicleBrandIds: part.vehicleBrandIds || [],
         vehicleModelIds: part.vehicleModelIds || [],
       }
@@ -119,7 +119,28 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
   }, [selectedVehicleBrands, form]);
 
   const handleSubmit = (data: ProductFormValues) => {
-    onSubmit(data);
+    
+    const vehicleCompatibility: VehicleCompatibility[] = [];
+    if(data.vehicleBrandIds && data.vehicleModelIds && data.yearRange) {
+        data.vehicleBrandIds.forEach(brandId => {
+            data.vehicleModelIds?.forEach(modelId => {
+                const model = getVehicleModels(brandId).find(m => m.id === modelId);
+                if (model) {
+                    vehicleCompatibility.push({
+                        brandId: brandId,
+                        modelId: modelId,
+                        yearRange: data.yearRange || ''
+                    });
+                }
+            })
+        })
+    }
+
+    const finalData = {
+        ...data,
+        vehicleCompatibility,
+    };
+    onSubmit(finalData);
   };
 
   return (
@@ -300,5 +321,3 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     </Form>
   );
 }
-
-    

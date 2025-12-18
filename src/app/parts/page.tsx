@@ -71,11 +71,8 @@ function PartsPageContent() {
   };
 
   const getCompatibilityYear = (part: Part): string => {
-    if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
-      const years = new Set(part.vehicleCompatibility.map(vc => vc.yearRange).filter(Boolean));
-      if (years.size > 0) {
-        return Array.from(years).join(', ');
-      }
+    if (part.yearRange) {
+        return part.yearRange;
     }
     return 'Consultar';
   };
@@ -376,5 +373,3 @@ export default function PartsPage() {
     </Suspense>
   )
 }
-
-    
