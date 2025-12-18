@@ -94,17 +94,16 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
 
   return (
     <div className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <form onSubmit={handleSearch} className="relative lg:col-span-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    name="query"
-                    placeholder="Buscar por nombre o SKU..." 
-                    className="pl-10" 
-                    defaultValue={searchParams.get('query') || ''}
-                />
-            </form>
-
+        <form onSubmit={handleSearch} className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+                name="query"
+                placeholder="Buscar por nombre o SKU..." 
+                className="pl-10" 
+                defaultValue={searchParams.get('query') || ''}
+            />
+        </form>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Marca del Repuesto" />
@@ -158,7 +157,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
             </Select>
         </div>
         {hasActiveFilters && (
-             <div className="flex items-center justify-center">
+             <div className="flex items-center justify-center pt-2">
                  <Button variant="ghost" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-2" />
                   Limpiar filtros
