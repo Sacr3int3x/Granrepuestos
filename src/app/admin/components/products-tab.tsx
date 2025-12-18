@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -134,20 +135,16 @@ export default function ProductsTab() {
   }, [parts, searchQuery, brandFilter, categoryFilter, statusFilter, currentPage]);
 
 
-  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, vehicleCompatibility?: string, imageUrls?: string[], vehicleBrandIds?: string[] }) => {
+  const handleFormSubmit = async (data: Omit<Part, 'id' | 'specifications' | 'relatedPartIds' | 'vehicleCompatibility'> & { id?: string, yearRange?: string, imageUrls?: string[], vehicleBrandIds?: string[], vehicleModelIds?: string[] }) => {
     if (!firestore || !partsCollection) return;
     
     let vehicleCompatibility: VehicleCompatibility[] = [];
-    if (data.vehicleBrandIds && data.vehicleModelIds && data.vehicleModelIds.length > 0 && data.vehicleCompatibility) {
-        data.vehicleBrandIds.forEach(brandId => {
-            data.vehicleModelIds?.forEach(modelId => {
-                 vehicleCompatibility.push({
-                    brandId: brandId,
-                    modelId: modelId,
-                    yearRange: data.vehicleCompatibility as string,
-                });
-            })
-        });
+    if (data.vehicleBrandIds && data.vehicleModelIds && data.vehicleModelIds.length > 0 && data.yearRange) {
+      vehicleCompatibility.push({
+        brandId: data.vehicleBrandIds.join(','), // Assuming single brand selection for now
+        modelId: data.vehicleModelIds.join(','),
+        yearRange: data.yearRange as string,
+      });
     }
 
     const partData = {
@@ -497,3 +494,5 @@ export default function ProductsTab() {
     </Card>
   );
 }
+
+    

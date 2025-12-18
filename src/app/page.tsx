@@ -13,7 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin, Instagram, ArrowRight } from "lucide-react";
-import type { Part, Brand } from "@/lib/types";
+import type { Part, Brand, Category } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,6 +21,8 @@ import { Icons } from "@/components/icons";
 import HeroImage from "@/components/hero.jpeg";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import { useMemo } from "react";
+import { getCategories } from "@/lib/data";
 
 
 function BrandsSection() {
@@ -98,8 +100,10 @@ function FeaturedProductsSection() {
     }, [firestore]);
 
     const { data: featuredParts, isLoading: partsLoading } = useCollection<Part>(partsQuery);
-    
+    const categories = useMemo(() => getCategories(), []);
+
     const getBrandForPart = (part: Part) => brands?.find(b => b.id === part.brandId);
+    const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
 
     const getCompatibilityYear = (part: Part): string => {
         if (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) {
@@ -147,6 +151,10 @@ function FeaturedProductsSection() {
             <CarouselContent>
               {featuredParts.map((part: Part) => {
                 const imageUrl = part.imageUrls?.[0];
+                const brand = getBrandForPart(part);
+                const category = getCategoryForPart(part);
+                const fullPart = { ...part, brand, category }
+                
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1 h-full">
@@ -172,12 +180,12 @@ function FeaturedProductsSection() {
                             <h3 className="text-lg font-semibold leading-tight line-clamp-2">
                                 {part.name}
                             </h3>
-                            <p className="text-sm text-muted-foreground mt-1">{getBrandForPart(part)?.name || part.brandId}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{brand?.name || part.brandId}</p>
                             <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                         </CardContent>
                         <CardFooter className="p-4 flex justify-between items-center mt-auto">
                             <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
-                            <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
+                            <AddToCartButton part={fullPart as Part} />
                         </CardFooter>
                         </Card>
                     </Link>

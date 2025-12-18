@@ -45,7 +45,7 @@ const formSchema = z.object({
   isFeatured: z.boolean().default(false),
   vehicleBrandIds: z.array(z.string()).optional(),
   vehicleModelIds: z.array(z.string()).optional(),
-  vehicleCompatibility: z.string().optional(),
+  yearRange: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -77,7 +77,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         ...part,
         description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.filter(u => typeof u === 'string') : [],
-        vehicleCompatibility: (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) ? part.vehicleCompatibility[0].yearRange : '',
+        yearRange: (part.vehicleCompatibility && part.vehicleCompatibility.length > 0) ? part.vehicleCompatibility[0].yearRange : '',
         vehicleBrandIds: part.vehicleBrandIds || [],
         vehicleModelIds: part.vehicleModelIds || [],
       }
@@ -93,7 +93,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         isFeatured: false,
         vehicleBrandIds: [],
         vehicleModelIds: [],
-        vehicleCompatibility: "",
+        yearRange: "",
       };
 
   const form = useForm<ProductFormValues>({
@@ -276,7 +276,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         </div>
          <FormField
           control={form.control}
-          name="vehicleCompatibility"
+          name="yearRange"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Año(s) de compatibilidad</FormLabel>
@@ -300,3 +300,5 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     </Form>
   );
 }
+
+    

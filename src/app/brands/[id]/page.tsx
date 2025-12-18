@@ -10,7 +10,7 @@ import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import AddToCartButton from "@/app/parts/components-v2/add-to-cart-button";
+import AddToCartButton from "@/app/parts/components/add-to-cart-button";
 import { Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -89,7 +89,7 @@ function BrandPageContent({ brand, parts, categories }: { brand: Brand, parts: P
                                         </CardContent>
                                         <CardFooter className="p-4 flex justify-between items-center mt-auto">
                                             <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
-                                            <AddToCartButton part={fullPart} />
+                                            <AddToCartButton part={fullPart as Part} />
                                         </CardFooter>
                                     </Card>
                                 </Link>
@@ -179,3 +179,5 @@ export default function BrandDetailPage() {
         </div>
     );
 }
+
+    
