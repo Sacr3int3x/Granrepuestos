@@ -5,11 +5,11 @@ import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
-import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/types";
+import type { Part, Brand } from "@/lib/types";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -23,7 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Info, AlertTriangle } from "lucide-react";
+import { Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -55,7 +55,8 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand | null }) {
+function PartDetailPageContent({ partData }: { partData: { part: Part; brand: Brand | null } }) {
+  const { part, brand } = partData;
   
   const staticData = useMemo(() => ({
       categories: getCategories(),
@@ -256,49 +257,76 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand | nul
 function PartDetailLoader({ partId }: { partId: string }) {
     const firestore = useFirestore();
 
+    const [partData, setPartData] = useState<{ part: Part; brand: Brand | null } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+
     const partRef = useMemoFirebase(() => {
         if (!firestore) return null;
         return doc(firestore, 'parts', partId);
     }, [firestore, partId]);
-    
+
+    // This is the initial hook to get the part.
     const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
-    // This is a derived query that depends on the result of the first one.
-    const brandRef = useMemoFirebase(() => {
-        if (!firestore || !part?.brandId) return null;
-        return doc(firestore, 'brands', part.brandId);
-    }, [firestore, part]);
+    // This effect runs when the part is loaded or if there's an error.
+    useEffect(() => {
+        if (partError) {
+            setError(partError);
+            setIsLoading(false);
+            return;
+        }
 
-    const { data: brand, isLoading: isBrandLoading, error: brandError } = useDoc<Brand>(brandRef);
+        if (isPartLoading) {
+            // Still waiting for the part to load.
+            setIsLoading(true);
+            return;
+        }
 
-    // If part loading fails, it's a 404.
-    if (partError) {
-        console.error("Error loading part:", partError);
-        notFound();
-    }
+        if (!part) {
+            // Part is loaded but is null, meaning it doesn't exist.
+            setError(new Error("Part not found")); // This will trigger a 404.
+            setIsLoading(false);
+            return;
+        }
+
+        // Part is loaded, now we need to fetch the brand.
+        if (part.brandId) {
+            const brandRef = doc(firestore, 'brands', part.brandId);
+            // We use a one-time getDoc inside the effect for the brand.
+            const { getDoc } = require("firebase/firestore");
+            getDoc(brandRef).then(brandSnap => {
+                const brand = brandSnap.exists() ? (brandSnap.data() as Brand) : null;
+                setPartData({ part, brand });
+                setIsLoading(false);
+            }).catch(brandError => {
+                console.error("Error fetching brand:", brandError);
+                // We can still display the page, but with a null brand.
+                setPartData({ part, brand: null });
+                setIsLoading(false);
+            });
+        } else {
+            // Part exists but has no brandId, we can still show the page.
+            setPartData({ part, brand: null });
+            setIsLoading(false);
+        }
+
+    }, [part, isPartLoading, partError, firestore, partId]);
     
-    // If the part is loaded, but it does not exist in the database.
-    if (!isPartLoading && !part) {
-        notFound();
-    }
-    
-    // Show loading skeleton while either is loading.
-    if (isPartLoading || (part && isBrandLoading)) {
+    if (isLoading) {
         return <PartDetailLoading />;
     }
-    
-    // If brand loading fails, we can still render the page but show a warning.
-    if (brandError) {
-        console.error("Error loading brand:", brandError);
+
+    if (error) {
+        // Any error in the process will lead to a 404 page.
+        notFound();
     }
     
-    // If we have a part, we can now render the content.
-    // We pass `brand` which can be `null` if it wasn't found.
-    if (part) {
-      return <PartDetailPageContent part={part} brand={brand} />;
+    if (partData) {
+      return <PartDetailPageContent partData={partData} />;
     }
     
-    // Fallback loading state, though the one above should catch it.
+    // Fallback in case something unexpected happens.
     return <PartDetailLoading />;
 }
 
