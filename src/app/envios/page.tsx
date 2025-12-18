@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, Package, Clock } from "lucide-react";
 import Image from "next/image";
-import ShippingHeroImage from "./fondoenvios.jpeg";
 
 export default function ShippingPage() {
   return (
@@ -9,11 +8,11 @@ export default function ShippingPage() {
       <section className="relative w-full h-[30vh] md:h-[40vh] flex items-center justify-center overflow-hidden bg-card">
          <div className="absolute inset-0 z-0">
             <Image
-                src={ShippingHeroImage}
+                src="https://images.unsplash.com/photo-1586528116311-06924151d18f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Paquetes listos para ser enviados"
                 fill
                 className="object-cover"
-                placeholder="blur"
+                data-ai-hint="shipping boxes"
             />
             <div className="absolute inset-0 bg-black/50" />
         </div>
