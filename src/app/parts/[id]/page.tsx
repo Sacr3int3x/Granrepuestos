@@ -55,7 +55,7 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
+function PartDetailPageContent({ part, brand, category, partId }: { part: Part; brand: Brand | null, category: Category | null, partId: string }) {
   
   const staticData = useMemo(() => ({
       vehicleBrands: getVehicleBrands(),
@@ -166,7 +166,7 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
             <div>
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
-                <p className="text-xs text-muted-foreground/80 mt-1">ID: {part.id}</p>
+                <p className="text-xs text-muted-foreground/80 mt-1">ID: {partId}</p>
             </div>
            <div className="my-6 flex justify-between items-center">
             <div>
@@ -228,7 +228,7 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
             </div>
              <div className="mt-auto pt-4 flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
+                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${partId}`} />
               </div>
               <Alert>
                   <Info className="h-4 w-4" />
@@ -269,42 +269,39 @@ function PartDetailLoader({ partId }: { partId: string }) {
           return;
         }
 
-        if (isPartLoading) {
-          setIsLoading(true);
-          return;
-        }
-
-        if (!part) {
+        if (!part && !isPartLoading) {
             setIsLoading(false);
-            // This will be caught by the notFound() call below
+            notFound();
             return;
         }
 
-        const fetchRelatedData = async () => {
-            let brandData: Brand | null = null;
-            if (part.brandId && firestore) {
-                try {
-                    const brandRef = doc(firestore, 'brands', part.brandId);
-                    const brandSnap = await getDoc(brandRef);
-                    if (brandSnap.exists()) {
-                        brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
+        if (part) {
+            const fetchRelatedData = async () => {
+                let brandData: Brand | null = null;
+                if (part.brandId && firestore) {
+                    try {
+                        const brandRef = doc(firestore, 'brands', part.brandId);
+                        const brandSnap = await getDoc(brandRef);
+                        if (brandSnap.exists()) {
+                            brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch brand", e);
                     }
-                } catch (e) {
-                    console.error("Failed to fetch brand", e);
                 }
-            }
-            
-            let categoryData: Category | null = null;
-            const allCategories = getCategories();
-            if (part.categoryIds && part.categoryIds.length > 0) {
-              categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
-            }
+                
+                let categoryData: Category | null = null;
+                const allCategories = getCategories();
+                if (part.categoryIds && part.categoryIds.length > 0) {
+                  categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
+                }
 
-            setPartData({ part, brand: brandData, category: categoryData });
-            setIsLoading(false);
-        };
+                setPartData({ part, brand: brandData, category: categoryData });
+                setIsLoading(false);
+            };
 
-        fetchRelatedData();
+            fetchRelatedData();
+        }
 
     }, [part, isPartLoading, partError, firestore]);
 
@@ -312,17 +309,11 @@ function PartDetailLoader({ partId }: { partId: string }) {
         return <PartDetailLoading />;
     }
 
-    if (error) {
-        // You might want a specific error component here
-        console.error("Error loading part:", error);
+    if (error || !partData) {
         notFound();
     }
     
-    if (!partData) {
-        notFound();
-    }
-    
-    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} />;
+    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} partId={partId} />;
 }
 
 
@@ -336,3 +327,6 @@ export default function PartDetailPage() {
     
     return <PartDetailLoader partId={id} />;
 }
+
+
+    
