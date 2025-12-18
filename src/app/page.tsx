@@ -13,7 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
-import { Mail, MessageSquare, MapPin, Instagram } from "lucide-react";
+import { Mail, MessageSquare, MapPin, Instagram, ArrowRight } from "lucide-react";
 import type { Part, Brand } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
@@ -219,8 +219,11 @@ export default function Home() {
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
-            <Button asChild size="lg" className="mt-12 bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s]">
-              <a href="/parts">Ver Catálogo</a>
+            <Button asChild size="lg" className="mt-12 h-14 px-10 text-lg bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s] transition-transform hover:scale-105">
+              <a href="/parts">
+                Ver Catálogo
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </a>
             </Button>
           </div>
         </div>
@@ -344,5 +347,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
