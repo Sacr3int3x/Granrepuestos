@@ -55,7 +55,7 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ part, brand, category, partId }: { part: Part; brand: Brand | null, category: Category | null, partId: string }) {
+function PartDetailPageContent({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
   
   const staticData = useMemo(() => ({
       vehicleBrands: getVehicleBrands(),
@@ -166,7 +166,6 @@ function PartDetailPageContent({ part, brand, category, partId }: { part: Part; 
             <div>
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
-                <p className="text-xs text-muted-foreground/80 mt-1">ID: {partId}</p>
             </div>
            <div className="my-6 flex justify-between items-center">
             <div>
@@ -228,7 +227,7 @@ function PartDetailPageContent({ part, brand, category, partId }: { part: Part; 
             </div>
              <div className="mt-auto pt-4 flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${partId}`} />
+                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
               </div>
               <Alert>
                   <Info className="h-4 w-4" />
@@ -313,7 +312,7 @@ function PartDetailLoader({ partId }: { partId: string }) {
         notFound();
     }
     
-    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} partId={partId} />;
+    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} />;
 }
 
 
@@ -327,6 +326,3 @@ export default function PartDetailPage() {
     
     return <PartDetailLoader partId={id} />;
 }
-
-
-    

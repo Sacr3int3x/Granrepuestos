@@ -108,8 +108,7 @@ export default function ProductsTab() {
     if (searchQuery) {
         filtered = filtered.filter(part => 
             part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            part.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            part.id.toLowerCase().includes(searchQuery.toLowerCase())
+            part.sku.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }
     
@@ -290,7 +289,7 @@ export default function ProductsTab() {
             <div className="relative md:col-span-2 lg:col-span-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Buscar por nombre, SKU o ID..."
+                    placeholder="Buscar por nombre o SKU..."
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
@@ -355,7 +354,6 @@ export default function ProductsTab() {
                 <TableRow>
                   <TableHead className="w-[120px]">Imagen</TableHead>
                   <TableHead>Nombre</TableHead>
-                  <TableHead>ID</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead>Precio</TableHead>
                   <TableHead>Stock</TableHead>
@@ -385,18 +383,6 @@ export default function ProductsTab() {
                         )}
                       </TableCell>
                       <TableCell className="font-medium">{part.name}</TableCell>
-                      <TableCell>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <span className="text-xs text-muted-foreground cursor-pointer">
-                              ...{part.id.slice(-6)}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{part.id}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
                       <TableCell>{part.sku}</TableCell>
                       <TableCell>${part.price.toFixed(2)}</TableCell>
                       <TableCell>{part.stock}</TableCell>
