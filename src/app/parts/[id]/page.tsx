@@ -53,7 +53,8 @@ function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleMo
           info.models.add(getModelName(modelId));
       })
     }
-
+    
+    // Legacy compatibility from previous structure.
     if (part.vehicleCompatibility) {
       part.vehicleCompatibility.forEach(comp => {
         if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
@@ -61,6 +62,12 @@ function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleMo
         if(comp.yearRange) info.years.add(comp.yearRange);
       });
     }
+    
+    // New simplified year range.
+    if ('yearRange' in part && typeof (part as any).yearRange === 'string') {
+        info.years.add((part as any).yearRange);
+    }
+
 
     return {
       brands: Array.from(info.brands).join(', ') || '-',
@@ -241,38 +248,31 @@ function PartDetailLoading() {
   );
 }
 
-export default function PartDetailPage() {
-    const params = useParams();
-    const id = typeof params.id === 'string' ? params.id : '';
-
+function PartDetailClient({ partId }: { partId: string }) {
     const firestore = useFirestore();
 
     const partRef = useMemoFirebase(() => {
-        if (!firestore || !id) return null;
-        return doc(firestore, 'parts', id);
-    }, [firestore, id]);
-    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+        if (!firestore) return null;
+        return doc(firestore, 'parts', partId);
+    }, [firestore, partId]);
+    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
     const brandRef = useMemoFirebase(() => {
         if (!firestore || !part?.brandId) return null;
         return doc(firestore, 'brands', part.brandId);
-    }, [firestore, part]);
-    const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+    }, [firestore, part?.brandId]);
+    const { data: brand, isLoading: isBrandLoading, error: brandError } = useDoc<Brand>(brandRef);
     
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
-    const [vehicleModels, setVehicleModels] = useState<VehicleModel[]>([]);
-    
-    useEffect(() => {
-        setCategories(getCategories());
-        setVehicleBrands(getVehicleBrands());
-        setVehicleModels(getVehicleModels());
-    }, []);
+    const staticData = useMemo(() => ({
+        categories: getCategories(),
+        vehicleBrands: getVehicleBrands(),
+        vehicleModels: getVehicleModels(),
+    }), []);
 
     const category = useMemo(() => {
-        if (!part || categories.length === 0) return null;
-        return categories.find(c => c.id === part.categoryId) || null;
-    }, [part, categories]);
+        if (!part || staticData.categories.length === 0) return null;
+        return staticData.categories.find(c => c.id === part.categoryId) || null;
+    }, [part, staticData.categories]);
     
     const isLoading = isPartLoading || (part && isBrandLoading);
 
@@ -281,8 +281,31 @@ export default function PartDetailPage() {
     }
 
     if (!part || !brand) {
+        // This will be caught by the notFound() in the main component
+        // if either part or brand fetching returns null (e.g., not found or permission error).
         notFound();
     }
     
-    return <PartDetailPageContent part={part} brand={brand} category={category} vehicleBrands={vehicleBrands} vehicleModels={vehicleModels} />;
+    return (
+        <PartDetailPageContent 
+            part={part} 
+            brand={brand} 
+            category={category} 
+            vehicleBrands={staticData.vehicleBrands} 
+            vehicleModels={staticData.vehicleModels} 
+        />
+    );
 }
+
+export default function PartDetailPage() {
+    const params = useParams();
+    const id = typeof params.id === 'string' ? params.id : '';
+
+    if (!id) {
+        notFound();
+    }
+    
+    return <PartDetailClient partId={id} />;
+}
+
+    
