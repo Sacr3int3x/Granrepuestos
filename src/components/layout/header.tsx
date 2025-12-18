@@ -45,11 +45,11 @@ function HeaderSearch() {
 
   return (
      <form onSubmit={handleSearch} className="relative w-full">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           name="query"
           placeholder="Busca por nombre, código..."
-          className="h-10 pl-10 pr-4 text-sm rounded-md"
+          className="h-11 pl-11 pr-4 text-base rounded-lg border-2"
         />
       </form>
   );
@@ -81,7 +81,7 @@ export default function Header() {
             <Icons.logo className="h-12 w-20 text-primary" />
             <span className="sr-only">GranRepuestos</span>
           </Link>
-           <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
+           <nav className="hidden items-center gap-4 text-sm font-medium lg:flex">
              {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -100,9 +100,9 @@ export default function Header() {
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex flex-1 items-center justify-end gap-2">
           {/* Desktop Search */}
-          <div className="hidden md:block w-64">
+          <div className="hidden md:block w-full max-w-sm">
             <HeaderSearch />
           </div>
 
@@ -112,22 +112,22 @@ export default function Header() {
               <Button
                 variant="outline"
                 size="icon"
-                className="md:hidden"
+                className="lg:hidden"
                 aria-label="Open mobile menu"
               >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
-               <SheetHeader className="sr-only">
-                  <SheetTitle>Menú de navegación</SheetTitle>
+               <SheetHeader className="border-b pb-4">
+                  <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+                  <Link href="/" onClick={handleLinkClick} className="flex items-center space-x-2">
+                    <Icons.logo className="h-12 w-24 text-primary" />
+                    <span className="sr-only">GranRepuestos</span>
+                  </Link>
                </SheetHeader>
               <div className="flex flex-col gap-6 pt-6 h-full">
-                <Link href="/" onClick={handleLinkClick} className="flex items-center space-x-2">
-                  <Icons.logo className="h-10 w-10 text-primary" />
-                  <span className="font-bold font-headline">GranRepuestos</span>
-                </Link>
-                <div className="px-1 mt-4">
+                <div className="px-1">
                   <HeaderSearch />
                 </div>
                 <nav className="grid gap-4 mt-4">
