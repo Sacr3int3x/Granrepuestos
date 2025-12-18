@@ -60,7 +60,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   const staticData = useMemo(() => ({
       categories: getCategories(),
       vehicleBrands: getVehicleBrands(),
-      vehicleModels: getVehicleModels(),
+      allVehicleModels: getVehicleModels(),
   }), []);
 
   const category = useMemo(() => {
@@ -68,7 +68,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   }, [part.categoryId, staticData.categories]);
   
   const getBrandName = (brandId: string) => staticData.vehicleBrands.find(b => b.id === brandId)?.name || brandId;
-  const getModelName = (modelId: string) => staticData.vehicleModels.find(m => m.id === modelId)?.name || modelId;
+  const getModelName = (modelId: string) => staticData.allVehicleModels.find(m => m.id === modelId)?.name || modelId;
 
   const compatibilityInfo = (() => {
     const info = {
@@ -216,7 +216,11 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
                   </TableRow>
                    {part.description && (
                      <TableRow>
-                      <TableCell colSpan={2}>{part.description}</TableCell>
+                       <TableCell colSpan={2} className="pt-4">
+                         <div className="prose prose-sm text-muted-foreground max-w-none">
+                            {part.description}
+                         </div>
+                        </TableCell>
                     </TableRow>
                    )}
                   </TableBody>

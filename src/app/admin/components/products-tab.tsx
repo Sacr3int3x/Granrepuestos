@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2, Search, X, AlertCircle } from "lucide-react";
-import type { Part, VehicleCompatibility, Brand, Category } from "@/lib/types";
+import type { Part, Brand, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -141,7 +141,7 @@ export default function ProductsTab() {
     const partData = {
         name: data.name,
         sku: data.sku,
-        description: data.description,
+        description: data.description || "",
         price: data.price,
         stock: data.stock,
         brandId: data.brandId,
@@ -153,7 +153,6 @@ export default function ProductsTab() {
         yearRange: data.yearRange || '',
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
-        vehicleCompatibility: data.vehicleCompatibility || [],
     };
 
     if (editingPart && data.id) {

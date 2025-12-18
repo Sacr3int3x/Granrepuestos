@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getCategories, getVehicleBrands, getVehicleModels } from "@/lib/data";
-import type { Part, Brand, VehicleBrand, VehicleModel, Category, VehicleCompatibility } from "@/lib/types";
+import type { Part, Brand, VehicleBrand, VehicleModel, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -39,8 +39,8 @@ const formSchema = z.object({
   description: z.string().optional(),
   price: z.coerce.number().min(0, "El precio no puede ser negativo."),
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
-  brandId: z.string({ required_error: "Por favor selecciona una marca." }),
-  categoryId: z.string({ required_error: "Por favor selecciona una categoría." }),
+  brandId: z.string({ required_error: "Por favor selecciona una marca." }).min(1, "Por favor selecciona una marca."),
+  categoryId: z.string({ required_error: "Por favor selecciona una categoría." }).min(1, "Por favor selecciona una categoría."),
   imageUrls: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
   vehicleBrandIds: z.array(z.string()).optional(),
@@ -51,7 +51,7 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: ProductFormValues) => void;
   part?: Part;
 }
 
@@ -118,34 +118,9 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
     }
   }, [selectedVehicleBrands, form]);
 
-  const handleSubmit = (data: ProductFormValues) => {
-    
-    const vehicleCompatibility: VehicleCompatibility[] = [];
-    if(data.vehicleBrandIds && data.vehicleModelIds && data.yearRange) {
-        data.vehicleBrandIds.forEach(brandId => {
-            data.vehicleModelIds?.forEach(modelId => {
-                const model = getVehicleModels(brandId).find(m => m.id === modelId);
-                if (model) {
-                    vehicleCompatibility.push({
-                        brandId: brandId,
-                        modelId: modelId,
-                        yearRange: data.yearRange || ''
-                    });
-                }
-            })
-        })
-    }
-
-    const finalData = {
-        ...data,
-        vehicleCompatibility,
-    };
-    onSubmit(finalData);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
         <FormField
           control={form.control}
           name="imageUrls"
