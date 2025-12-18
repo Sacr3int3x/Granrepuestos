@@ -55,8 +55,7 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ partData }: { partData: { part: Part; brand: Brand | null } }) {
-  const { part, brand } = partData;
+function PartDetailPageContent({ part, brand }: { part: Part; brand: Brand | null }) {
   
   const staticData = useMemo(() => ({
       categories: getCategories(),
@@ -256,7 +255,6 @@ function PartDetailPageContent({ partData }: { partData: { part: Part; brand: Br
 
 function PartDetailLoader({ partId }: { partId: string }) {
     const firestore = useFirestore();
-
     const [partData, setPartData] = useState<{ part: Part; brand: Brand | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -265,38 +263,41 @@ function PartDetailLoader({ partId }: { partId: string }) {
         return doc(firestore, 'parts', partId);
     }, [firestore, partId]);
 
-    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
     useEffect(() => {
-        if (isPartLoading) {
-            return; 
-        }
+      if (isPartLoading) {
+        return;
+      }
+      
+      if (!part || partError) {
+        notFound();
+        return;
+      }
 
-        if (!part) {
-            notFound();
-            return;
-        }
-
-        const fetchBrand = async () => {
-            if (part.brandId) {
-                const brandRef = doc(firestore, 'brands', part.brandId);
-                const brandSnap = await getDoc(brandRef);
-                const brand = brandSnap.exists() ? (brandSnap.data() as Brand) : null;
-                setPartData({ part, brand });
-            } else {
-                setPartData({ part, brand: null });
-            }
-            setIsLoading(false);
-        };
-
-        fetchBrand().catch(() => {
+      const fetchBrand = async () => {
+        setIsLoading(true);
+        if (part && part.brandId) {
+          try {
+            const brandRef = doc(firestore, 'brands', part.brandId);
+            const brandSnap = await getDoc(brandRef);
+            const brand = brandSnap.exists() ? (brandSnap.data() as Brand) : null;
+            setPartData({ part, brand });
+          } catch (e) {
+            console.error("Failed to fetch brand", e);
             setPartData({ part, brand: null });
-            setIsLoading(false);
-        });
+          }
+        } else if(part) {
+          setPartData({ part, brand: null });
+        }
+        setIsLoading(false);
+      };
 
-    }, [part, isPartLoading, firestore]);
-    
-    if (isLoading) {
+      fetchBrand();
+
+    }, [part, isPartLoading, partError, firestore]);
+
+    if (isLoading || isPartLoading) {
         return <PartDetailLoading />;
     }
 
@@ -304,7 +305,7 @@ function PartDetailLoader({ partId }: { partId: string }) {
         notFound();
     }
     
-    return <PartDetailPageContent partData={partData} />;
+    return <PartDetailPageContent part={partData.part} brand={partData.brand} />;
 }
 
 

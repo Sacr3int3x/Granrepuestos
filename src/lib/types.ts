@@ -26,6 +26,11 @@ export type VehicleModel = {
     brandId: string;
 }
 
+export type VehicleCompatibility = {
+    brandId: string;
+    modelId: string;
+}
+
 export type Part = {
   id: string;
   name: string;
@@ -44,4 +49,5 @@ export type Part = {
   vehicleBrandIds?: string[];
   vehicleModelIds?: string[];
   yearRange?: string; 
+  vehicleCompatibility?: VehicleCompatibility[];
 };

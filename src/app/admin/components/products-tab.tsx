@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2, Search, X, AlertCircle } from "lucide-react";
-import type { Part, Brand, Category } from "@/lib/types";
+import type { Part, Brand, Category, VehicleCompatibility } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -138,6 +138,15 @@ export default function ProductsTab() {
   const handleFormSubmit = async (data: any) => {
     if (!firestore || !partsCollection) return;
     
+    const vehicleCompatibility: VehicleCompatibility[] = (data.vehicleBrandIds || []).flatMap((brandId: string) => {
+        return (data.vehicleModelIds || [])
+            .filter((modelId: string) => {
+                const modelsForBrand = getVehicleModels([brandId]);
+                return modelsForBrand.some(m => m.id === modelId);
+            })
+            .map((modelId: string) => ({ brandId, modelId }));
+    });
+
     const partData = {
         name: data.name,
         sku: data.sku,
@@ -151,6 +160,7 @@ export default function ProductsTab() {
         vehicleBrandIds: data.vehicleBrandIds || [],
         vehicleModelIds: data.vehicleModelIds || [],
         yearRange: data.yearRange || '',
+        vehicleCompatibility: vehicleCompatibility,
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
     };
