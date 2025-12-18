@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin, Instagram, ArrowRight } from "lucide-react";
 import type { Part, Brand } from "@/lib/types";
@@ -21,9 +20,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
 import HeroImage from "@/components/hero.jpeg";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
-
-const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-"));
 
 function BrandsSection() {
   const firestore = useFirestore();
@@ -152,7 +150,7 @@ function FeaturedProductsSection() {
                 return (
                 <CarouselItem key={part.id} className="md:basis-1/2 lg:basis-1/4">
                    <div className="p-1 h-full">
-                    <a href={`/parts/${part.id}`} className="block group h-full">
+                    <Link href={`/parts/${part.id}`} className="block group h-full">
                         <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                         <CardHeader className="p-0">
                             <div className="relative aspect-square w-full">
@@ -182,7 +180,7 @@ function FeaturedProductsSection() {
                             <AddToCartButton part={{...part, brand: getBrandForPart(part), category: {id: part.categoryId, name: ''}}} />
                         </CardFooter>
                         </Card>
-                    </a>
+                    </Link>
                   </div>
                 </CarouselItem>
                 )
@@ -220,10 +218,10 @@ export default function Home() {
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
             <Button asChild size="lg" className="mt-12 h-14 px-10 text-lg bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s] transition-transform hover:scale-105">
-              <a href="/parts">
+              <Link href="/parts">
                 Ver Catálogo
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
@@ -347,3 +345,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

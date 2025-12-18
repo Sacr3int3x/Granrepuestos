@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Part, Brand, VehicleBrand } from '@/lib/types';
+import type { Part, Brand, VehicleBrand, Category } from '@/lib/types';
 import {
   Pagination,
   PaginationContent,
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useMemo } from 'react';
 import Filters from './components/filters';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
@@ -55,15 +55,15 @@ function PartsPageContent() {
   }, [firestore]);
   const { data: allBrands, isLoading: brandsLoading } = useCollection<Brand>(brandsQuery);
 
-  const categories = getCategories();
-  const vehicleBrands = getVehicleBrands();
+  const categories = useMemo(() => getCategories(), []);
+  const vehicleBrands = useMemo(() => getVehicleBrands(), []);
 
-  const getCompatibilityBrand = (part: Part, allVehicleBrands: VehicleBrand[]): string => {
+  const getCompatibilityBrand = (part: Part): string => {
     if (!part.vehicleBrandIds || part.vehicleBrandIds.length === 0) {
       return 'Varios';
     }
     const brandNames = part.vehicleBrandIds.map(id => {
-      const brand = allVehicleBrands.find(b => b.id === id);
+      const brand = vehicleBrands.find(b => b.id === id);
       return brand ? brand.name : id;
     });
 
@@ -172,8 +172,8 @@ function PartsPageContent() {
     <Filters categories={categories} vehicleBrands={vehicleBrands} />
   )
   
-  const getBrandForPart = (part: Part) => allBrands?.find(b => b.id === part.brandId);
-  const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
+  const getBrandForPart = (part: Part): Brand | undefined => allBrands?.find(b => b.id === part.brandId);
+  const getCategoryForPart = (part: Part): Category | undefined => categories.find(c => c.id === part.categoryId);
 
   const isLoading = partsLoading || brandsLoading;
 
@@ -217,7 +217,7 @@ function PartsPageContent() {
                  )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="max-h-[80vh] flex flex-col">
+            <SheetContent side="left" className="max-h-[80vh] flex flex-col">
               <SheetHeader>
                 <SheetTitle>Filtros</SheetTitle>
               </SheetHeader>
@@ -270,7 +270,8 @@ function PartsPageContent() {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
                       if (!brand || !category) return null;
-                      const fullPart = {...part, brand, category};
+                      
+                      const fullPart = {...part, brand, category };
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
                       return (
                         <Link href={`/parts/${part.id}`} key={part.id} className="block group">
@@ -297,8 +298,8 @@ function PartsPageContent() {
                                 <h3 className="text-base font-semibold leading-tight line-clamp-2">
                                     {part.name}
                                 </h3>
-                                <p className="text-sm text-muted-foreground mt-1">{brand?.name || part.brandId}</p>
-                                <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part, vehicleBrands)}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{brand.name}</p>
+                                <p className="text-sm text-muted-foreground">Vehículo: {getCompatibilityBrand(part)}</p>
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
@@ -375,3 +376,5 @@ export default function PartsPage() {
     </Suspense>
   )
 }
+
+    

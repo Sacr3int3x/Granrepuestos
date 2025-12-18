@@ -10,7 +10,7 @@ import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import AddToCartButton from "@/app/parts/components/add-to-cart-button";
+import AddToCartButton from "@/app/parts/components-v2/add-to-cart-button";
 import { Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -122,7 +122,7 @@ function BrandPageClient({ brandId }: { brandId: string }) {
     }, [firestore, brandId]);
     const { data: parts, isLoading: arePartsLoading } = useCollection<Part>(partsQuery);
     
-    const categories = getCategories();
+    const categories = useMemo(() => getCategories(), []);
 
     if (isBrandLoading || arePartsLoading) {
         return (
