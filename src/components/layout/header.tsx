@@ -123,6 +123,9 @@ export default function Header() {
                 </Button>
             </SheetTrigger>
             <SheetContent side="top" className="p-0">
+                <SheetHeader className="sr-only">
+                    <SheetTitle>Búsqueda de productos</SheetTitle>
+                </SheetHeader>
                 <div className="container mx-auto py-12">
                    <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg mx-auto">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
