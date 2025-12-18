@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { Part, Brand, VehicleBrand, Category } from '@/lib/types';
@@ -170,7 +171,7 @@ function PartsPageContent() {
   )
   
   const getBrandForPart = (part: Part): Brand | undefined => allBrands?.find(b => b.id === part.brandId);
-  const getCategoryForPart = (part: Part): Category | undefined => categories.find(c => c.id === part.categoryId);
+  const getCategoryForPart = (part: Part): Category | undefined => categories.find(c => c.id === (part.categoryIds && part.categoryIds[0]));
 
   const isLoading = partsLoading || brandsLoading;
 
@@ -225,8 +226,8 @@ function PartsPageContent() {
           </Sheet>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          <aside className="lg:col-span-1 hidden lg:block">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+          <aside className="lg:col-span-2 hidden lg:block">
             <FilterComponent />
           </aside>
 
@@ -244,7 +245,7 @@ function PartsPageContent() {
             )}
             {isLoading ? (
                <div className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                       {[...Array(8)].map((_, i) => (
                         <Card key={i}>
                            <CardHeader className="p-0"><Skeleton className="aspect-square w-full" /></CardHeader>
@@ -262,7 +263,7 @@ function PartsPageContent() {
               </div>
             ) : paginatedParts.length > 0 ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
@@ -281,7 +282,7 @@ function PartsPageContent() {
                                         alt={part.name}
                                         fill
                                         className="object-cover group-hover:scale-105 transition-transform"
-                                        sizes="(max-width: 767px) 50vw, 25vw"
+                                        sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                         data-ai-hint="auto part"
                                     />
                                     ) : (
