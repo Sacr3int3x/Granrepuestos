@@ -4,7 +4,7 @@
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import type { Part, Brand } from "@/lib/types";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -199,7 +199,7 @@ function PartDetailPageContent({ partData }: { partData: { part: Part; brand: Br
                               <span>{brand.name}</span>
                             )
                           ) : (
-                             <span className="text-destructive">Marca no encontrada</span>
+                             <span className="text-muted-foreground">Marca no encontrada</span>
                           )}
                       </TableCell>
                   </TableRow>
@@ -259,75 +259,52 @@ function PartDetailLoader({ partId }: { partId: string }) {
 
     const [partData, setPartData] = useState<{ part: Part; brand: Brand | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
 
     const partRef = useMemoFirebase(() => {
         if (!firestore) return null;
         return doc(firestore, 'parts', partId);
     }, [firestore, partId]);
 
-    // This is the initial hook to get the part.
-    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
+    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
-    // This effect runs when the part is loaded or if there's an error.
     useEffect(() => {
-        if (partError) {
-            setError(partError);
-            setIsLoading(false);
-            return;
-        }
-
         if (isPartLoading) {
-            // Still waiting for the part to load.
-            setIsLoading(true);
-            return;
+            return; 
         }
 
         if (!part) {
-            // Part is loaded but is null, meaning it doesn't exist.
-            setError(new Error("Part not found")); // This will trigger a 404.
-            setIsLoading(false);
+            notFound();
             return;
         }
 
-        // Part is loaded, now we need to fetch the brand.
-        if (part.brandId) {
-            const brandRef = doc(firestore, 'brands', part.brandId);
-            // We use a one-time getDoc inside the effect for the brand.
-            const { getDoc } = require("firebase/firestore");
-            getDoc(brandRef).then(brandSnap => {
+        const fetchBrand = async () => {
+            if (part.brandId) {
+                const brandRef = doc(firestore, 'brands', part.brandId);
+                const brandSnap = await getDoc(brandRef);
                 const brand = brandSnap.exists() ? (brandSnap.data() as Brand) : null;
                 setPartData({ part, brand });
-                setIsLoading(false);
-            }).catch(brandError => {
-                console.error("Error fetching brand:", brandError);
-                // We can still display the page, but with a null brand.
+            } else {
                 setPartData({ part, brand: null });
-                setIsLoading(false);
-            });
-        } else {
-            // Part exists but has no brandId, we can still show the page.
+            }
+            setIsLoading(false);
+        };
+
+        fetchBrand().catch(() => {
             setPartData({ part, brand: null });
             setIsLoading(false);
-        }
+        });
 
-    }, [part, isPartLoading, partError, firestore, partId]);
+    }, [part, isPartLoading, firestore]);
     
     if (isLoading) {
         return <PartDetailLoading />;
     }
 
-    if (error) {
-        // Any error in the process will lead to a 404 page.
+    if (!partData) {
         notFound();
     }
     
-    if (partData) {
-      return <PartDetailPageContent partData={partData} />;
-    }
-    
-    // Fallback in case something unexpected happens.
-    return <PartDetailLoading />;
+    return <PartDetailPageContent partData={partData} />;
 }
 
 
@@ -341,5 +318,3 @@ export default function PartDetailPage() {
     
     return <PartDetailLoader partId={id} />;
 }
-
-    
