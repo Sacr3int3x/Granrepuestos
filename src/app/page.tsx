@@ -199,38 +199,6 @@ function FeaturedProductsSection() {
     )
 }
 
-function HeroSearch() {
-  const router = useRouter();
-
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const query = formData.get('query') as string;
-    if (query) {
-      router.push(`/parts?query=${encodeURIComponent(query)}`);
-    } else {
-      router.push('/parts');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSearch} className="w-full max-w-lg mt-8 animate-fade-in-up [animation-delay:0.6s]">
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input
-          name="query"
-          placeholder="Busca por nombre, código o vehículo..."
-          className="h-14 pl-12 pr-32 text-base rounded-full shadow-lg"
-        />
-        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 h-11 rounded-full px-6">
-          Buscar
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -256,7 +224,12 @@ export default function Home() {
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
-            <HeroSearch />
+            <Button asChild size="lg" className="mt-8 animate-fade-in-up [animation-delay:0.6s]">
+                <Link href="/parts">
+                    Explorar Catálogo
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+            </Button>
           </div>
         </div>
       </section>

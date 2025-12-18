@@ -2,8 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart, Mail, MessageSquare } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, ShoppingCart, Mail, MessageSquare, Search } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Icons } from "@/components/icons";
 import { useCart } from "@/context/cart-context";
+import { Input } from "../ui/input";
 
 const NavLink = ({ href, children, onClick }: { href: string, children: React.ReactNode, onClick: () => void }) => {
   const pathname = usePathname();
@@ -28,6 +29,32 @@ const NavLink = ({ href, children, onClick }: { href: string, children: React.Re
   );
 };
 
+function HeaderSearch() {
+  const router = useRouter();
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = formData.get('query') as string;
+    if (query) {
+      router.push(`/parts?query=${encodeURIComponent(query)}`);
+    } else {
+      router.push('/parts');
+    }
+  };
+
+  return (
+     <form onSubmit={handleSearch} className="relative w-full max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          name="query"
+          placeholder="Busca por nombre, código..."
+          className="h-10 pl-10 pr-4 text-sm rounded-md"
+        />
+      </form>
+  );
+}
+
 
 export default function Header() {
   const pathname = usePathname();
@@ -38,7 +65,6 @@ export default function Header() {
     { href: "/parts", label: "Repuestos" },
     { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
-    { href: "/politicas", label: "Políticas" },
   ];
 
   const handleLinkClick = () => {
@@ -47,46 +73,36 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         
-        {/* Left & Center Section (Desktop Navigation with Logo) */}
-        <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+        {/* Left Section */}
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center space-x-2">
             <Icons.logo className="h-12 w-20 text-primary" />
             <span className="sr-only">GranRepuestos</span>
           </Link>
-          <Link
-            href="/"
-            className={cn(
-              "transition-colors hover:text-foreground/80",
-              pathname === "/" ? "text-foreground" : "text-foreground/60"
-            )}
-          >
-            Inicio
-          </Link>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-foreground/80",
-                pathname.startsWith(item.href)
-                  ? "text-foreground"
-                  : "text-foreground/60"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+           <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
+             {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname.startsWith(item.href)
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-        {/* Mobile Logo */}
-         <Link href="/" className="flex items-center space-x-2 md:hidden">
-          <Icons.logo className="h-12 w-20 text-primary" />
-          <span className="sr-only sm:inline-block font-bold font-headline">
-            GranRepuestos
-          </span>
-        </Link>
+        {/* Center Section (Desktop Search) */}
+        <div className="hidden flex-1 justify-center md:flex">
+           <HeaderSearch />
+        </div>
 
 
         {/* Right Section */}
@@ -112,10 +128,10 @@ export default function Header() {
                   <Icons.logo className="h-10 w-10 text-primary" />
                   <span className="font-bold font-headline">GranRepuestos</span>
                 </Link>
-                <nav className="grid gap-4">
-                     <NavLink href="/" onClick={handleLinkClick}>
-                      Inicio
-                    </NavLink>
+                <div className="px-1 mt-4">
+                  <HeaderSearch />
+                </div>
+                <nav className="grid gap-4 mt-4">
                   {navItems.map((item) => (
                      <NavLink key={item.href} href={item.href} onClick={handleLinkClick}>
                       {item.label}
