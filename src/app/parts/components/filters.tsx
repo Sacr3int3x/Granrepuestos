@@ -115,7 +115,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
           <label className="font-medium">Marca del Repuesto</label>
           <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar marca" />
+              <SelectValue className="truncate" placeholder="Seleccionar marca" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas las marcas</SelectItem>
@@ -130,7 +130,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
           <label className="font-medium">Categoría</label>
           <Select onValueChange={handleSelectChange('category')} defaultValue={searchParams.get('category') || 'all'}>
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar categoría" />
+              <SelectValue className="truncate" placeholder="Seleccionar categoría" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas las categorías</SelectItem>
@@ -145,7 +145,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
           <label className="font-medium">Marca del Vehículo</label>
           <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar marca" />
+              <SelectValue className="truncate" placeholder="Seleccionar marca" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas las marcas</SelectItem>
@@ -164,7 +164,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
             disabled={!selectedVehicleBrand}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleccionar modelo" />
+              <SelectValue className="truncate" placeholder="Seleccionar modelo" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los modelos</SelectItem>
