@@ -45,12 +45,16 @@ const ShareButton: React.FC<ShareButtonProps> = ({ title, text, url }) => {
           url: fullUrl,
         });
       } catch (error) {
-        // Fallback to copy to clipboard if share fails for any reason
-        // (e.g., user cancels the share sheet, or permission is denied).
-        // We don't log this as an error because it's usually user-initiated.
-        copyToClipboard();
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          // This is expected if the user cancels the share sheet.
+          // We don't need to log it as an error or do anything.
+        } else {
+          // For other errors, fallback to clipboard
+          copyToClipboard();
+        }
       }
     } else {
+        // Fallback for browsers that don't support navigator.share
         copyToClipboard();
     }
   };

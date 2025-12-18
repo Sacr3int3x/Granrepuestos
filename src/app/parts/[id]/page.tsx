@@ -1,7 +1,4 @@
-
-"use client";
-
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, getDoc, DocumentReference } from "firebase/firestore";
@@ -28,31 +25,66 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import ShareButton from "../components/share-button";
+import { db } from "@/lib/firebase";
+import { Metadata, ResolvingMetadata } from 'next';
+import Script from "next/script";
 
-function PartDetailLoading() {
-  return (
-     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-6 w-2/3 mb-6" />
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
-            <Skeleton className="aspect-square w-full rounded-lg" />
-            <div className="space-y-4">
-                <Skeleton className="h-8 w-4/5" />
-                <Skeleton className="h-5 w-1/4" />
-                <Skeleton className="h-12 w-1/2 mt-6" />
-                <div className="space-y-2 pt-6">
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-4/5" />
-                    <Skeleton className="h-5 w-2/3" />
-                </div>
-                <div className="pt-8 flex gap-4">
-                    <Skeleton className="h-10 w-32" />
-                    <Skeleton className="h-12 w-full" />
-                </div>
-            </div>
-        </div>
-    </div>
-  );
+type Props = {
+    params: { id: string }
+}
+
+async function getPartData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null } | null> {
+    const partRef = doc(db, 'parts', id);
+    const partSnap = await getDoc(partRef);
+
+    if (!partSnap.exists()) {
+      return null;
+    }
+    
+    const part = { ...partSnap.data(), id: partSnap.id } as Part;
+    
+    let brandData: Brand | null = null;
+    if (part.brandId) {
+      const brandRef = doc(db, 'brands', part.brandId);
+      const brandSnap = await getDoc(brandRef);
+      if (brandSnap.exists()) {
+        brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
+      }
+    }
+    
+    let categoryData: Category | null = null;
+    const allCategories = getCategories();
+    if (part.categoryIds && part.categoryIds.length > 0) {
+      categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
+    }
+
+    return { part, brand: brandData, category: categoryData };
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const data = await getPartData(params.id);
+
+  if (!data) {
+    return {
+      title: "Repuesto No Encontrado",
+      description: "El repuesto que buscas no existe o fue eliminado.",
+    }
+  }
+
+  const { part } = data;
+  const previousImages = (await parent).openGraph?.images || [];
+  const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
+
+  return {
+    title: `${part.name} - GranRepuestos`,
+    description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+    openGraph: {
+      images: [imageUrl, ...previousImages],
+    },
+  }
 }
 
 function PartDetailPageContent({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
@@ -98,8 +130,34 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
   const safeImageUrls = sanitizeImageUrls(part.imageUrls);
   const fullPart = { ...part, brand: brand || undefined, category: category || undefined };
 
+  const productSchema = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: part.name,
+    image: safeImageUrls,
+    description: part.description,
+    sku: part.sku,
+    brand: {
+      '@type': 'Brand',
+      name: brand?.name || 'N/A',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+      priceCurrency: 'USD',
+      price: part.price.toFixed(2),
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: part.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Script
+            id="product-schema"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
         <Breadcrumb className="mb-6">
             <BreadcrumbList>
                 <BreadcrumbItem>
@@ -249,72 +307,12 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
   );
 }
 
-function PartDetailLoader({ partId }: { partId: string }) {
-    const firestore = useFirestore();
-    const [partData, setPartData] = useState<{ part: Part; brand: Brand | null; category: Category | null } | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+export default async function PartDetailPage({ params }: { params: { id: string }}) {
+    const data = await getPartData(params.id);
 
-    useEffect(() => {
-      const fetchPartAndRelatedData = async () => {
-        if (!firestore) return;
-
-        const partRef = doc(firestore, 'parts', partId);
-        try {
-          const partSnap = await getDoc(partRef);
-          if (!partSnap.exists()) {
-            notFound();
-            return;
-          }
-          
-          const part = { ...partSnap.data(), id: partSnap.id } as Part;
-          
-          let brandData: Brand | null = null;
-          if (part.brandId) {
-            const brandRef = doc(firestore, 'brands', part.brandId);
-            const brandSnap = await getDoc(brandRef);
-            if (brandSnap.exists()) {
-              brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
-            }
-          }
-          
-          let categoryData: Category | null = null;
-          const allCategories = getCategories();
-          if (part.categoryIds && part.categoryIds.length > 0) {
-            categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
-          }
-
-          setPartData({ part, brand: brandData, category: categoryData });
-        } catch (e) {
-          console.error("Failed to fetch part details:", e);
-          setError(e as Error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchPartAndRelatedData();
-    }, [partId, firestore]);
-
-    if (isLoading) {
-        return <PartDetailLoading />;
-    }
-
-    if (error || !partData) {
+    if (!data) {
         notFound();
     }
     
-    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} />;
-}
-
-
-export default function PartDetailPage() {
-    const params = useParams();
-    const id = typeof params.id === 'string' ? params.id : '';
-
-    if (!id) {
-        notFound();
-    }
-    
-    return <PartDetailLoader partId={id} />;
+    return <PartDetailPageContent part={data.part} brand={data.brand} category={data.category} />;
 }

@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AddToCartButton from "./parts/components/add-to-cart-button";
-import { Mail, MessageSquare, MapPin, Instagram, ArrowRight } from "lucide-react";
+import { Mail, MessageSquare, MapPin, Instagram, ArrowRight, Search } from "lucide-react";
 import type { Part, Brand, Category } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
@@ -23,6 +23,8 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useMemo } from "react";
 import { getCategories } from "@/lib/data";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 
 function BrandsSection() {
@@ -103,7 +105,7 @@ function FeaturedProductsSection() {
     const categories = useMemo(() => getCategories(), []);
 
     const getBrandForPart = (part: Part) => brands?.find(b => b.id === part.brandId);
-    const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryId);
+    const getCategoryForPart = (part: Part) => categories.find(c => c.id === part.categoryIds[0]);
 
     const getCompatibilityYear = (part: Part): string => {
         if (part.yearRange) {
@@ -197,10 +199,42 @@ function FeaturedProductsSection() {
     )
 }
 
+function HeroSearch() {
+  const router = useRouter();
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = formData.get('query') as string;
+    if (query) {
+      router.push(`/parts?query=${encodeURIComponent(query)}`);
+    } else {
+      router.push('/parts');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSearch} className="w-full max-w-lg mt-8 animate-fade-in-up [animation-delay:0.6s]">
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          name="query"
+          placeholder="Busca por nombre, código o vehículo..."
+          className="h-14 pl-12 pr-32 text-base rounded-full shadow-lg"
+        />
+        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 h-11 rounded-full px-6">
+          Buscar
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center justify-center overflow-hidden">
+      <section className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
             <Image
                 src={HeroImage}
@@ -222,12 +256,7 @@ export default function Home() {
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
             </p>
-            <Button asChild size="lg" className="mt-12 h-14 px-10 text-lg bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in-up [animation-delay:0.6s] transition-transform hover:scale-105">
-              <Link href="/parts">
-                Ver Catálogo
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <HeroSearch />
           </div>
         </div>
       </section>
