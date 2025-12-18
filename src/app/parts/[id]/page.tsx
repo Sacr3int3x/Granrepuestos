@@ -166,6 +166,7 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
             <div>
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
+                <p className="text-xs text-muted-foreground mt-1">ID: {part.id}</p>
             </div>
            <div className="my-6 flex justify-between items-center">
             <div>
