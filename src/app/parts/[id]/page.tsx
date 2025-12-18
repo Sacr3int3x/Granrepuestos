@@ -23,7 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Info } from "lucide-react";
+import { Info, Truck } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -231,15 +231,15 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
                  <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
               </div>
               <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>¿No estás seguro?</AlertTitle>
-                  <AlertDescription>
-                      Si tienes dudas sobre la compatibilidad, contáctanos antes de comprar.
-                  </AlertDescription>
+                <Truck className="h-4 w-4" />
+                <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
+                <AlertDescription>
+                    Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
+                </AlertDescription>
               </Alert>
                <div className="flex items-center gap-2">
                   <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
-                    Ver políticas de devolución
+                    Ver políticas de compra y devolución
                   </Link>
               </div>
             </div>

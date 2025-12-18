@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -37,7 +38,7 @@ export default function Header() {
     { href: "/parts", label: "Repuestos" },
     { href: "/brands", label: "Marcas" },
     { href: "/quienes-somos", label: "Quiénes Somos" },
-    { href: "/envios", label: "Envíos" },
+    { href: "/politicas", label: "Políticas" },
   ];
 
   const handleLinkClick = () => {
