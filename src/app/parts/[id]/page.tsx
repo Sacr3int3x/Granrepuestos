@@ -9,7 +9,7 @@ import type { Part, Brand, Category, VehicleBrand, VehicleModel } from "@/lib/ty
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -29,11 +29,46 @@ import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import ShareButton from "../components/share-button";
 
+function PartDetailLoading() {
+  return (
+     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Skeleton className="h-6 w-2/3 mb-6" />
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
+            <Skeleton className="aspect-square w-full rounded-lg" />
+            <div className="space-y-4">
+                <Skeleton className="h-8 w-4/5" />
+                <Skeleton className="h-5 w-1/4" />
+                <Skeleton className="h-12 w-1/2 mt-6" />
+                <div className="space-y-2 pt-6">
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-4/5" />
+                    <Skeleton className="h-5 w-2/3" />
+                </div>
+                <div className="pt-8 flex gap-4">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </div>
+        </div>
+    </div>
+  );
+}
 
-function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleModels }: { part: Part, brand: Brand, category: Category | null, vehicleBrands: VehicleBrand[], vehicleModels: VehicleModel[]}) {
+function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   
-  const getBrandName = (brandId: string) => vehicleBrands.find(b => b.id === brandId)?.name || brandId;
-  const getModelName = (modelId: string) => vehicleModels.find(m => m.id === modelId)?.name || modelId;
+  const staticData = useMemo(() => ({
+      categories: getCategories(),
+      vehicleBrands: getVehicleBrands(),
+      vehicleModels: getVehicleModels(),
+  }), []);
+
+  const category = useMemo(() => {
+      return staticData.categories.find(c => c.id === part.categoryId) || null;
+  }, [part, staticData.categories]);
+  
+  const getBrandName = (brandId: string) => staticData.vehicleBrands.find(b => b.id === brandId)?.name || brandId;
+  const getModelName = (modelId: string) => staticData.vehicleModels.find(m => m.id === modelId)?.name || modelId;
 
   const compatibilityInfo = (() => {
     const info = {
@@ -54,7 +89,6 @@ function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleMo
       })
     }
     
-    // Legacy compatibility from previous structure.
     if (part.vehicleCompatibility) {
       part.vehicleCompatibility.forEach(comp => {
         if(comp.brandId) info.brands.add(getBrandName(comp.brandId));
@@ -63,7 +97,6 @@ function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleMo
       });
     }
     
-    // New simplified year range.
     if ('yearRange' in part && typeof (part as any).yearRange === 'string') {
         info.years.add((part as any).yearRange);
     }
@@ -221,31 +254,29 @@ function PartDetailPageContent({ part, brand, category, vehicleBrands, vehicleMo
   );
 }
 
+function PartWithBrandLoader({ part }: { part: Part }) {
+    const firestore = useFirestore();
 
-function PartDetailLoading() {
-  return (
-     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-6 w-2/3 mb-6" />
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
-            <Skeleton className="aspect-square w-full rounded-lg" />
-            <div className="space-y-4">
-                <Skeleton className="h-8 w-4/5" />
-                <Skeleton className="h-5 w-1/4" />
-                <Skeleton className="h-12 w-1/2 mt-6" />
-                <div className="space-y-2 pt-6">
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-4/5" />
-                    <Skeleton className="h-5 w-2/3" />
-                </div>
-                <div className="pt-8 flex gap-4">
-                    <Skeleton className="h-10 w-32" />
-                    <Skeleton className="h-12 w-full" />
-                </div>
-            </div>
-        </div>
-    </div>
-  );
+    const brandRef = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return doc(firestore, 'brands', part.brandId);
+    }, [firestore, part.brandId]);
+    
+    const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
+
+    if (isBrandLoading) {
+        return <PartDetailLoading />;
+    }
+
+    if (!brand) {
+        // If the brand for a valid part is not found, it's a data integrity issue.
+        // It might be better to show an error message or a partial page than a 404.
+        // For simplicity, we can show a loading state or a specific error component.
+        // Or, for now, let's treat it as not found.
+        notFound();
+    }
+
+    return <PartDetailPageContent part={part} brand={brand} />;
 }
 
 function PartDetailClient({ partId }: { partId: string }) {
@@ -255,46 +286,18 @@ function PartDetailClient({ partId }: { partId: string }) {
         if (!firestore) return null;
         return doc(firestore, 'parts', partId);
     }, [firestore, partId]);
-    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
-
-    const brandRef = useMemoFirebase(() => {
-        if (!firestore || !part?.brandId) return null;
-        return doc(firestore, 'brands', part.brandId);
-    }, [firestore, part?.brandId]);
-    const { data: brand, isLoading: isBrandLoading, error: brandError } = useDoc<Brand>(brandRef);
     
-    const staticData = useMemo(() => ({
-        categories: getCategories(),
-        vehicleBrands: getVehicleBrands(),
-        vehicleModels: getVehicleModels(),
-    }), []);
+    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
 
-    const category = useMemo(() => {
-        if (!part || staticData.categories.length === 0) return null;
-        return staticData.categories.find(c => c.id === part.categoryId) || null;
-    }, [part, staticData.categories]);
-    
-    const isLoading = isPartLoading || (part && isBrandLoading);
-
-    if (isLoading) {
+    if (isPartLoading) {
         return <PartDetailLoading />;
     }
 
-    if (!part || !brand) {
-        // This will be caught by the notFound() in the main component
-        // if either part or brand fetching returns null (e.g., not found or permission error).
+    if (!part) {
         notFound();
     }
     
-    return (
-        <PartDetailPageContent 
-            part={part} 
-            brand={brand} 
-            category={category} 
-            vehicleBrands={staticData.vehicleBrands} 
-            vehicleModels={staticData.vehicleModels} 
-        />
-    );
+    return <PartWithBrandLoader part={part} />;
 }
 
 export default function PartDetailPage() {
