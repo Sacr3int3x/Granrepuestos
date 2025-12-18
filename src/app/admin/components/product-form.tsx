@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +39,7 @@ const formSchema = z.object({
   price: z.coerce.number().min(0, "El precio no puede ser negativo."),
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo."),
   brandId: z.string({ required_error: "Por favor selecciona una marca." }).min(1, "Por favor selecciona una marca."),
-  categoryId: z.string({ required_error: "Por favor selecciona una categoría." }).min(1, "Por favor selecciona una categoría."),
+  categoryIds: z.array(z.string()).min(1, "Debes seleccionar al menos una categoría."),
   imageUrls: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
   vehicleBrandIds: z.array(z.string()).optional(),
@@ -77,6 +76,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         ...part,
         description: part.description || "",
         imageUrls: Array.isArray(part.imageUrls) ? part.imageUrls.filter(u => typeof u === 'string') : [],
+        categoryIds: part.categoryIds || [],
         yearRange: part.yearRange || '',
         vehicleBrandIds: part.vehicleBrandIds || [],
         vehicleModelIds: part.vehicleModelIds || [],
@@ -88,7 +88,7 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
         price: 0,
         stock: 0,
         brandId: "",
-        categoryId: "",
+        categoryIds: [],
         imageUrls: [],
         isFeatured: false,
         vehicleBrandIds: [],
@@ -168,16 +168,42 @@ export function ProductForm({ onSubmit, part }: ProductFormProps) {
             <FormMessage />
             </FormItem>
         )}/>
-        <FormField control={form.control} name="categoryId" render={({ field }) => (
+        <FormField
+          control={form.control}
+          name="categoryIds"
+          render={() => (
             <FormItem>
-            <FormLabel>Categoría</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Selecciona una categoría" /></SelectTrigger></FormControl>
-                <SelectContent>{categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-            </Select>
-            <FormMessage />
+              <FormLabel>Categorías</FormLabel>
+              <Card className="p-2">
+                <ScrollArea className="h-40">
+                  {categories.map((cat) => (
+                    <FormField
+                      key={cat.id}
+                      control={form.control}
+                      name="categoryIds"
+                      render={({ field }) => (
+                        <FormItem key={cat.id} className="flex flex-row items-start space-x-3 space-y-0 p-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(cat.id)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...(field.value || []), cat.id])
+                                  : field.onChange(field.value?.filter((value) => value !== cat.id));
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">{cat.name}</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                </ScrollArea>
+              </Card>
+              <FormMessage />
             </FormItem>
-        )}/>
+          )}
+        />
         </div>
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField

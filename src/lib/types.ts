@@ -39,7 +39,7 @@ export type Part = {
   price: number;
   stock: number;
   brandId: string;
-  categoryId: string;
+  categoryIds: string[];
   imageUrls: string[];
   isFeatured: boolean;
   specifications: {
@@ -49,5 +49,4 @@ export type Part = {
   vehicleBrandIds?: string[];
   vehicleModelIds?: string[];
   yearRange?: string; 
-  vehicleCompatibility?: VehicleCompatibility[];
 };

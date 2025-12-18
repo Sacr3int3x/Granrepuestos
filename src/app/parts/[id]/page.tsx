@@ -5,7 +5,7 @@ import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import type { Part, Brand } from "@/lib/types";
+import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
@@ -55,18 +55,13 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ part, brand }: { part: Part; brand: Brand | null }) {
+function PartDetailPageContent({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
   
   const staticData = useMemo(() => ({
-      categories: getCategories(),
       vehicleBrands: getVehicleBrands(),
       allVehicleModels: getVehicleModels(),
   }), []);
 
-  const category = useMemo(() => {
-      return staticData.categories.find(c => c.id === part.categoryId) || null;
-  }, [part.categoryId, staticData.categories]);
-  
   const getBrandName = (brandId: string) => staticData.vehicleBrands.find(b => b.id === brandId)?.name || brandId;
   const getModelName = (modelId: string) => staticData.allVehicleModels.find(m => m.id === modelId)?.name || modelId;
 
@@ -204,7 +199,7 @@ function PartDetailPageContent({ part, brand }: { part: Part; brand: Brand | nul
                   </TableRow>
                   <TableRow>
                       <TableCell className="font-medium">Categoría</TableCell>
-                      <TableCell>{category?.name || '-'}</TableCell>
+                      <TableCell>{category?.name || 'No especificada'}</TableCell>
                   </TableRow>
                    <TableRow>
                       <TableCell className="font-medium">Marca Vehículo</TableCell>
@@ -255,7 +250,7 @@ function PartDetailPageContent({ part, brand }: { part: Part; brand: Brand | nul
 
 function PartDetailLoader({ partId }: { partId: string }) {
     const firestore = useFirestore();
-    const [partData, setPartData] = useState<{ part: Part; brand: Brand | null } | null>(null);
+    const [data, setData] = useState<{ part: Part; brand: Brand | null; category: Category | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const partRef = useMemoFirebase(() => {
@@ -266,46 +261,51 @@ function PartDetailLoader({ partId }: { partId: string }) {
     const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
     useEffect(() => {
-      if (isPartLoading) {
-        return;
-      }
-      
-      if (!part || partError) {
-        notFound();
-        return;
-      }
+        const fetchRelatedData = async () => {
+            if (!part) {
+                if (!isPartLoading) {
+                    notFound();
+                }
+                return;
+            }
 
-      const fetchBrand = async () => {
-        setIsLoading(true);
-        if (part && part.brandId) {
-          try {
-            const brandRef = doc(firestore, 'brands', part.brandId);
-            const brandSnap = await getDoc(brandRef);
-            const brand = brandSnap.exists() ? (brandSnap.data() as Brand) : null;
-            setPartData({ part, brand });
-          } catch (e) {
-            console.error("Failed to fetch brand", e);
-            setPartData({ part, brand: null });
-          }
-        } else if(part) {
-          setPartData({ part, brand: null });
+            let brandData: Brand | null = null;
+            if (part.brandId) {
+                try {
+                    const brandRef = doc(firestore, 'brands', part.brandId);
+                    const brandSnap = await getDoc(brandRef);
+                    if (brandSnap.exists()) {
+                        brandData = { ...brandSnap.data(), id: brandSnap.id } as Brand;
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch brand", e);
+                }
+            }
+            
+            let categoryData: Category | null = null;
+            const allCategories = getCategories();
+            if (part.categoryIds && part.categoryIds.length > 0) {
+              categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
+            }
+
+            setData({ part, brand: brandData, category: categoryData });
+            setIsLoading(false);
+        };
+
+        if (!isPartLoading) {
+            fetchRelatedData();
         }
-        setIsLoading(false);
-      };
-
-      fetchBrand();
-
-    }, [part, isPartLoading, partError, firestore]);
+    }, [part, isPartLoading, firestore]);
 
     if (isLoading || isPartLoading) {
         return <PartDetailLoading />;
     }
 
-    if (!partData) {
+    if (!data) {
         notFound();
     }
     
-    return <PartDetailPageContent part={partData.part} brand={partData.brand} />;
+    return <PartDetailPageContent part={data.part} brand={data.brand} category={data.category} />;
 }
 
 

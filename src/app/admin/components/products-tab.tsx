@@ -61,7 +61,7 @@ const getPartStatus = (part: Part): PartStatus => {
   if (!part.sku) missingFields.push("SKU");
   if (part.price <= 0) missingFields.push("Precio");
   if (!part.brandId) missingFields.push("Marca");
-  if (!part.categoryId) missingFields.push("Categoría");
+  if (!part.categoryIds || part.categoryIds.length === 0) missingFields.push("Categoría");
   if (!part.imageUrls || part.imageUrls.length === 0) missingFields.push("Imágenes");
   
   return {
@@ -117,7 +117,7 @@ export default function ProductsTab() {
     }
 
     if (categoryFilter !== 'all') {
-        filtered = filtered.filter(part => part.categoryId === categoryFilter);
+        filtered = filtered.filter(part => part.categoryIds && part.categoryIds.includes(categoryFilter));
     }
 
     if (statusFilter !== 'all') {
@@ -137,15 +137,6 @@ export default function ProductsTab() {
 
   const handleFormSubmit = async (data: any) => {
     if (!firestore || !partsCollection) return;
-    
-    const vehicleCompatibility: VehicleCompatibility[] = (data.vehicleBrandIds || []).flatMap((brandId: string) => {
-        return (data.vehicleModelIds || [])
-            .filter((modelId: string) => {
-                const modelsForBrand = getVehicleModels([brandId]);
-                return modelsForBrand.some(m => m.id === modelId);
-            })
-            .map((modelId: string) => ({ brandId, modelId }));
-    });
 
     const partData = {
         name: data.name,
@@ -154,13 +145,12 @@ export default function ProductsTab() {
         price: data.price,
         stock: data.stock,
         brandId: data.brandId,
-        categoryId: data.categoryId,
+        categoryIds: data.categoryIds || [],
         imageUrls: data.imageUrls || [],
         isFeatured: data.isFeatured,
         vehicleBrandIds: data.vehicleBrandIds || [],
         vehicleModelIds: data.vehicleModelIds || [],
         yearRange: data.yearRange || '',
-        vehicleCompatibility: vehicleCompatibility,
         specifications: editingPart?.specifications || {}, 
         relatedPartIds: editingPart?.relatedPartIds || [],
     };
