@@ -190,19 +190,8 @@ function PartsPageContent() {
           </p>
         </div>
         
-         <div className="lg:hidden mb-4 space-y-4">
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              name="query"
-              placeholder="Buscar por nombre o SKU..." 
-              className="pl-10 pr-20" 
-              defaultValue={searchParams.get('query') || ''}
-            />
-            <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
-          </form>
-
-          <Sheet>
+         <div className="lg:hidden mb-4">
+           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full relative">
                 <Filter className="mr-2 h-4 w-4" />
@@ -220,18 +209,30 @@ function PartsPageContent() {
                 <SheetTitle>Filtros</SheetTitle>
               </SheetHeader>
               <div className="overflow-y-auto">
-                <FilterComponent />
+                 <div className="p-4 space-y-4">
+                  <form onSubmit={handleSearch} className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      name="query"
+                      placeholder="Buscar por nombre o SKU..." 
+                      className="pl-10 pr-20" 
+                      defaultValue={searchParams.get('query') || ''}
+                    />
+                    <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
+                  </form>
+                  <FilterComponent />
+                </div>
               </div>
             </SheetContent>
           </Sheet>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
-          <aside className="lg:col-span-2 hidden lg:block">
+        <div className="hidden lg:block mb-6">
             <FilterComponent />
-          </aside>
+        </div>
 
-          <main className="lg:col-span-3">
+
+          <main>
             {hasActiveFilters && !isLoading && (
               <div className="mb-4 flex items-center justify-between bg-muted p-3 rounded-lg">
                 <p className="text-sm text-muted-foreground">
@@ -244,26 +245,24 @@ function PartsPageContent() {
               </div>
             )}
             {isLoading ? (
-               <div className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                      {[...Array(8)].map((_, i) => (
-                        <Card key={i}>
-                           <CardHeader className="p-0"><Skeleton className="aspect-square w-full" /></CardHeader>
-                           <CardContent className="p-3 space-y-2">
-                             <Skeleton className="h-4 w-4/5" />
-                             <Skeleton className="h-4 w-2/5" />
-                             <Skeleton className="h-4 w-3/5" />
-                           </CardContent>
-                           <CardFooter className="p-3">
-                             <Skeleton className="h-8 w-1/2" />
-                           </CardFooter>
-                        </Card>
-                      ))}
-                  </div>
+               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {[...Array(16)].map((_, i) => (
+                    <Card key={i}>
+                       <CardHeader className="p-0"><Skeleton className="aspect-square w-full" /></CardHeader>
+                       <CardContent className="p-3 space-y-2">
+                         <Skeleton className="h-4 w-4/5" />
+                         <Skeleton className="h-4 w-2/5" />
+                         <Skeleton className="h-4 w-3/5" />
+                       </CardContent>
+                       <CardFooter className="p-3">
+                         <Skeleton className="h-8 w-1/2" />
+                       </CardFooter>
+                    </Card>
+                  ))}
               </div>
             ) : paginatedParts.length > 0 ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
@@ -360,7 +359,6 @@ function PartsPageContent() {
                </div>
             )}
           </main>
-        </div>
       </div>
     </div>
   );

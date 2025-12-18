@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Category, Brand, VehicleBrand } from '@/lib/types';
 import { Search, X } from 'lucide-react';
 import { getVehicleModels } from '@/lib/data';
@@ -94,95 +93,78 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
 
 
   return (
-    <Card className="sticky top-20 shadow-none border-none lg:border lg:shadow-sm">
-      <CardHeader className='hidden lg:flex'>
-        <CardTitle className="flex items-center justify-between">
-          Filtros
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-6 p-1 lg:p-6">
-        <form onSubmit={handleSearch} className="relative hidden lg:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            name="query"
-            placeholder="Buscar por nombre o SKU..." 
-            className="pl-10 pr-20" 
-            defaultValue={searchParams.get('query') || ''}
-          />
-          <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
-        </form>
+    <div className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <form onSubmit={handleSearch} className="relative lg:col-span-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                    name="query"
+                    placeholder="Buscar por nombre o SKU..." 
+                    className="pl-10" 
+                    defaultValue={searchParams.get('query') || ''}
+                />
+            </form>
 
-        <div className="grid gap-2">
-          <label className="font-medium">Marca del Repuesto</label>
-          <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
-            <SelectTrigger className="w-full">
-              <SelectValue className="truncate" placeholder="Seleccionar marca" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las marcas</SelectItem>
-              {brands?.map((brand) => (
-                <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Marca del Repuesto" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todas las marcas</SelectItem>
+                    {brands?.map((brand) => (
+                        <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
 
-        <div className="grid gap-2">
-          <label className="font-medium">Categoría</label>
-          <Select onValueChange={handleSelectChange('category')} defaultValue={searchParams.get('category') || 'all'}>
-            <SelectTrigger className="w-full">
-              <SelectValue className="truncate" placeholder="Seleccionar categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="grid gap-2">
-          <label className="font-medium">Marca del Vehículo</label>
-          <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
-            <SelectTrigger className="w-full">
-              <SelectValue className="truncate" placeholder="Seleccionar marca" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las marcas</SelectItem>
-              {vehicleBrands.map((brand) => (
-                <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <Select onValueChange={handleSelectChange('category')} defaultValue={searchParams.get('category') || 'all'}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todas las categorías</SelectItem>
+                    {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
 
-        <div className="grid gap-2">
-          <label className="font-medium">Modelo del Vehículo</label>
-          <Select 
-            onValueChange={handleModelChange} 
-            defaultValue={searchParams.get('vehicleModel') || 'all'}
-            disabled={!selectedVehicleBrand}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue className="truncate" placeholder="Seleccionar modelo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los modelos</SelectItem>
-              {availableModels.map((model) => (
-                <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Marca del Vehículo" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todas las marcas</SelectItem>
+                    {vehicleBrands.map((brand) => (
+                        <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <Select 
+                onValueChange={handleModelChange} 
+                defaultValue={searchParams.get('vehicleModel') || 'all'}
+                disabled={!selectedVehicleBrand}
+            >
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Modelo del Vehículo" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todos los modelos</SelectItem>
+                    {availableModels.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
-        
         {hasActiveFilters && (
-            <Button variant="ghost" onClick={clearFilters}>
-              <X className="w-4 h-4 mr-2" />
-              Limpiar todos los filtros
-            </Button>
+             <div className="flex items-center justify-center">
+                 <Button variant="ghost" onClick={clearFilters}>
+                  <X className="w-4 h-4 mr-2" />
+                  Limpiar filtros
+                </Button>
+             </div>
           )}
-      </CardContent>
-    </Card>
+    </div>
   );
 }
