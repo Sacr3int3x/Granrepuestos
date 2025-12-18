@@ -71,7 +71,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
   );
   
   const handleStateChange = (key: string) => (value: string) => {
-    const newState = { ...localState, [key]: value };
+    const newState: any = { ...localState, [key]: value };
     if (key === 'vehicleBrand') {
         newState.vehicleModel = 'all'; // Reset model when brand changes
     }
@@ -88,7 +88,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
     if(onApply) onApply();
   }
 
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const query = formData.get('query') as string;
@@ -96,7 +96,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
     if (isMobile) {
         setLocalState(prev => ({...prev, query}));
     } else {
-        router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+        router.push(pathname + '?' + createQueryString({ ...localState, query: query || undefined }));
     }
   };
 
@@ -117,20 +117,23 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
       }
   };
   
-  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true);
+  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true) && (searchParams.get('page') !== '1' || searchParams.size > 1);
 
 
   return (
     <div className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-        <form onSubmit={handleSearch} className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-                name="query"
-                placeholder="Buscar por nombre o SKU..." 
-                className="pl-10" 
-                defaultValue={searchParams.get('query') || ''}
-            />
-        </form>
+        {!isMobile && (
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                    name="query"
+                    placeholder="Buscar por nombre, SKU, descripción..." 
+                    className="pl-10" 
+                    defaultValue={searchParams.get('query') || ''}
+                    onChange={(e) => setLocalState(prev => ({...prev, query: e.target.value}))}
+                />
+            </form>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <Select onValueChange={handleStateChange('brand')} value={localState.brand}>
                 <SelectTrigger className="w-full">

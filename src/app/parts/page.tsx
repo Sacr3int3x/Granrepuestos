@@ -18,7 +18,7 @@ import { Suspense, useMemo, useState } from 'react';
 import Filters from './components/filters';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
 import { Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -110,6 +110,13 @@ function PartsPageContent() {
       params.set('page', '1');
       return params.toString();
   };
+  
+  const handleMobileSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = formData.get('query') as string;
+    router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+  };
 
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -164,7 +171,7 @@ function PartsPageContent() {
 
   const isLoading = partsLoading || brandsLoading;
 
-  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true);
+  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true) && (searchParams.get('page') !== '1' || searchParams.size > 1);
 
 
   return (
@@ -179,7 +186,16 @@ function PartsPageContent() {
           </p>
         </div>
         
-         <div className="lg:hidden mb-4">
+         <div className="lg:hidden mb-4 space-y-4">
+           <form onSubmit={handleMobileSearchSubmit} className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                name="query"
+                placeholder="Buscar por nombre o SKU..."
+                className="pl-10"
+                defaultValue={searchParams.get('query') || ''}
+              />
+            </form>
            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full relative">
@@ -196,6 +212,9 @@ function PartsPageContent() {
             <SheetContent side="left" className="flex flex-col">
               <SheetHeader>
                 <SheetTitle>Filtros</SheetTitle>
+                <SheetDescription>
+                  Selecciona uno o más filtros para refinar tu búsqueda.
+                </SheetDescription>
               </SheetHeader>
               <div className="overflow-y-auto -mx-6 px-6">
                  <Filters categories={categories} vehicleBrands={vehicleBrands} isMobile={true} onApply={() => setIsSheetOpen(false)} />
