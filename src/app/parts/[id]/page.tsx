@@ -23,7 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Info } from "lucide-react";
+import { Info, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -55,7 +55,7 @@ function PartDetailLoading() {
   );
 }
 
-function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
+function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand | null }) {
   
   const staticData = useMemo(() => ({
       categories: getCategories(),
@@ -101,7 +101,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   })();
 
   const safeImageUrls = sanitizeImageUrls(part.imageUrls);
-  const fullPart = { ...part, brand, category: category || undefined };
+  const fullPart = { ...part, brand: brand || undefined, category: category || undefined };
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -191,10 +191,14 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
                    <TableRow>
                       <TableCell className="font-medium">Marca</TableCell>
                       <TableCell>
-                         {brand?.websiteUrl ? (
-                           <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
+                         {brand ? (
+                            brand.websiteUrl ? (
+                             <a href={brand.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{brand.name}</a>
+                            ) : (
+                              <span>{brand.name}</span>
+                            )
                           ) : (
-                            <span>{brand?.name || '-'}</span>
+                             <span className="text-destructive">Marca no encontrada</span>
                           )}
                       </TableCell>
                   </TableRow>
@@ -249,29 +253,7 @@ function PartDetailPageContent({ part, brand }: { part: Part, brand: Brand }) {
   );
 }
 
-function PartWithBrandLoader({ part }: { part: Part }) {
-    const firestore = useFirestore();
-
-    const brandRef = useMemoFirebase(() => {
-        if (!firestore || !part.brandId) return null;
-        return doc(firestore, 'brands', part.brandId);
-    }, [firestore, part.brandId]);
-    
-    const { data: brand, isLoading: isBrandLoading } = useDoc<Brand>(brandRef);
-
-    if (isBrandLoading) {
-        return <PartDetailLoading />;
-    }
-
-    if (!brand) {
-        console.error(`Brand with ID ${part.brandId} not found for part ${part.id}`);
-        notFound();
-    }
-
-    return <PartDetailPageContent part={part} brand={brand} />;
-}
-
-function PartDetailClient({ partId }: { partId: string }) {
+function PartDetailLoader({ partId }: { partId: string }) {
     const firestore = useFirestore();
 
     const partRef = useMemoFirebase(() => {
@@ -279,18 +261,47 @@ function PartDetailClient({ partId }: { partId: string }) {
         return doc(firestore, 'parts', partId);
     }, [firestore, partId]);
     
-    const { data: part, isLoading: isPartLoading } = useDoc<Part>(partRef);
+    const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
-    if (isPartLoading) {
-        return <PartDetailLoading />;
-    }
+    // This is a derived query that depends on the result of the first one.
+    const brandRef = useMemoFirebase(() => {
+        if (!firestore || !part?.brandId) return null;
+        return doc(firestore, 'brands', part.brandId);
+    }, [firestore, part]);
 
-    if (!part) {
+    const { data: brand, isLoading: isBrandLoading, error: brandError } = useDoc<Brand>(brandRef);
+
+    // If part loading fails, it's a 404.
+    if (partError) {
+        console.error("Error loading part:", partError);
         notFound();
     }
     
-    return <PartWithBrandLoader part={part} />;
+    // If the part is loaded, but it does not exist in the database.
+    if (!isPartLoading && !part) {
+        notFound();
+    }
+    
+    // Show loading skeleton while either is loading.
+    if (isPartLoading || (part && isBrandLoading)) {
+        return <PartDetailLoading />;
+    }
+    
+    // If brand loading fails, we can still render the page but show a warning.
+    if (brandError) {
+        console.error("Error loading brand:", brandError);
+    }
+    
+    // If we have a part, we can now render the content.
+    // We pass `brand` which can be `null` if it wasn't found.
+    if (part) {
+      return <PartDetailPageContent part={part} brand={brand} />;
+    }
+    
+    // Fallback loading state, though the one above should catch it.
+    return <PartDetailLoading />;
 }
+
 
 export default function PartDetailPage() {
     const params = useParams();
@@ -300,5 +311,7 @@ export default function PartDetailPage() {
         notFound();
     }
     
-    return <PartDetailClient partId={id} />;
+    return <PartDetailLoader partId={id} />;
 }
+
+    
