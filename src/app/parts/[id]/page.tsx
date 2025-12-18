@@ -4,7 +4,7 @@
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, DocumentReference } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -166,6 +166,7 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
             <div>
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
+                <p className="text-xs text-muted-foreground/80 mt-1">ID: {part.id}</p>
             </div>
            <div className="my-6 flex justify-between items-center">
             <div>
@@ -250,27 +251,38 @@ function PartDetailPageContent({ part, brand, category }: { part: Part; brand: B
 
 function PartDetailLoader({ partId }: { partId: string }) {
     const firestore = useFirestore();
-    const [data, setData] = useState<{ part: Part; brand: Brand | null; category: Category | null } | null>(null);
+    const [partData, setPartData] = useState<{ part: Part; brand: Brand | null; category: Category | null } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
 
     const partRef = useMemoFirebase(() => {
         if (!firestore) return null;
-        return doc(firestore, 'parts', partId);
+        return doc(firestore, 'parts', partId) as DocumentReference<Part>;
     }, [firestore, partId]);
-
+    
     const { data: part, isLoading: isPartLoading, error: partError } = useDoc<Part>(partRef);
 
     useEffect(() => {
-        const fetchRelatedData = async () => {
-            if (!part) {
-                if (!isPartLoading) {
-                    notFound();
-                }
-                return;
-            }
+        if (partError) {
+          setError(partError);
+          setIsLoading(false);
+          return;
+        }
 
+        if (isPartLoading) {
+          setIsLoading(true);
+          return;
+        }
+
+        if (!part) {
+            setIsLoading(false);
+            // This will be caught by the notFound() call below
+            return;
+        }
+
+        const fetchRelatedData = async () => {
             let brandData: Brand | null = null;
-            if (part.brandId) {
+            if (part.brandId && firestore) {
                 try {
                     const brandRef = doc(firestore, 'brands', part.brandId);
                     const brandSnap = await getDoc(brandRef);
@@ -288,24 +300,29 @@ function PartDetailLoader({ partId }: { partId: string }) {
               categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
             }
 
-            setData({ part, brand: brandData, category: categoryData });
+            setPartData({ part, brand: brandData, category: categoryData });
             setIsLoading(false);
         };
 
-        if (!isPartLoading) {
-            fetchRelatedData();
-        }
-    }, [part, isPartLoading, firestore]);
+        fetchRelatedData();
 
-    if (isLoading || isPartLoading) {
+    }, [part, isPartLoading, partError, firestore]);
+
+    if (isLoading) {
         return <PartDetailLoading />;
     }
 
-    if (!data) {
+    if (error) {
+        // You might want a specific error component here
+        console.error("Error loading part:", error);
         notFound();
     }
     
-    return <PartDetailPageContent part={data.part} brand={data.brand} category={data.category} />;
+    if (!partData) {
+        notFound();
+    }
+    
+    return <PartDetailPageContent part={partData.part} brand={partData.brand} category={partData.category} />;
 }
 
 
