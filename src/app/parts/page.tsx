@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import Filters from './components/filters';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import AddToCartButton from './components/add-to-cart-button';
@@ -35,6 +35,7 @@ function PartsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   
   const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
   const query = searchParams.get('query') || undefined;
@@ -110,13 +111,6 @@ function PartsPageContent() {
       return params.toString();
   };
 
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const query = formData.get('query') as string;
-    router.push(pathname + '?' + createQueryString({ query: query || undefined }));
-  };
-
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', pageNumber.toString());
@@ -164,11 +158,6 @@ function PartsPageContent() {
         }
         return [];
     };
-
-
-  const FilterComponent = () => (
-    <Filters categories={categories} vehicleBrands={vehicleBrands} />
-  )
   
   const getBrandForPart = (part: Part): Brand | undefined => allBrands?.find(b => b.id === part.brandId);
   const getCategoryForPart = (part: Part): Category | undefined => categories.find(c => c.id === (part.categoryIds && part.categoryIds[0]));
@@ -191,7 +180,7 @@ function PartsPageContent() {
         </div>
         
          <div className="lg:hidden mb-4">
-           <Sheet>
+           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full relative">
                 <Filter className="mr-2 h-4 w-4" />
@@ -204,31 +193,19 @@ function PartsPageContent() {
                  )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="max-h-[80vh] flex flex-col">
+            <SheetContent side="left" className="flex flex-col">
               <SheetHeader>
                 <SheetTitle>Filtros</SheetTitle>
               </SheetHeader>
-              <div className="overflow-y-auto">
-                 <div className="p-4 space-y-4">
-                  <form onSubmit={handleSearch} className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      name="query"
-                      placeholder="Buscar por nombre o SKU..." 
-                      className="pl-10 pr-20" 
-                      defaultValue={searchParams.get('query') || ''}
-                    />
-                    <Button type="submit" size="sm" className="absolute right-1 top-1/2 -translate-y-1/2 h-8">Buscar</Button>
-                  </form>
-                  <FilterComponent />
-                </div>
+              <div className="overflow-y-auto -mx-6 px-6">
+                 <Filters categories={categories} vehicleBrands={vehicleBrands} isMobile={true} onApply={() => setIsSheetOpen(false)} />
               </div>
             </SheetContent>
           </Sheet>
         </div>
 
         <div className="hidden lg:block mb-6">
-            <FilterComponent />
+            <Filters categories={categories} vehicleBrands={vehicleBrands} />
         </div>
 
 

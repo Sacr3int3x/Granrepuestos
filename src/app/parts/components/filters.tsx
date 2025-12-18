@@ -3,7 +3,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -23,9 +23,11 @@ import { collection } from 'firebase/firestore';
 interface FiltersProps {
   categories: Category[];
   vehicleBrands: VehicleBrand[];
+  isMobile?: boolean;
+  onApply?: () => void;
 }
 
-export default function Filters({ categories, vehicleBrands }: FiltersProps) {
+export default function Filters({ categories, vehicleBrands, isMobile = false, onApply }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -37,12 +39,18 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
   }, [firestore]);
   const { data: brands } = useCollection<Brand>(brandsQuery);
 
-  const selectedVehicleBrand = searchParams.get('vehicleBrand');
+  const [localState, setLocalState] = useState({
+      query: searchParams.get('query') || '',
+      brand: searchParams.get('brand') || 'all',
+      category: searchParams.get('category') || 'all',
+      vehicleBrand: searchParams.get('vehicleBrand') || 'all',
+      vehicleModel: searchParams.get('vehicleModel') || 'all',
+  });
   
   const availableModels = useMemo(() => {
-    if (!selectedVehicleBrand) return [];
-    return getVehicleModels(selectedVehicleBrand);
-  }, [selectedVehicleBrand]);
+    if (!localState.vehicleBrand || localState.vehicleBrand === 'all') return [];
+    return getVehicleModels(localState.vehicleBrand);
+  }, [localState.vehicleBrand]);
 
 
   const createQueryString = useCallback(
@@ -62,31 +70,51 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
     [searchParams]
   );
   
-  const handleBrandChange = (value: string) => {
-    const newQueryString = createQueryString({ 
-        vehicleBrand: value, 
-        vehicleModel: undefined // Reset model when brand changes
-    });
-    router.push(`${pathname}?${newQueryString}`);
+  const handleStateChange = (key: string) => (value: string) => {
+    const newState = { ...localState, [key]: value };
+    if (key === 'vehicleBrand') {
+        newState.vehicleModel = 'all'; // Reset model when brand changes
+    }
+    
+    if (isMobile) {
+      setLocalState(newState);
+    } else {
+      router.push(`${pathname}?${createQueryString(newState)}`);
+    }
   };
 
-  const handleModelChange = (value: string) => {
-    router.push(`${pathname}?${createQueryString({ vehicleModel: value })}`);
-  };
+  const handleApplyFilters = () => {
+    router.push(`${pathname}?${createQueryString(localState)}`);
+    if(onApply) onApply();
+  }
 
-  const handleSelectChange = (key: string) => (value: string) => {
-    router.push(pathname + '?' + createQueryString({ [key]: value }));
-  };
-  
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const query = formData.get('query') as string;
-    router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+    
+    if (isMobile) {
+        setLocalState(prev => ({...prev, query}));
+    } else {
+        router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+    }
   };
 
   const clearFilters = () => {
-    router.push(pathname);
+      if (isMobile) {
+        const clearedState = {
+            query: '',
+            brand: 'all',
+            category: 'all',
+            vehicleBrand: 'all',
+            vehicleModel: 'all',
+        };
+        setLocalState(clearedState);
+        router.push(pathname);
+        if(onApply) onApply();
+      } else {
+        router.push(pathname);
+      }
   };
   
   const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true);
@@ -103,8 +131,8 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
                 defaultValue={searchParams.get('query') || ''}
             />
         </form>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Select onValueChange={handleSelectChange('brand')} defaultValue={searchParams.get('brand') || 'all'}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <Select onValueChange={handleStateChange('brand')} value={localState.brand}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Marca del Repuesto" />
                 </SelectTrigger>
@@ -116,7 +144,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
                 </SelectContent>
             </Select>
 
-            <Select onValueChange={handleSelectChange('category')} defaultValue={searchParams.get('category') || 'all'}>
+            <Select onValueChange={handleStateChange('category')} value={localState.category}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
@@ -128,7 +156,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
                 </SelectContent>
             </Select>
 
-            <Select onValueChange={handleBrandChange} defaultValue={searchParams.get('vehicleBrand') || 'all'}>
+            <Select onValueChange={handleStateChange('vehicleBrand')} value={localState.vehicleBrand}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Marca del Vehículo" />
                 </SelectTrigger>
@@ -141,9 +169,9 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
             </Select>
 
             <Select 
-                onValueChange={handleModelChange} 
-                defaultValue={searchParams.get('vehicleModel') || 'all'}
-                disabled={!selectedVehicleBrand}
+                onValueChange={handleStateChange('vehicleModel')} 
+                value={localState.vehicleModel}
+                disabled={!localState.vehicleBrand || localState.vehicleBrand === 'all'}
             >
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Modelo del Vehículo" />
@@ -156,6 +184,11 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
                 </SelectContent>
             </Select>
         </div>
+        
+        {isMobile ? (
+             <Button onClick={handleApplyFilters} className="w-full">Aplicar Filtros</Button>
+        ) : null}
+
         {hasActiveFilters && (
              <div className="flex items-center justify-center pt-2">
                  <Button variant="ghost" onClick={clearFilters}>
@@ -163,7 +196,7 @@ export default function Filters({ categories, vehicleBrands }: FiltersProps) {
                   Limpiar filtros
                 </Button>
              </div>
-          )}
+        )}
     </div>
   );
 }
