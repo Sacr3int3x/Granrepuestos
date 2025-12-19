@@ -41,7 +41,7 @@ export default function CartSheet() {
     const subject = "Solicitud de Cotización de Repuestos - GranRepuestos";
     const body = generateQuoteMessage();
     // Reemplaza YOUR_EMAIL@example.com con tu dirección de correo
-    const mailtoUrl = `mailto:info@granrepuestos.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = `mailto:soporte@granrepuestos.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
 
@@ -128,3 +128,5 @@ export default function CartSheet() {
     </>
   );
 }
+
+    

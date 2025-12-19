@@ -145,7 +145,7 @@ export default function Header() {
                       </a>
                    </Button>
                     <Button asChild variant="outline">
-                      <a href="mailto:info@granrepuestos.com" onClick={handleLinkClick}>
+                      <a href="mailto:soporte@granrepuestos.com" onClick={handleLinkClick}>
                         <Mail className="mr-2" /> Correo
                       </a>
                     </Button>
@@ -158,3 +158,5 @@ export default function Header() {
     </header>
   );
 }
+
+    

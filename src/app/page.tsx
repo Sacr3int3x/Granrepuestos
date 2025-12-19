@@ -297,10 +297,10 @@ export default function Home() {
               ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
             </p>
           </div>
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <Card>
               <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row items-center justify-around gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-center justify-around">
                   
                   <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
@@ -310,20 +310,22 @@ export default function Home() {
                     </div>
                   </a>
 
-                  <Separator orientation="vertical" className="hidden md:block h-16" />
-                  <Separator orientation="horizontal" className="md:hidden" />
-                  
-                  <a href="mailto:info@granrepuestos.com" className="flex items-center gap-4 group">
-                    <Mail className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                  <a href="https://wa.me/584123269600" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                    <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
-                      <h3 className="text-lg font-semibold">Correo Electrónico</h3>
-                      <p className="text-muted-foreground group-hover:underline">info@granrepuestos.com</p>
+                      <h3 className="text-lg font-semibold">WhatsApp</h3>
+                      <p className="text-muted-foreground group-hover:underline">+58 412-3269600</p>
                     </div>
                   </a>
                   
-                  <Separator orientation="vertical" className="hidden md:block h-16" />
-                  <Separator orientation="horizontal" className="md:hidden" />
-
+                  <a href="mailto:soporte@granrepuestos.com" className="flex items-center gap-4 group">
+                    <Mail className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Correo Electrónico</h3>
+                      <p className="text-muted-foreground group-hover:underline">soporte@granrepuestos.com</p>
+                    </div>
+                  </a>
+                  
                   <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
@@ -332,9 +334,6 @@ export default function Home() {
                     </div>
                   </a>
                   
-                  <Separator orientation="vertical" className="hidden md:block h-16" />
-                   <Separator orientation="horizontal" className="md:hidden" />
-
                   <div className="flex items-center gap-4">
                     <MapPin className="h-8 w-8 text-primary" />
                     <div>
@@ -352,3 +351,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
