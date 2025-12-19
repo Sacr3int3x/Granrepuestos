@@ -223,7 +223,7 @@ function PartsPageContent() {
           </Sheet>
         </div>
 
-        <div className="hidden lg:block mb-6">
+        <div className="hidden lg:block my-8">
             <Filters categories={categories} vehicleBrands={vehicleBrands} />
         </div>
 
