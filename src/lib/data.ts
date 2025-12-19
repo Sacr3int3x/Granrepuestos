@@ -1,4 +1,5 @@
 
+
 import type { Category, Part, VehicleBrand, VehicleModel, Brand } from './types';
 
 
@@ -173,13 +174,16 @@ export function getParts(
   let filteredParts = sanitizedParts;
 
   if (filters.query) {
-    const lowerCaseQuery = filters.query.toLowerCase();
-    filteredParts = filteredParts.filter(
-      (part) =>
-        part.name.toLowerCase().includes(lowerCaseQuery) ||
-        part.sku.toLowerCase().includes(lowerCaseQuery) ||
-        (part.description && part.description.toLowerCase().includes(lowerCaseQuery))
-    );
+    const searchWords = filters.query.toLowerCase().split(' ').filter(Boolean);
+    filteredParts = filteredParts.filter((part) => {
+        const partText = [
+            part.name.toLowerCase(),
+            part.sku.toLowerCase(),
+            part.description?.toLowerCase() || ''
+        ].join(' ');
+
+        return searchWords.every(word => partText.includes(word));
+    });
   }
 
   if (filters.brand) {
@@ -187,15 +191,12 @@ export function getParts(
   }
 
   if (filters.category) {
-    filteredParts = filteredParts.filter((part) => part.categoryId === filters.category);
+    filteredParts = filteredParts.filter((part) => part.categoryIds && part.categoryIds.includes(filters.category as string));
   }
   
   if (filters.vehicleBrand) {
     filteredParts = filteredParts.filter((part) => {
         if (part.vehicleBrandIds && part.vehicleBrandIds.includes(filters.vehicleBrand as string)) return true;
-        if (part.vehicleCompatibility) {
-            return part.vehicleCompatibility.some(comp => comp.brandId === filters.vehicleBrand);
-        }
         return false;
     });
   }
@@ -203,9 +204,6 @@ export function getParts(
   if (filters.vehicleModel) {
      filteredParts = filteredParts.filter((part) => {
         if (part.vehicleModelIds && part.vehicleModelIds.includes(filters.vehicleModel as string)) return true;
-        if (part.vehicleCompatibility) {
-            return part.vehicleCompatibility.some(comp => comp.modelId === filters.vehicleModel);
-        }
         return false;
     });
   }

@@ -3,7 +3,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -47,6 +47,17 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
       vehicleModel: searchParams.get('vehicleModel') || 'all',
   });
   
+  // Sync state with URL params
+    useEffect(() => {
+        setLocalState({
+            query: searchParams.get('query') || '',
+            brand: searchParams.get('brand') || 'all',
+            category: searchParams.get('category') || 'all',
+            vehicleBrand: searchParams.get('vehicleBrand') || 'all',
+            vehicleModel: searchParams.get('vehicleModel') || 'all',
+        });
+    }, [searchParams]);
+
   const availableModels = useMemo(() => {
     if (!localState.vehicleBrand || localState.vehicleBrand === 'all') return [];
     return getVehicleModels(localState.vehicleBrand);
@@ -64,7 +75,9 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
         }
       });
       // Reset page to 1 when filters change
-      params.set('page', '1');
+      if (!params.has('page')) {
+        params.set('page', '1');
+      }
       return params.toString();
     },
     [searchParams]
@@ -117,11 +130,15 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
       }
   };
   
-  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true) && (searchParams.get('page') !== '1' || searchParams.size > 1);
+  const hasActiveFilters = 
+    (searchParams.get('brand') && searchParams.get('brand') !== 'all') ||
+    (searchParams.get('category') && searchParams.get('category') !== 'all') ||
+    (searchParams.get('vehicleBrand') && searchParams.get('vehicleBrand') !== 'all') ||
+    (searchParams.get('vehicleModel') && searchParams.get('vehicleModel') !== 'all');
 
   if (isMobile) {
      return (
-        <div className="space-y-4">
+        <div className="space-y-4 p-1">
              <div className="space-y-4">
                 <Select onValueChange={handleStateChange('brand')} value={localState.brand}>
                     <SelectTrigger className="w-full">
@@ -176,39 +193,40 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
                 </Select>
             </div>
             
-            <Button onClick={handleApplyFilters} className="w-full">Aplicar Filtros</Button>
-
-            {hasActiveFilters && (
-                <div className="flex items-center justify-center pt-2">
-                    <Button variant="ghost" onClick={clearFilters}>
-                    <X className="w-4 h-4 mr-2" />
-                    Limpiar filtros
-                    </Button>
-                </div>
-            )}
+            <div className="sticky bottom-0 bg-background py-4 border-t border-border">
+                <Button onClick={handleApplyFilters} className="w-full">Aplicar Filtros</Button>
+                {hasActiveFilters && (
+                    <div className="flex items-center justify-center pt-2">
+                        <Button variant="ghost" onClick={clearFilters}>
+                        <X className="w-4 h-4 mr-2" />
+                        Limpiar filtros
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
   }
 
   return (
-    <div className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm p-4">
+    <div className="space-y-4 rounded-lg">
         <form onSubmit={handleSearchSubmit} className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
                 name="query"
                 placeholder="Buscar por nombre, SKU, descripción..." 
-                className="pl-10" 
+                className="pl-10 h-11 text-base" 
                 defaultValue={searchParams.get('query') || ''}
             />
         </form>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <Select onValueChange={handleStateChange('brand')} value={localState.brand}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Marca del Repuesto" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">Todas las marcas</SelectItem>
-                    {brands?.map((brand) => (
+                    {brands?.sort((a,b) => a.name.localeCompare(b.name)).map((brand) => (
                         <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
                     ))}
                 </SelectContent>
@@ -232,7 +250,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">Todas las marcas</SelectItem>
-                    {vehicleBrands.map((brand) => (
+                    {vehicleBrands.sort((a,b) => a.name.localeCompare(b.name)).map((brand) => (
                         <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
                     ))}
                 </SelectContent>
@@ -248,7 +266,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">Todos los modelos</SelectItem>
-                    {availableModels.map((model) => (
+                    {availableModels.sort((a,b) => a.name.localeCompare(b.name)).map((model) => (
                         <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
                     ))}
                 </SelectContent>
@@ -256,8 +274,8 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
         </div>
         
         {hasActiveFilters && (
-             <div className="flex items-center justify-center pt-2">
-                 <Button variant="ghost" onClick={clearFilters}>
+             <div className="flex items-center justify-start pt-2">
+                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-2" />
                   Limpiar filtros
                 </Button>

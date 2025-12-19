@@ -27,6 +27,7 @@ import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 const PARTS_PER_PAGE = 16;
@@ -107,7 +108,10 @@ function PartsPageContent() {
           params.set(key, String(value));
         }
       });
-      params.set('page', '1');
+      // Reset page to 1 when filters change, except for page itself
+      if (!('page' in paramsToUpdate)) {
+        params.set('page', '1');
+      }
       return params.toString();
   };
   
@@ -210,15 +214,15 @@ function PartsPageContent() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
-              <SheetHeader>
+              <SheetHeader className="px-6 flex-shrink-0">
                 <SheetTitle>Filtros</SheetTitle>
                 <SheetDescription>
                   Selecciona uno o más filtros para refinar tu búsqueda.
                 </SheetDescription>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4">
+               <ScrollArea className="flex-1 -mx-6 px-6 mt-4">
                  <Filters categories={categories} vehicleBrands={vehicleBrands} isMobile={true} onApply={() => setIsSheetOpen(false)} />
-              </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>
@@ -262,7 +266,7 @@ function PartsPageContent() {
                   {paginatedParts.map((part: Part) => {
                       const brand = getBrandForPart(part);
                       const category = getCategoryForPart(part);
-                      if (!brand || !category) return null;
+                      if (!brand ) return null;
                       
                       const fullPart = {...part, brand, category };
                       const firstImage = (part.imageUrls && part.imageUrls.length > 0) ? part.imageUrls[0] : null;
