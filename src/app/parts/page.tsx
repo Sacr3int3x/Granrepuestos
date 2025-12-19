@@ -171,7 +171,7 @@ function PartsPageContent() {
 
   const isLoading = partsLoading || brandsLoading;
 
-  const hasActiveFilters = searchParams.size > 0 && (searchParams.has('page') ? searchParams.size > 1 : true) && (searchParams.get('page') !== '1' || searchParams.size > 1);
+  const hasActiveFilters = (searchParams.has('brand') || searchParams.has('category') || searchParams.has('vehicleBrand') || searchParams.has('vehicleModel'));
 
 
   return (
@@ -216,7 +216,7 @@ function PartsPageContent() {
                   Selecciona uno o más filtros para refinar tu búsqueda.
                 </SheetDescription>
               </SheetHeader>
-              <div className="overflow-y-auto -mx-6 px-6">
+              <div className="flex-1 overflow-y-auto -mx-6 px-6 py-4">
                  <Filters categories={categories} vehicleBrands={vehicleBrands} isMobile={true} onApply={() => setIsSheetOpen(false)} />
               </div>
             </SheetContent>
