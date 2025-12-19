@@ -10,6 +10,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
+import Snowfall from "@/components/snowfall";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
             <CartProviderWrapper>
+                <Snowfall />
                 <div className="relative flex min-h-screen flex-col">
                     <Header />
                     <main className="flex-1 animate-fade-in">{children}</main>
@@ -57,5 +59,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    
