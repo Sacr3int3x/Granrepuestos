@@ -206,7 +206,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
             <Image
                 src={HeroImage}
-                alt="Repuestos de automoviles"
+                alt="Repuestos de automoviles originales en Venezuela"
                 fill
                 className="object-cover"
                 quality={100}
@@ -219,14 +219,14 @@ export default function Home() {
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
-              GranRepuestos
+              Repuestos Originales para Carros en Guatire y Caracas
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
-              La fuente de repuestos para tu vehiculo, originales y de máxima calidad.
+              Tu tienda de confianza para comprar repuestos originales y certificados. Ubicados en Guatire con envíos a toda Venezuela.
             </p>
             <Button asChild size="lg" className="mt-8 animate-fade-in-up [animation-delay:0.6s]">
                 <Link href="/parts">
-                    Explorar Catálogo
+                    Buscar Repuestos por Vehículo
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
             </Button>
@@ -239,13 +239,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-              Marcas con las que trabajamos
+              Distribuidores de Repuestos Originales en Venezuela
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-              Nuestro compromiso es la durabilidad y el rendimiento. Por eso, solo distribuimos repuestos originales y certificados de los fabricantes líderes a nivel mundial.
-            </p>
-             <p className="mt-4 text-xl font-bold text-primary">
-              ¡Cero imitaciones, Cero Chino!
+              Nuestro compromiso es con la calidad. Solo distribuimos repuestos originales y certificados de fabricantes líderes. Tu carro merece lo mejor, por eso ofrecemos ¡Cero imitaciones, Cero chino!
             </p>
           </div>
           <BrandsSection />
@@ -256,9 +253,9 @@ export default function Home() {
       <section id="featured-products" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline">Productos Destacados</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Catálogo de Repuestos para Carros</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Los repuestos más populares y recomendados por nuestros clientes.
+              Explora las piezas más buscadas. Si no encuentras tu repuesto, contáctanos.
             </p>
           </div>
           <FeaturedProductsSection />
@@ -272,16 +269,16 @@ export default function Home() {
             <div className="relative h-20 w-48 shrink-0">
                 <Image 
                     src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadolibre/logo__large_plus.png"
-                    alt="MercadoLibre Logo"
+                    alt="MercadoLibre Logo Venezuela"
                     fill
                     className="object-contain"
                     sizes="192px"
                 />
             </div>
             <div className="max-w-xl">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline">También vendemos en MercadoLibre</h2>
+                <h2 className="text-3xl md:text-4xl font-bold font-headline">Tienda de Repuestos con Reputación en MercadoLibre</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Con más de 5 años de trayectoria y reputación impecable, somos tu opción de confianza en la plataforma líder de e-commerce de Latinoamérica.
+                    Con más de 5 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
                 </p>
             </div>
           </div>
@@ -292,9 +289,9 @@ export default function Home() {
       <section id="contact" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1.4s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos - Asesoría para tu Repuesto</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
+              ¿No estás seguro de qué pieza necesitas? ¡Te ayudamos! Escríbenos para una cotización inmediata.
             </p>
           </div>
           <div className="max-w-5xl mx-auto">
@@ -305,7 +302,7 @@ export default function Home() {
                   <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
-                      <h3 className="text-lg font-semibold">WhatsApp</h3>
+                      <h3 className="text-lg font-semibold">WhatsApp Principal</h3>
                       <p className="text-muted-foreground group-hover:underline">+58 412-0177075</p>
                     </div>
                   </a>
@@ -313,7 +310,7 @@ export default function Home() {
                   <a href="https://wa.me/584123269600" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
-                      <h3 className="text-lg font-semibold">WhatsApp</h3>
+                      <h3 className="text-lg font-semibold">WhatsApp Ventas</h3>
                       <p className="text-muted-foreground group-hover:underline">+58 412-3269600</p>
                     </div>
                   </a>
@@ -337,8 +334,8 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <MapPin className="h-8 w-8 text-primary" />
                     <div>
-                      <h3 className="text-lg font-semibold">Ubicación</h3>
-                      <p className="text-muted-foreground">Guatire Edo. Miranda</p>
+                      <h3 className="text-lg font-semibold">Ubicación y Entregas</h3>
+                      <p className="text-muted-foreground">Tienda en Guatire. Entregas en Caracas.</p>
                     </div>
                   </div>
 
@@ -351,5 +348,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
