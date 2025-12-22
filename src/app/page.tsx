@@ -219,7 +219,7 @@ export default function Home() {
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
-              Repuestos originales para tu vehiculo en Guatire
+              Repuestos Originales Para Tu Vehiculo en Guatire
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               Tu tienda de confianza para comprar repuestos originales y certificados. Ubicados en Guatire con envíos a toda Venezuela.
@@ -239,7 +239,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-              Distribuidores de repuestos originales en Venezuela
+              Distribuidores de Repuestos Originales en Venezuela
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
               Nuestro compromiso es con la calidad. Solo distribuimos repuestos originales y certificados de fabricantes líderes. Tu carro merece lo mejor, por eso ofrecemos ¡Cero imitaciones, Cero chino!
@@ -296,8 +296,8 @@ export default function Home() {
           </div>
           <div className="max-w-5xl mx-auto">
             <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-center justify-around">
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
                   
                   <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
@@ -323,7 +323,7 @@ export default function Home() {
                     </div>
                   </a>
                   
-                  <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
+                  <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group lg:col-start-1">
                     <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">Instagram</h3>
@@ -334,8 +334,8 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <MapPin className="h-8 w-8 text-primary" />
                     <div>
-                      <h3 className="text-lg font-semibold">Ubicación y Entregas</h3>
-                      <p className="text-muted-foreground">Tienda en Guatire. Entregas en Caracas.</p>
+                      <h3 className="text-lg font-semibold">Ubicación</h3>
+                      <p className="text-muted-foreground">Entregas Personales en Guatire</p>
                     </div>
                   </div>
 
