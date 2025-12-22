@@ -219,14 +219,14 @@ export default function Home() {
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
-              Repuestos Originales Para Carros en Guatire
+              Repuestos originales para tu vehiculo en Guatire
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               Tu tienda de confianza para comprar repuestos originales y certificados. Ubicados en Guatire con envíos a toda Venezuela.
             </p>
             <Button asChild size="lg" className="mt-8 animate-fade-in-up [animation-delay:0.6s]">
                 <Link href="/parts">
-                    Buscar Repuestos por Vehículo
+                    Buscar repuestos por vehículo
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
             </Button>
@@ -239,7 +239,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-              Distribuidores de Repuestos Originales en Venezuela
+              Distribuidores de repuestos originales en Venezuela
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
               Nuestro compromiso es con la calidad. Solo distribuimos repuestos originales y certificados de fabricantes líderes. Tu carro merece lo mejor, por eso ofrecemos ¡Cero imitaciones, Cero chino!
@@ -278,7 +278,7 @@ export default function Home() {
             <div className="max-w-xl">
                 <h2 className="text-3xl md:text-4xl font-bold font-headline">Tienda de Repuestos con Reputación en MercadoLibre</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Con más de 5 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
+                    Con más de 10 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
                 </p>
             </div>
           </div>
