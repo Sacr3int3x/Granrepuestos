@@ -24,12 +24,57 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AutoPartsStore",
+    "name": "GranRepuestos",
+    "image": "URL_DE_TU_LOGO",
+    "@id": "https://www.granrepuestos.com",
+    "url": "https://www.granrepuestos.com",
+    "telephone": "+58-412-0177075",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Tu Dirección en Guatire",
+      "addressLocality": "Guatire",
+      "addressRegion": "Miranda",
+      "postalCode": "1221",
+      "addressCountry": "VE"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Guatire"
+      },
+      {
+        "@type": "City",
+        "name": "Caracas"
+      }
+    ],
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "08:00",
+      "closes": "17:00"
+    }
+  };
+
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
