@@ -219,7 +219,7 @@ export default function Home() {
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
-              Repuestos Originales para Carros en Guatire y Caracas
+              Repuestos Originales Para Carros en Guatire
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               Tu tienda de confianza para comprar repuestos originales y certificados. Ubicados en Guatire con envíos a toda Venezuela.
