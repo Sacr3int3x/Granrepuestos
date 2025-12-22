@@ -15,7 +15,7 @@ import Snowfall from "@/components/snowfall";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Repuestos Originales en Guatire y Caracas | GranRepuestos",
+  title: "Repuestos Originales en Guatire | GranRepuestos",
   description: "Tu tienda de repuestos en Guatire con entregas en Caracas. Consigue repuestos originales y certificados para tu carro. ¡Cotiza por WhatsApp!",
 };
 
