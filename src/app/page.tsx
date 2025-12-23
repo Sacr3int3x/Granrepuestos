@@ -219,7 +219,7 @@ export default function Home() {
         <div className="absolute z-10 w-full h-full flex flex-col items-center justify-center text-center p-4">
           <div className="flex-grow flex flex-col items-center justify-center text-white">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg font-headline animate-fade-in-up [animation-delay:0.2s]">
-              Repuestos originales para tu vehiculo en Guatire
+              GranRepuestos
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md animate-fade-in-up [animation-delay:0.4s]">
               Tu tienda de confianza para comprar repuestos originales y certificados. Ubicados en Guatire con envíos a toda Venezuela.
@@ -278,7 +278,7 @@ export default function Home() {
             <div className="max-w-xl">
                 <h2 className="text-3xl md:text-4xl font-bold font-headline">Tienda de Repuestos con Reputación en MercadoLibre</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Con más de 10 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
+                    Con más de 5 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
                 </p>
             </div>
           </div>
@@ -297,7 +297,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             <Card>
               <CardContent className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
                   
                   <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
                     <MessageSquare className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
@@ -348,3 +348,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
