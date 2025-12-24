@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -27,44 +28,26 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
+  
   useEffect(() => {
-    if (!isUserLoading) {
-      if (user) {
-        setIsReady(true);
-      } else if (auth) {
-        // If not logged in, sign in anonymously and then set ready
-        signInAnonymously(auth)
-          .then(() => {
-             // onAuthStateChanged will handle setting the user,
-             // another useEffect will catch the user change and set isReady.
-          })
-          .catch((error) => {
-            console.error("Anonymous sign-in failed:", error);
-            toast({
-              variant: "destructive",
-              title: "Error de autenticación",
-              description: "No se pudo iniciar una sesión segura para procesar la orden.",
-            });
-          });
-      }
+    if (!isUserLoading && !user && auth) {
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "No se pudo iniciar una sesión segura para procesar la orden.",
+        });
+      });
     }
-  }, [user, isUserLoading, auth, toast]);
-
-   useEffect(() => {
-    // This effect runs when the user state changes *after* anonymous sign-in
-    if (!isUserLoading && user) {
-        setIsReady(true);
-    }
-  }, [user, isUserLoading]);
-
+  }, [isUserLoading, user, auth, toast]);
+  
   useEffect(() => {
-    // Redirect if cart is empty after initialization and readiness check
-    if (isReady && cartItems.length === 0) {
+    // Redirect if cart is empty after user is loaded and checked
+    if (!isUserLoading && cartItems.length === 0) {
       router.replace("/parts");
     }
-  }, [cartItems, isReady, router]);
+  }, [cartItems, isUserLoading, router]);
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
@@ -119,7 +102,7 @@ export default function CheckoutPage() {
       });
   };
 
-  const isLoading = isUserLoading || !isReady;
+  const isLoading = isUserLoading || !user;
 
   if (isLoading) {
     return (
