@@ -31,36 +31,37 @@ export default function CheckoutPage() {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    if (isUserLoading) return;
+    if (isUserLoading) {
+      return; // Wait until user state is resolved
+    }
 
     if (user) {
+      // If a user (anonymous or authenticated) already exists, we're ready.
       setIsAuthReady(true);
-      return;
-    }
-    
-    if (!user && auth) {
-      signInAnonymously(auth)
-        .catch((error) => {
-          console.error("Anonymous sign-in failed:", error);
-          toast({
-            variant: "destructive",
-            title: "Error de autenticación",
-            description: "No se pudo iniciar una sesión segura para procesar la orden.",
-          });
+    } else if (auth) {
+      // If no user and auth is available, sign in anonymously.
+      // The onAuthStateChanged listener in the provider will then update the user state.
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "No se pudo iniciar una sesión segura para procesar la orden.",
         });
-        // The onAuthStateChanged listener will eventually set isAuthReady to true
+      });
     }
   }, [isUserLoading, user, auth, toast]);
 
-  // This effect runs when the auth state is finally determined
+  // This effect marks auth as ready once the user object is available after any sign-in process.
   useEffect(() => {
-     if (!isUserLoading && user) {
-        setIsAuthReady(true);
-     }
-  }, [isUserLoading, user])
+    if (!isUserLoading && user) {
+      setIsAuthReady(true);
+    }
+  }, [isUserLoading, user]);
+
 
   useEffect(() => {
-    // Redirect if cart is empty after authentication is resolved
+    // Redirect if cart is empty only after authentication is confirmed ready.
     if (isAuthReady && cartItems.length === 0) {
       router.replace("/parts");
     }
