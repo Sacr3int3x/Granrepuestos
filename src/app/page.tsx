@@ -183,7 +183,7 @@ function FeaturedProductsSection() {
                             <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                         </CardContent>
                         <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                            <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                            <p className="text-xl font-bold text-primary">€{part.price.toFixed(2)}</p>
                             <AddToCartButton part={fullPart as Part} />
                         </CardFooter>
                         </Card>
@@ -323,7 +323,7 @@ export default function Home() {
                     </div>
                   </a>
                   
-                  <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group lg:col-start-1">
+                  <a href="https://www.instagram.com/granrepuesto.ve" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group sm:col-start-1 lg:col-start-auto">
                     <Instagram className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                     <div>
                       <h3 className="text-lg font-semibold">Instagram</h3>
@@ -348,5 +348,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

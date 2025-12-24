@@ -52,15 +52,22 @@ export async function generateMetadata(
     }
   }
 
-  const { part } = data;
+  const { part, brand } = data;
   const previousImages = (await parent).openGraph?.images || [];
   const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
 
   return {
-    title: `${part.name} - GranRepuestos`,
+    title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
     description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
     openGraph: {
       images: [imageUrl, ...previousImages],
+      type: 'product',
+      title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
+      description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+      price: {
+        amount: part.price.toString(),
+        currency: 'EUR',
+      },
     },
   }
 }

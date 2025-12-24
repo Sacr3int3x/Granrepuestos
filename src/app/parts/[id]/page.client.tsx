@@ -19,7 +19,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Info, Truck } from "lucide-react";
+import { Info, Truck, Wallet } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -83,7 +83,7 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
     offers: {
       '@type': 'Offer',
       url: typeof window !== 'undefined' ? window.location.href : '',
-      priceCurrency: 'USD',
+      priceCurrency: 'EUR',
       price: part.price.toFixed(2),
       itemCondition: 'https://schema.org/NewCondition',
       availability: part.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
@@ -167,7 +167,7 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
             </div>
            <div className="my-6 flex justify-between items-center">
             <div>
-              <p className="text-4xl font-bold text-primary">${part.price.toFixed(2)}</p>
+              <p className="text-4xl font-bold text-primary">€{part.price.toFixed(2)}</p>
               <p className={part.stock > 0 ? "text-green-600 mt-1" : "text-red-600 mt-1"}>
                 {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
               </p>
@@ -227,6 +227,13 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
               <div className="flex items-center gap-2">
                  <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
               </div>
+              <Alert>
+                <Wallet className="h-4 w-4" />
+                <AlertTitle>Métodos de Pago</AlertTitle>
+                <AlertDescription>
+                  Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
+                </AlertDescription>
+              </Alert>
               <Alert>
                 <Truck className="h-4 w-4" />
                 <AlertTitle>Envíos a Nivel Nacional</AlertTitle>

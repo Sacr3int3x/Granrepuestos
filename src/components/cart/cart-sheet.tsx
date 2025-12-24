@@ -26,7 +26,7 @@ export default function CartSheet() {
     cartItems.forEach(item => {
       message += `• ${item.quantity}x - ${item.part.name} (SKU: ${item.part.sku})\n`;
     });
-    message += `\nTotal estimado: $${cartTotal.toFixed(2)}\n\n¡Quedo a la espera de su respuesta!`;
+    message += `\nTotal estimado: €${cartTotal.toFixed(2)}\n\n¡Quedo a la espera de su respuesta!`;
     return message;
   };
 
@@ -75,7 +75,7 @@ export default function CartSheet() {
             <SheetFooter className="p-6 flex flex-col gap-4 text-center sm:text-left">
               <div className="text-lg font-semibold w-full flex justify-between items-center">
                 <span>Subtotal:</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>€{cartTotal.toFixed(2)}</span>
               </div>
                <div className="flex flex-col gap-3">
                 <p className="text-sm text-muted-foreground text-center">Solicita tu cotización:</p>
@@ -128,5 +128,3 @@ export default function CartSheet() {
     </>
   );
 }
-
-    

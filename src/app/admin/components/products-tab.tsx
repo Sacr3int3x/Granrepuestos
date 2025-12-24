@@ -106,10 +106,16 @@ export default function ProductsTab() {
     let filtered = [...parts];
 
     if (searchQuery) {
-        filtered = filtered.filter(part => 
-            part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            part.sku.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const searchWords = searchQuery.toLowerCase().split(' ').filter(Boolean);
+        filtered = filtered.filter(part => {
+            const partText = [
+                part.name.toLowerCase(),
+                part.sku.toLowerCase(),
+                part.description?.toLowerCase() || ''
+            ].join(' ');
+
+            return searchWords.every(word => partText.includes(word));
+        });
     }
     
     if (brandFilter !== 'all') {
@@ -384,7 +390,7 @@ export default function ProductsTab() {
                       </TableCell>
                       <TableCell className="font-medium">{part.name}</TableCell>
                       <TableCell>{part.sku}</TableCell>
-                      <TableCell>${part.price.toFixed(2)}</TableCell>
+                      <TableCell>€{part.price.toFixed(2)}</TableCell>
                       <TableCell>{part.stock}</TableCell>
                        <TableCell>
                           {status.isComplete ? (

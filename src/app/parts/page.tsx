@@ -300,7 +300,7 @@ function PartsPageContent() {
                                 <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                                 </CardContent>
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                                <p className="text-lg font-bold text-primary">${part.price.toFixed(2)}</p>
+                                <p className="text-lg font-bold text-primary">€{part.price.toFixed(2)}</p>
                                 <AddToCartButton part={fullPart} size="icon" />
                             </CardFooter>
                          </Card>

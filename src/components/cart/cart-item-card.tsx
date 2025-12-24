@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -40,7 +41,7 @@ export default function CartItemCard({ item }: CartItemCardProps) {
       </div>
       <div className="flex-1">
         <h3 className="font-semibold text-sm line-clamp-2">{item.part.name}</h3>
-        <p className="text-sm text-muted-foreground">${item.part.price.toFixed(2)}</p>
+        <p className="text-sm text-muted-foreground">€{item.part.price.toFixed(2)}</p>
         <div className="mt-2 flex items-center gap-2">
           <Button
             variant="outline"
