@@ -99,7 +99,6 @@ service cloud.firestore {
     /**
      * @description Controls access to individual documents in the /orders collection.
      * @path /orders/{orderId}
-     * @allow create: Should be handled by collection-level rule.
      * @allow get, update: User can get/update their own order, or an admin can manage any order.
      * @allow list, delete: Only admins are allowed.
      * @principle Users can manage their own orders, admins can manage all orders.
@@ -107,17 +106,19 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow get, update: if isOwner(resource.data.userId) || isAdmin();
       allow list, delete: if isAdmin();
-      allow create: if false; // Creation is handled at the collection level
+      // Deny create on a specific document ID. Creation must happen at the collection level.
+      allow create: if false; 
     }
 
     /**
      * @description Controls write access to the /orders collection for creating new documents.
      * @path /orders
-     * @allow create: User can create their own order if the userId in the request matches their auth uid. Admins can also create orders.
+     * @allow create: A user (anonymous or authenticated) can create their own order. Admins can also create orders.
      */
     match /orders {
       allow create: if (request.auth != null && isRequestingOwner()) || isAdmin();
-      allow list, get, update, delete: if false; // These operations are handled by the document-level rule /orders/{orderId}
+      // Deny all other operations at the collection level. They are handled by the document-level rule /orders/{orderId}.
+      allow list, get, update, delete: if false; 
     }
 
     
