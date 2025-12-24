@@ -134,7 +134,7 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                 <BreadcrumbLink asChild>
                     <Link href="/parts">Repuestos</Link>
                 </BreadcrumbLink>
-                </a</BreadcrumbItem>
+                </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 {category && (
                     <>
