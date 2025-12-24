@@ -17,7 +17,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -269,12 +268,10 @@ export default function ProductsTab() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Gestionar Repuestos</CardTitle>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogTrigger asChild>
             <Button onClick={openNewDialog}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Añadir Repuesto
             </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
               <DialogTitle>{editingPart ? "Editar Repuesto" : "Añadir Nuevo Repuesto"}</DialogTitle>
@@ -283,7 +280,7 @@ export default function ProductsTab() {
               </DialogDescription>
             </DialogHeader>
             <ProductForm
-              key={editingPart?.id} // Rerender form when product changes
+              key={editingPart?.id}
               onSubmit={handleFormSubmit}
               part={editingPart}
             />
@@ -491,5 +488,7 @@ export default function ProductsTab() {
     </Card>
   );
 }
+
+    
 
     
