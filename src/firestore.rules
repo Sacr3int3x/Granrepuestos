@@ -68,7 +68,7 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow get: if isOwner(resource.data.userId) || isAdmin();
       allow update, delete: if isAdmin();
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow create: if (request.auth.uid == request.resource.data.userId) || isAdmin();
     }
     
     /******************* Admins Collection Rules *******************/
@@ -78,3 +78,4 @@ service cloud.firestore {
     }
   }
 }
+

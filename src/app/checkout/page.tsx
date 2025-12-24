@@ -31,27 +31,24 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     // If cart is empty after initial load, redirect to the parts page.
-    if (!isUserLoading && cartItems.length === 0) {
+    if (cartItems.length > 0 && !isUserLoading && !user && auth) {
+      setIsSigningIn(true);
+      signInAnonymously(auth)
+        .catch((error) => {
+          console.error("Anonymous sign-in failed:", error);
+          toast({
+            variant: "destructive",
+            title: "Error de autenticación",
+            description: "No se pudo iniciar una sesión segura para procesar la orden.",
+          });
+        })
+        .finally(() => {
+          setIsSigningIn(false);
+        });
+    } else if (cartItems.length === 0 && !isUserLoading) {
       router.replace('/parts');
     }
-  }, [cartItems, isUserLoading, router]);
-
-  useEffect(() => {
-    // If auth is loaded, there's no user, and the cart has items, sign in anonymously.
-    if (auth && !user && !isUserLoading && cartItems.length > 0) {
-        setIsSigningIn(true);
-        signInAnonymously(auth).catch((error) => {
-            console.error("Anonymous sign-in failed:", error);
-            toast({
-                variant: "destructive",
-                title: "Error de autenticación",
-                description: "No se pudo iniciar una sesión segura para procesar la orden.",
-            });
-        }).finally(() => {
-            setIsSigningIn(false);
-        });
-    }
-  }, [isUserLoading, user, auth, cartItems.length, toast]);
+  }, [cartItems.length, isUserLoading, user, auth, router, toast]);
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
