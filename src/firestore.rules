@@ -97,30 +97,32 @@ service cloud.firestore {
     /******************* Orders Collection Rules *******************/
     
     /**
+     * @description Controls access to the /orders collection.
+     * This rule applies to creation of new documents in the 'orders' collection.
+     * @path /orders
+     * @allow create: A user (authenticated, including anonymous) can create their own order. Admins can also create orders.
+     * @allow list, get, update, delete: These operations are denied at the collection level and handled by the document-specific rule below.
+     * @principle Users can initiate their own orders, and admins have override capabilities.
+     */
+    match /orders {
+      allow create: if (request.auth != null && isRequestingOwner()) || isAdmin();
+      allow list, get, update, delete: if false; 
+    }
+
+    /**
      * @description Controls access to individual documents in the /orders collection.
+     * This rule applies to existing documents.
      * @path /orders/{orderId}
      * @allow get, update: User can get/update their own order, or an admin can manage any order.
      * @allow list, delete: Only admins are allowed.
+     * @allow create: Denied on a specific document ID. Creation must happen at the collection level (see rule above).
      * @principle Users can manage their own orders, admins can manage all orders.
      */
     match /orders/{orderId} {
       allow get, update: if isOwner(resource.data.userId) || isAdmin();
       allow list, delete: if isAdmin();
-      // Deny create on a specific document ID. Creation must happen at the collection level.
-      allow create: if false; 
+      allow create: if false;
     }
-
-    /**
-     * @description Controls write access to the /orders collection for creating new documents.
-     * @path /orders
-     * @allow create: A user (anonymous or authenticated) can create their own order. Admins can also create orders.
-     */
-    match /orders {
-      allow create: if (request.auth != null && isRequestingOwner()) || isAdmin();
-      // Deny all other operations at the collection level. They are handled by the document-level rule /orders/{orderId}.
-      allow list, get, update, delete: if false; 
-    }
-
     
     /******************* Admins Collection Rules *******************/
     /**

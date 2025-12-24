@@ -39,15 +39,18 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (auth) {
-      signInAnonymously(auth).catch((error) => {
-        console.error("Anonymous sign-in failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Error de autenticación",
-          description: "No se pudo iniciar una sesión segura para procesar la orden.",
+    if (auth && !user) {
+      signInAnonymously(auth)
+        .then(() => setIsAuthReady(true))
+        .catch((error) => {
+          console.error("Anonymous sign-in failed:", error);
+          toast({
+            variant: "destructive",
+            title: "Error de autenticación",
+            description: "No se pudo iniciar una sesión segura para procesar la orden.",
+          });
+          setIsAuthReady(true); // Still proceed, but user creation will likely fail
         });
-      });
     }
     
   }, [user, isUserLoading, auth, toast]);
