@@ -14,35 +14,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CartItemCard from "./cart-item-card";
-import { ShoppingCart, PackageX, Mail, MessageSquare } from "lucide-react";
+import { ShoppingCart, PackageX, Mail, MessageSquare, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 
 export default function CartSheet() {
   const { cartItems, cartTotal, isCartOpen, setIsCartOpen, cartItemCount } = useCart();
 
-  const generateQuoteMessage = () => {
-    let message = "¡Hola GranRepuestos! 👋\n\nQuisiera solicitar una cotización para los siguientes repuestos:\n\n";
-    cartItems.forEach(item => {
-      message += `• ${item.quantity}x - ${item.part.name} (SKU: ${item.part.sku})\n`;
-    });
-    message += `\nTotal estimado: €${cartTotal.toFixed(2)}\n\n¡Quedo a la espera de su respuesta!`;
-    return message;
-  };
-
-  const handleWhatsAppQuote = () => {
-    const message = generateQuoteMessage();
-    // Reemplaza YOUR_PHONE_NUMBER con tu número de WhatsApp con código de país
-    const whatsappUrl = `https://wa.me/584120177075?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
-  const handleEmailQuote = () => {
-    const subject = "Solicitud de Cotización de Repuestos - GranRepuestos";
-    const body = generateQuoteMessage();
-    // Reemplaza YOUR_EMAIL@example.com con tu dirección de correo
-    const mailtoUrl = `mailto:soporte@granrepuestos.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    // We'll navigate to a dedicated checkout page in the next step
   };
 
 
@@ -78,17 +59,13 @@ export default function CartSheet() {
                 <span>€{cartTotal.toFixed(2)}</span>
               </div>
                <div className="flex flex-col gap-3">
-                <p className="text-sm text-muted-foreground text-center">Solicita tu cotización:</p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <Button onClick={handleWhatsAppQuote} variant="outline" className="w-full bg-green-50 hover:bg-green-100 text-green-700 border-green-200">
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      WhatsApp
-                    </Button>
-                    <Button onClick={handleEmailQuote} variant="outline" className="w-full">
-                      <Mail className="mr-2 h-4 w-4" />
-                      Correo
-                    </Button>
-                </div>
+                <Button asChild size="lg" onClick={handleCheckout}>
+                    <Link href="/checkout">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Proceder al Pago
+                    </Link>
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">Serás redirigido a una página para completar tu orden.</p>
               </div>
             </SheetFooter>
           </>

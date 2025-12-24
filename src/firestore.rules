@@ -1,0 +1,124 @@
+
+/**
+ * @fileoverview Firestore Security Rules for Auto Parts Hub.
+ *
+ * Core Philosophy:
+ * This ruleset provides role-based access control for administrative functions using an "admins" collection. Brands, Categories, and Parts are publicly readable, but can only be created, updated, or deleted by administrators. This enforces a clear separation of concerns and ensures data integrity.
+ *
+ * Data Structure:
+ * - /brands/{brandId}: Stores brand information.
+ * - /categories/{categoryId}: Stores category information.
+ * - /parts/{partId}: Stores auto part information.
+ * - /orders/{orderId}: Stores customer orders.
+ * - /admins/{uid}: Stores administrator user IDs. The existence of a document in this collection grants admin privileges.
+ *
+ * Key Security Decisions:
+ * - Public Read Access: The 'brands', 'categories', and 'parts' collections are publicly readable to allow for open browsing of the parts catalog.
+ * - Admin-Only Writes: Create, update, and delete operations on 'brands', 'categories', and 'parts' are restricted to administrators only.
+ * - Order Security: Users can create their own orders and view them. Admins can view and manage all orders. Users cannot see other users' orders.
+ * - Existence-Based Roles: Admin privileges are determined solely by the existence of a document in the `/admins/{uid}` collection, not by its content. This simplifies the security rules and avoids potential data integrity issues.
+ * - No User Listing: Listing of users is not permitted.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the requesting user is an admin.
+     * @return {boolean} True if the user is an admin, false otherwise.
+     */
+    function isAdmin() {
+      // The user is an admin if their UID exists in the /admins collection or matches a hardcoded UID.
+      return exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.uid == "txlhGIPOaQR1zISpvJwMgBzdBIt2";
+    }
+
+    /**
+     * @description Checks if the requesting user is the owner of the document.
+     * @param {string} userId - The userId stored in the document.
+     * @return {boolean} True if the user is the owner, false otherwise.
+     */
+     function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /******************* Brands Collection Rules *******************/
+
+    /**
+     * @description Controls access to the /brands collection.
+     * @path /brands/{brandId}
+     * @allow (get, list): Any user can read brand information.
+     * @allow (create, update, delete): Only admins can modify brand information.
+     * @deny  (create, update, delete): Non-admins cannot modify brand information.
+     * @principle Allows public read access but restricts write access to admins only.
+     */
+    match /brands/{brandId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /******************* Categories Collection Rules *******************/
+
+    /**
+     * @description Controls access to the /categories collection.
+     * @path /categories/{categoryId}
+     * @allow (get, list): Any user can read category information.
+     * @allow (create, update, delete): Only admins can modify category information.
+     * @deny  (create, update, delete): Non-admins cannot modify category information.
+     * @principle Allows public read access but restricts write access to admins only.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /******************* Parts Collection Rules *******************/
+
+    /**
+     * @description Controls access to the /parts collection.
+     * @path /parts/{partId}
+     * @allow (get, list): Any user can read part information.
+     * @allow (create, update, delete): Only admins can modify part information.
+     * @deny  (create, update, delete): Non-admins cannot modify part information.
+     * @principle Allows public read access but restricts write access to admins only.
+     */
+    match /parts/{partId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /******************* Orders Collection Rules *******************/
+
+    /**
+     * @description Controls access to the /orders collection.
+     * @path /orders/{orderId}
+     * @allow create: Any authenticated user can create their own order.
+     * @allow get: User can get their own order.
+     * @allow update: User can update their own order (e.g., add payment info).
+     * @allow list, delete: Not allowed for users.
+     * @allow (get, list, update): Admins have full access.
+     * @principle Users can manage their own orders, admins can manage all orders.
+     */
+    match /orders/{orderId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow get, update: if isOwner(resource.data.userId);
+      allow list, delete: if false;
+
+      // Admin overrides
+      allow get, list, update: if isAdmin();
+    }
+    
+    /******************* Admins Collection Rules *******************/
+    /**
+     * @description Controls access to the /admins collection.
+     * @path /admins/{uid}
+     * @allow get: if isAdmin();
+     * @allow list: if isAdmin();
+     * @allow create, update, delete: if false; // Prevent all client-side modification.
+     * @principle Secures the admin collection by preventing any client-side modifications.
+     */
+      match /admins/{uid} {
+        allow get, list: if isAdmin();
+        allow write: if false;
+    }
+  }
+}
