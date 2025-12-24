@@ -27,48 +27,35 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    if (isUserLoading) {
-      return; 
-    }
-    
-    if (user) {
-      setIsAuthReady(true);
-      return;
-    }
-
-    if (auth && !user) {
-      signInAnonymously(auth)
-        .then(() => setIsAuthReady(true))
-        .catch((error) => {
-          console.error("Anonymous sign-in failed:", error);
-          toast({
-            variant: "destructive",
-            title: "Error de autenticación",
-            description: "No se pudo iniciar una sesión segura para procesar la orden.",
-          });
-          setIsAuthReady(true); // Still proceed, but user creation will likely fail
+    // If auth is not loading and there's no user, sign in anonymously.
+    // The useUser hook will then provide the updated user state.
+    if (!isUserLoading && !user && auth) {
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "No se pudo iniciar una sesión segura para procesar la orden.",
         });
+      });
     }
-    
-  }, [user, isUserLoading, auth, toast]);
-
+  }, [isUserLoading, user, auth, toast]);
 
   useEffect(() => {
-    // Redirect if cart is empty only after authentication is confirmed ready.
-    if (isAuthReady && cartItems.length === 0) {
+    // Redirect if cart is empty after we're sure about the auth state.
+    if (!isUserLoading && cartItems.length === 0) {
       router.replace("/parts");
     }
-  }, [cartItems, isAuthReady, router]);
+  }, [cartItems, isUserLoading, router]);
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo procesar la orden. Faltan datos o el carrito está vacío.",
+        description: "No se pudo procesar la orden. Faltan datos, el carrito está vacío o no se pudo autenticar.",
       });
       return;
     }
@@ -119,10 +106,8 @@ export default function CheckoutPage() {
         setIsSubmitting(false);
       });
   };
-
-  const isLoading = isUserLoading || !isAuthReady;
-
-  if (isLoading) {
+  
+  if (isUserLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
