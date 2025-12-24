@@ -43,44 +43,20 @@ service cloud.firestore {
 
     /******************* Brands Collection Rules *******************/
 
-    /**
-     * @description Controls access to the /brands collection.
-     * @path /brands/{brandId}
-     * @allow (get, list): Any user can read brand information.
-     * @allow (create, update, delete): Only admins can modify brand information.
-     * @deny  (create, update, delete): Non-admins cannot modify brand information.
-     * @principle Allows public read access but restricts write access to admins only.
-     */
     match /brands/{brandId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
     /******************* Categories Collection Rules *******************/
-
-    /**
-     * @description Controls access to the /categories collection.
-     * @path /categories/{categoryId}
-     * @allow (get, list): Any user can read category information.
-     * @allow (create, update, delete): Only admins can modify category information.
-     * @deny  (create, update, delete): Non-admins cannot modify category information.
-     * @principle Allows public read access but restricts write access to admins only.
-     */
+    
     match /categories/{categoryId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
     /******************* Parts Collection Rules *******************/
-
-    /**
-     * @description Controls access to the /parts collection.
-     * @path /parts/{partId}
-     * @allow (get, list): Any user can read part information.
-     * @allow (create, update, delete): Only admins can modify part information.
-     * @deny  (create, update, delete): Non-admins cannot modify part information.
-     * @principle Allows public read access but restricts write access to admins only.
-     */
+    
     match /parts/{partId} {
       allow get, list: if true;
       allow write: if isAdmin();
@@ -89,35 +65,13 @@ service cloud.firestore {
     /******************* Orders Collection Rules *******************/
     
     match /orders/{orderId} {
-      /**
-       * @description Controls access to the /orders collection for create operations.
-       * - create: Authenticated users can create orders for themselves.
-       */
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-
-      /**
-       * @description Controls access for listing and reading individual orders.
-       * - list: Only admins can list all orders.
-       * - get: The owner of the order or an admin can read it.
-       */
       allow list: if isAdmin();
       allow get: if isOwner(resource.data.userId) || isAdmin();
-      
-      /**
-       * @description Controls access for updating and deleting individual orders.
-       * - update, delete: Only admins can update or delete orders.
-       */
       allow update, delete: if isAdmin();
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
     
     /******************* Admins Collection Rules *******************/
-    /**
-     * @description Controls access to the /admins collection.
-     * @path /admins/{uid}
-     * @allow get, list: if isAdmin();
-     * @allow write: if false; // Prevent all client-side modification.
-     * @principle Secures the admin collection by preventing any client-side modifications.
-     */
       match /admins/{uid} {
         allow get, list: if isAdmin();
         allow write: if false;
