@@ -61,7 +61,7 @@ export async function generateMetadata(
     description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
     openGraph: {
       images: [imageUrl, ...previousImages],
-      type: 'product',
+      type: 'website',
       title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
       description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
       price: {
@@ -82,3 +82,4 @@ export default async function PartDetailPage({ params }: { params: { id: string 
     
     return <PartDetailPageClient part={data.part} brand={data.brand} category={data.category} />;
 }
+
