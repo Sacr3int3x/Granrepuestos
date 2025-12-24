@@ -41,14 +41,6 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    /**
-     * @description Checks if the requesting user is the owner of the document using the incoming request data.
-     * @return {boolean} True if the user is the owner, false otherwise.
-     */
-    function isRequestingOwner() {
-        return request.auth.uid == request.resource.data.userId;
-    }
-
     /******************* Brands Collection Rules *******************/
 
     /**
@@ -97,25 +89,25 @@ service cloud.firestore {
     /******************* Orders Collection Rules *******************/
     
     /**
-     * @description Controls access for creating new orders at the collection level.
-     * @path /orders
-     * @allow create: A user (authenticated, including anonymous) can create an order if they are the owner. Admins can also create orders.
+     * @description Controls access for the /orders collection.
+     * - create: Authenticated users can create their own orders. Admins can create any order.
+     * - list: Only admins can list all orders.
      */
     match /orders {
-      allow create: if (request.auth != null && isRequestingOwner()) || isAdmin();
-      allow list, get, update, delete: if false; 
+      allow create: if (request.auth != null && request.auth.uid == request.resource.data.userId) || isAdmin();
+      allow list: if isAdmin();
+      allow get, update, delete: if false; 
     }
     
     /**
      * @description Controls access to individual order documents.
-     * @path /orders/{orderId}
-     * @allow get, update: A user can access their own order, or an admin can access any order.
-     * @allow delete: Only admins can delete orders.
+     * - get, update: The owner of the order or an admin can access/update it.
+     * - delete: Only admins can delete orders.
      */
     match /orders/{orderId} {
       allow get, update: if isOwner(resource.data.userId) || isAdmin();
-      allow list, delete: if isAdmin();
-      allow create: if false; // Creation is handled at collection level
+      allow delete: if isAdmin();
+      allow create, list: if false; 
     }
     
     /******************* Admins Collection Rules *******************/
