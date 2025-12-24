@@ -31,11 +31,17 @@ export default function CheckoutPage() {
   const [isAuthReady, setIsAuthReady] = useState(false);
   
   useEffect(() => {
-    if (isUserLoading) return;
+    if (isUserLoading) return; // Wait until Firebase has determined the auth state.
 
+    // If there's already a user (either logged in or anonymous), we're ready.
+    if (user) {
+      setIsAuthReady(true);
+      return;
+    }
+
+    // If there's no user and the auth service is available, sign in anonymously.
     if (!user && auth) {
       signInAnonymously(auth)
-        .then(() => setIsAuthReady(true))
         .catch((error) => {
           console.error("Anonymous sign-in failed:", error);
           toast({
@@ -43,9 +49,16 @@ export default function CheckoutPage() {
             title: "Error de autenticación",
             description: "No se pudo iniciar una sesión segura para procesar la orden.",
           });
-          setIsAuthReady(true); // Still ready, but with an error
+        })
+        .finally(() => {
+          // The onAuthStateChanged listener in the provider will update the user state,
+          // and this effect will re-run, hitting the `if (user)` block above.
+          // We can set auth ready here as a fallback.
+          setIsAuthReady(true);
         });
     } else {
+        // If auth service isn't even ready, we mark as ready to avoid infinite load,
+        // but operations requiring auth will fail.
         setIsAuthReady(true);
     }
   }, [isUserLoading, user, auth, toast]);
@@ -96,8 +109,8 @@ export default function CheckoutPage() {
         clearCart();
         router.push(`/`); 
       })
-      .catch((error) => {
-        console.error("Order creation failed:", error);
+      .catch((serverError) => {
+        console.error("Order creation failed:", serverError);
         const permissionError = new FirestorePermissionError({
           path: ordersCollection.path,
           operation: 'create',
