@@ -18,6 +18,8 @@ interface CartContextType {
   cartTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
+  exchangeRate: number;
+  setExchangeRate: (rate: number) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -25,6 +27,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -33,8 +36,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (storedCart) {
         setCartItems(JSON.parse(storedCart));
       }
+      const storedRate = localStorage.getItem("exchangeRate");
+      if (storedRate) {
+        setExchangeRate(parseFloat(storedRate));
+      }
     } catch (error) {
-      console.error("Failed to parse cart from localStorage", error);
+      console.error("Failed to parse from localStorage", error);
     }
     setIsInitialized(true);
   }, []);
@@ -42,8 +49,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isInitialized) {
       localStorage.setItem("cart", JSON.stringify(cartItems));
+      if (exchangeRate > 0) {
+        localStorage.setItem("exchangeRate", exchangeRate.toString());
+      }
     }
-  }, [cartItems, isInitialized]);
+  }, [cartItems, exchangeRate, isInitialized]);
 
   const addToCart = (part: Part, quantity: number = 1) => {
     setCartItems((prevItems) => {
@@ -95,6 +105,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         cartTotal,
         isCartOpen,
         setIsCartOpen,
+        exchangeRate,
+        setExchangeRate,
       }}
     >
       {children}

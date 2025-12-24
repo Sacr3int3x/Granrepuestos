@@ -15,6 +15,7 @@ import AddToCartButton from "./parts/components/add-to-cart-button";
 import { Mail, MessageSquare, MapPin, Instagram, ArrowRight, Search } from "lucide-react";
 import type { Part, Brand, Category } from "@/lib/types";
 import { useCollection, useMemoFirebase, useFirestore } from "@/firebase";
+import { useCart } from "@/context/cart-context";
 import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
@@ -89,6 +90,7 @@ function BrandsSection() {
 
 
 function FeaturedProductsSection() {
+    const { exchangeRate } = useCart();
     const firestore = useFirestore();
     const brandsQuery = useMemoFirebase(() => {
         if (!firestore) return null;
@@ -183,7 +185,14 @@ function FeaturedProductsSection() {
                             <p className="text-sm text-muted-foreground">Año: {getCompatibilityYear(part)}</p>
                         </CardContent>
                         <CardFooter className="p-4 flex justify-between items-center mt-auto">
-                            <p className="text-xl font-bold text-primary">€{part.price.toFixed(2)}</p>
+                            <div>
+                                <p className="text-xl font-bold text-primary">€{part.price.toFixed(2)}</p>
+                                {exchangeRate > 0 && (
+                                    <p className="text-sm text-muted-foreground">
+                                    Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </p>
+                                )}
+                            </div>
                             <AddToCartButton part={fullPart as Part} />
                         </CardFooter>
                         </Card>

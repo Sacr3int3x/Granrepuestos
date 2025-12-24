@@ -3,8 +3,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ShoppingCart, Mail, MessageSquare, Search } from "lucide-react";
-import { useState } from "react";
+import { Menu, ShoppingCart, Mail, MessageSquare, Search, Euro } from "lucide-react";
+import { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Icons } from "@/components/icons";
 import { useCart } from "@/context/cart-context";
 import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Label } from "../ui/label";
 
 const NavLink = ({ href, children, onClick }: { href: string, children: React.ReactNode, onClick: () => void }) => {
   const pathname = usePathname();
@@ -52,6 +54,63 @@ function HeaderSearch() {
           className="h-11 pl-11 pr-4 text-base rounded-lg border-2"
         />
       </form>
+  );
+}
+
+function ExchangeRateManager() {
+  const { exchangeRate, setExchangeRate } = useCart();
+  const [localRate, setLocalRate] = useState(exchangeRate.toString());
+
+  useEffect(() => {
+    // Sync local state if context changes from another component
+    setLocalRate(exchangeRate > 0 ? exchangeRate.toString() : '');
+  }, [exchangeRate]);
+
+  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow empty string or valid number format
+    if (value === '' || /^[0-9]*[.,]?[0-9]*$/.test(value)) {
+      setLocalRate(value);
+    }
+  };
+
+  const handleRateUpdate = () => {
+    const newRate = parseFloat(localRate.replace(',', '.'));
+    if (!isNaN(newRate) && newRate > 0) {
+      setExchangeRate(newRate);
+    }
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className="hidden sm:flex">
+          <Euro className="mr-2 h-4 w-4" />
+          Tasa BCV
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-60">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none">Tasa de Cambio</h4>
+            <p className="text-sm text-muted-foreground">
+              Introduce la tasa EUR a VES del día.
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="exchange-rate">Tasa € ➜ Bs.</Label>
+            <Input
+              id="exchange-rate"
+              value={localRate}
+              onChange={handleRateChange}
+              onBlur={handleRateUpdate}
+              placeholder="Ej: 40.5"
+              className="h-8"
+            />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -101,6 +160,7 @@ export default function Header() {
 
         {/* Right Section */}
         <div className="flex flex-1 items-center justify-end gap-2">
+          <ExchangeRateManager />
           {/* Desktop Search */}
           <div className="hidden md:block w-full max-w-sm">
             <HeaderSearch />
@@ -158,5 +218,3 @@ export default function Header() {
     </header>
   );
 }
-
-    
