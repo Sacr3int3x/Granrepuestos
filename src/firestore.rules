@@ -91,19 +91,15 @@ service cloud.firestore {
     /**
      * @description Controls access to individual documents in the /orders collection.
      * @path /orders/{orderId}
-     * @allow create: User can create their own order.
-     * @allow get, update: User can get/update their own order.
-     * @allow list, delete: Not allowed for non-admin users.
-     * @allow (get, list, update, create): Admins have full access.
+     * @allow create: User can create their own order or an admin can create any order.
+     * @allow get, update: User can get/update their own order, or an admin can manage any order.
+     * @allow list, delete: Only admins are allowed.
      * @principle Users can manage their own orders, admins can manage all orders.
      */
     match /orders/{orderId} {
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow get, update: if isOwner(resource.data.userId);
-      allow list, delete: if false;
-
-      // Admin overrides
-      allow get, list, update, create: if isAdmin();
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid) || isAdmin();
+      allow get, update: if isOwner(resource.data.userId) || isAdmin();
+      allow list, delete: if isAdmin();
     }
     
     /******************* Admins Collection Rules *******************/
