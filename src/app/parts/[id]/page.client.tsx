@@ -28,8 +28,10 @@ import ShareButton from "../components/share-button";
 import Script from "next/script";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
+import RelatedParts from "../components/related-parts";
+import { Separator } from "@/components/ui/separator";
 
-function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
+function PartDetailPageClient({ part, brand, category, relatedParts }: { part: Part; brand: Brand | null, category: Category | null, relatedParts: Part[] }) {
   
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -322,6 +324,12 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
             </div>
         </div>
       </div>
+       {relatedParts && relatedParts.length > 0 && (
+            <div className="mt-16">
+                <Separator />
+                <RelatedParts parts={relatedParts} />
+            </div>
+       )}
     </div>
   );
 }

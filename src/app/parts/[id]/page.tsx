@@ -1,6 +1,6 @@
 
 import { notFound } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, limit } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories } from "@/lib/data";
 import { db } from "@/lib/firebase";
@@ -11,7 +11,7 @@ type Props = {
     params: { id: string }
 }
 
-async function getPartData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null } | null> {
+async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null, relatedParts: Part[] } | null> {
     const partRef = doc(db, 'parts', id);
     const partSnap = await getDoc(partRef);
 
@@ -36,14 +36,30 @@ async function getPartData(id: string): Promise<{ part: Part; brand: Brand | nul
       categoryData = allCategories.find(c => c.id === part.categoryIds[0]) || null;
     }
 
-    return { part, brand: brandData, category: categoryData };
+    // Fetch related parts
+    let relatedParts: Part[] = [];
+    if (part.vehicleModelIds && part.vehicleModelIds.length > 0) {
+        const relatedQuery = query(
+            collection(db, 'parts'),
+            where('vehicleModelIds', 'array-contains-any', part.vehicleModelIds),
+            where('id', '!=', id),
+            limit(5) // Get up to 5 related parts (4 + the current one to filter out)
+        );
+        const relatedSnap = await getDocs(relatedQuery);
+        relatedParts = relatedSnap.docs
+            .map(doc => ({...doc.data(), id: doc.id}))
+            .filter(p => p.id !== id) // Ensure current part is not in the list
+            .slice(0, 4) as Part[];
+    }
+
+    return { part, brand: brandData, category: categoryData, relatedParts };
 }
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const data = await getPartData(params.id);
+  const data = await getPartAndRelatedData(params.id);
 
   if (!data) {
     return {
@@ -74,12 +90,12 @@ export async function generateMetadata(
 
 
 export default async function PartDetailPage({ params }: { params: { id: string }}) {
-    const data = await getPartData(params.id);
+    const data = await getPartAndRelatedData(params.id);
 
     if (!data) {
         notFound();
     }
     
-    return <PartDetailPageClient part={data.part} brand={data.brand} category={data.category} />;
+    return <PartDetailPageClient part={data.part} brand={data.brand} category={data.category} relatedParts={data.relatedParts} />;
 }
 
