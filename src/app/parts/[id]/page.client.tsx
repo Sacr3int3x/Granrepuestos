@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories, getVehicleBrands, getVehicleModels, sanitizeImageUrls } from "@/lib/data";
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -25,9 +26,13 @@ import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import ShareButton from "../components/share-button";
 import Script from "next/script";
+import { cn } from "@/lib/utils";
 
 function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Brand | null, category: Category | null }) {
   
+  const [api, setApi] = useState<CarouselApi>()
+  const [current, setCurrent] = useState(0)
+
   const staticData = useMemo(() => ({
       vehicleBrands: getVehicleBrands(),
       allVehicleModels: getVehicleModels(),
@@ -35,6 +40,25 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
 
   const getBrandName = (brandId: string) => staticData.vehicleBrands.find(b => b.id === brandId)?.name || brandId;
   const getModelName = (modelId: string) => staticData.allVehicleModels.find(m => m.id === modelId)?.name || modelId;
+  
+  const safeImageUrls = sanitizeImageUrls(part.imageUrls);
+  const fullPart = { ...part, brand: brand || undefined, category: category || undefined };
+
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+ 
+    setCurrent(api.selectedScrollSnap())
+ 
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api]);
+
+  const onThumbClick = useCallback((index: number) => {
+    api?.scrollTo(index)
+  }, [api])
 
   const compatibilityInfo = (() => {
     const info = {
@@ -65,9 +89,6 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
       years: Array.from(info.years).join(', ') || 'Consultar',
     };
   })();
-
-  const safeImageUrls = sanitizeImageUrls(part.imageUrls);
-  const fullPart = { ...part, brand: brand || undefined, category: category || undefined };
 
   const productSchema = {
     '@context': 'https://schema.org/',
@@ -128,7 +149,7 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
         </Breadcrumb>
       <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
         <div>
-           <Carousel className="w-full">
+           <Carousel className="w-full" setApi={setApi}>
             <CarouselContent>
               {safeImageUrls.length > 0 ? safeImageUrls.map((url, index) => (
                 <CarouselItem key={index}>
@@ -140,6 +161,7 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
                       className="object-contain"
                       sizes="(max-width: 768px) 100vw, 50vw"
                       data-ai-hint="auto part"
+                      priority={index === 0}
                     />
                   </div>
                 </CarouselItem>
@@ -153,11 +175,46 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
             </CarouselContent>
             {safeImageUrls.length > 1 && (
               <>
-                <CarouselPrevious className="left-2" />
-                <CarouselNext className="right-2" />
+                <CarouselPrevious className="left-2 hidden md:flex" />
+                <CarouselNext className="right-2 hidden md:flex" />
               </>
             )}
           </Carousel>
+
+          {safeImageUrls.length > 1 && (
+             <div className="mt-4">
+                <Carousel
+                    opts={{
+                    align: "start",
+                    containScroll: "keepSnaps",
+                    dragFree: true,
+                    }}
+                    className="w-full"
+                >
+                    <CarouselContent className="-ml-2">
+                    {safeImageUrls.map((url, index) => (
+                        <CarouselItem key={index} className="basis-1/4 lg:basis-1/5 pl-2">
+                        <div
+                            className={cn(
+                            "aspect-square relative rounded-md overflow-hidden cursor-pointer border-2",
+                            index === current ? "border-primary" : "border-transparent opacity-60 hover:opacity-100 transition-opacity"
+                            )}
+                            onClick={() => onThumbClick(index)}
+                        >
+                            <Image
+                            src={url}
+                            alt={`Miniatura de ${part.name} - ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            sizes="10vw"
+                            />
+                        </div>
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                </Carousel>
+             </div>
+          )}
         </div>
         <div className="flex flex-col">
             <div>
@@ -254,3 +311,5 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
 }
 
 export default PartDetailPageClient;
+
+    
