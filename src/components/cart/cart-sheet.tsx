@@ -83,34 +83,40 @@ export default function CartSheet() {
                 </div>
             </ScrollArea>
             <Separator />
-            <SheetFooter className="p-6 flex flex-col gap-4 text-center sm:text-left">
-              <div className="text-lg font-semibold w-full flex justify-between items-center">
-                <span>Subtotal:</span>
-                <span>€{cartTotal.toFixed(2)}</span>
-              </div>
-              <div className="text-sm font-semibold w-full flex justify-between items-center text-green-600">
-                <span>Total con Binance (15% dto):</span>
-                <span>€{discountedTotal.toFixed(2)}</span>
-              </div>
-               <div className="flex flex-col gap-3">
+            <SheetFooter className="p-6 flex flex-col gap-4">
+               <div className="space-y-2">
+                 <div className="flex justify-between items-center text-muted-foreground">
+                    <span>Subtotal:</span>
+                    <span className="font-medium text-foreground">€{cartTotal.toFixed(2)}</span>
+                </div>
+                 <div className="flex justify-between items-center text-amber-600">
+                    <span>Descuento Binance (15%):</span>
+                    <span className="font-medium">-€{(cartTotal * binanceDiscount).toFixed(2)}</span>
+                </div>
+                 <div className="flex justify-between items-center font-bold text-lg border-t pt-2 mt-2">
+                    <span>Total con Binance:</span>
+                    <span>€{discountedTotal.toFixed(2)}</span>
+                </div>
+               </div>
+               <div className="flex flex-col gap-3 pt-4">
                 <p className="text-sm text-center text-muted-foreground">Selecciona tu método de pago o cotización:</p>
 
-                <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black">
+                <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-slate-800 font-bold shadow-md h-12">
                     <a href={binanceUrl} target="_blank" rel="noopener noreferrer">
                        <Image src="https://i.postimg.cc/pX0HjQz7/binance-pay-logo.png" alt="Binance Pay" width={24} height={24} className="mr-2"/>
                        Pagar con Binance
                     </a>
                 </Button>
 
-                <Button asChild size="lg" onClick={handleSheetClose}>
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700">
-                      <MessageSquare className="mr-2 h-4 w-4" />
+                <Button asChild size="lg" onClick={handleSheetClose} className="bg-green-600 hover:bg-green-700 h-12">
+                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                      <MessageSquare className="mr-2 h-5 w-5" />
                       Solicitar por WhatsApp
                     </a>
                 </Button>
-                <Button asChild size="lg" variant="outline" onClick={handleSheetClose}>
+                <Button asChild size="lg" variant="outline" onClick={handleSheetClose} className="h-12">
                     <a href={emailUrl} target="_blank" rel="noopener noreferrer">
-                      <Mail className="mr-2 h-4 w-4" />
+                      <Mail className="mr-2 h-5 w-5" />
                       Solicitar por Correo
                     </a>
                 </Button>
@@ -153,3 +159,5 @@ export default function CartSheet() {
     </>
   );
 }
+
+    

@@ -20,7 +20,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Info, Truck, Wallet } from "lucide-react";
+import { Info, Truck, Wallet, PercentCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -240,6 +240,15 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
                 <AddToCartButton part={fullPart as Part} size="lg" showText={true}/>
             </div>
           </div>
+            
+            <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800 [&>svg]:text-amber-600">
+                <PercentCircle className="h-4 w-4" />
+                <AlertTitle className="font-bold">¡Oferta Exclusiva!</AlertTitle>
+                <AlertDescription>
+                    Obtén un <strong>15% de descuento</strong> en tu compra total pagando con <strong>Binance Pay</strong>.
+                </AlertDescription>
+            </Alert>
+
 
            <div className="mt-6">
             <h3 className="text-lg font-bold tracking-tight">Detalles Técnicos</h3>
@@ -318,3 +327,5 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
 }
 
 export default PartDetailPageClient;
+
+    
