@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
@@ -31,17 +32,33 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await fetch('https://ve.dolarapi.com/v1/euros');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        // Assuming the API returns an array and we need the first entry for 'oficial'
+        const officialRate = data.find((rate: any) => rate.casa === 'oficial');
+        if (officialRate && officialRate.promedio) {
+          setExchangeRate(officialRate.promedio);
+        }
+      } catch (error) {
+        console.error("Failed to fetch exchange rate:", error);
+        // Fallback or old value from localStorage will be used
+      }
+    };
+
+    fetchExchangeRate();
+
     try {
       const storedCart = localStorage.getItem("cart");
       if (storedCart) {
         setCartItems(JSON.parse(storedCart));
       }
-      const storedRate = localStorage.getItem("exchangeRate");
-      if (storedRate) {
-        setExchangeRate(parseFloat(storedRate));
-      }
     } catch (error) {
-      console.error("Failed to parse from localStorage", error);
+      console.error("Failed to parse cart from localStorage", error);
     }
     setIsInitialized(true);
   }, []);
@@ -49,11 +66,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isInitialized) {
       localStorage.setItem("cart", JSON.stringify(cartItems));
-      if (exchangeRate > 0) {
-        localStorage.setItem("exchangeRate", exchangeRate.toString());
-      }
     }
-  }, [cartItems, exchangeRate, isInitialized]);
+  }, [cartItems, isInitialized]);
 
   const addToCart = (part: Part, quantity: number = 1) => {
     setCartItems((prevItems) => {
