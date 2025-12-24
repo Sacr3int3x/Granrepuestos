@@ -1,5 +1,6 @@
 
 
+
 export type Brand = {
   id: string;
   name: string;
@@ -49,4 +50,26 @@ export type Part = {
   vehicleBrandIds?: string[];
   vehicleModelIds?: string[];
   yearRange?: string; 
+};
+
+export type Order = {
+  id: string;
+  userId: string;
+  items: {
+    partId: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
+  totalAmount: number;
+  status: 'pending' | 'paid' | 'verified' | 'rejected' | 'shipped';
+  createdAt: any; // Firestore Timestamp
+  paymentDetails?: {
+    referenceNumber: string;
+    bank: string;
+    phone: string;
+    idNumber: string;
+    amount: number;
+    paymentDate: string; // YYYY-MM-DD
+  };
 };
