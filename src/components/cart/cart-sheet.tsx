@@ -14,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CartItemCard from "./cart-item-card";
-import { ShoppingCart, PackageX, Mail, MessageSquare } from "lucide-react";
+import { ShoppingCart, PackageX, Mail, MessageSquare, Euro } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
@@ -103,7 +103,7 @@ export default function CartSheet() {
 
                 <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-slate-800 font-bold shadow-md h-12">
                     <a href={binanceUrl} target="_blank" rel="noopener noreferrer">
-                       <Image src="https://i.postimg.cc/g0TfxZfS/binance-pay-logo.png" alt="Binance Pay" width={24} height={24} className="mr-2"/>
+                       <Euro className="mr-2 h-5 w-5"/>
                        Pagar con Binance
                     </a>
                 </Button>
