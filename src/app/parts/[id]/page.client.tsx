@@ -327,5 +327,3 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
 }
 
 export default PartDetailPageClient;
-
-    
