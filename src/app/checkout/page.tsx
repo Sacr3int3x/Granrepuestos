@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
@@ -24,6 +24,14 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // If cart is empty after initialization, redirect to the parts catalog.
+    if (cartItems.length === 0 && typeof window !== 'undefined') {
+      router.replace('/parts');
+    }
+  }, [cartItems, router]);
+
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || cartItems.length === 0) {
@@ -79,8 +87,7 @@ export default function CheckoutPage() {
     }
   };
   
-  if (cartItems.length === 0 && typeof window !== 'undefined') {
-      router.replace('/parts');
+  if (cartItems.length === 0) {
       return (
          <div className="flex justify-center items-center min-h-[50vh]">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
