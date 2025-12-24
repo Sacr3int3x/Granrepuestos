@@ -300,29 +300,55 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                   </TableBody>
               </Table>
             </div>
-             <div className="mt-auto pt-4 flex flex-col gap-4">
-              <Alert>
-                <Wallet className="h-4 w-4" />
-                <AlertTitle>Métodos de Pago</AlertTitle>
-                <AlertDescription>
-                  Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
-                </AlertDescription>
-              </Alert>
-              <Alert>
-                <Truck className="h-4 w-4" />
-                <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
-                <AlertDescription>
-                    Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
-                </AlertDescription>
-              </Alert>
-               <div className="flex items-center gap-2">
-                  <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
-                    Ver políticas de compra y devolución
-                  </Link>
+             <div className="mt-auto pt-4 md:hidden">
+              <div className="flex flex-col gap-4">
+                <Alert>
+                  <Wallet className="h-4 w-4" />
+                  <AlertTitle>Métodos de Pago</AlertTitle>
+                  <AlertDescription>
+                    Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
+                  </AlertDescription>
+                </Alert>
+                <Alert>
+                  <Truck className="h-4 w-4" />
+                  <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
+                  <AlertDescription>
+                      Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
+                  </AlertDescription>
+                </Alert>
+                <div className="flex items-center gap-2">
+                    <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
+                      Ver políticas de compra y devolución
+                    </Link>
+                </div>
               </div>
             </div>
         </div>
       </div>
+        <footer className="hidden md:block mt-12 pt-8 border-t">
+            <div className="grid md:grid-cols-2 gap-8">
+                 <Alert>
+                    <Wallet className="h-4 w-4" />
+                    <AlertTitle>Métodos de Pago</AlertTitle>
+                    <AlertDescription>
+                    Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
+                    </AlertDescription>
+                </Alert>
+                <Alert>
+                    <Truck className="h-4 w-4" />
+                    <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
+                    <AlertDescription>
+                        Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
+                    </AlertDescription>
+                </Alert>
+            </div>
+             <div className="mt-4 text-center">
+                <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
+                    Ver políticas de compra y devolución
+                </Link>
+            </div>
+        </footer>
+
        {relatedParts && relatedParts.length > 0 && (
             <div className="mt-16">
                 <Separator />
