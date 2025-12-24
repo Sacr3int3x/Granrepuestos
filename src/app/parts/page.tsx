@@ -306,7 +306,7 @@ function PartsPageContent() {
                                     <p className="text-lg font-bold text-primary">€{part.price.toFixed(2)}</p>
                                     {exchangeRate > 0 && (
                                         <p className="text-sm text-muted-foreground">
-                                        Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </p>
                                     )}
                                 </div>

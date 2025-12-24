@@ -229,7 +229,7 @@ function PartDetailPageClient({ part, brand, category }: { part: Part; brand: Br
               <p className="text-4xl font-bold text-primary">€{part.price.toFixed(2)}</p>
               {exchangeRate > 0 && (
                 <p className="text-lg text-muted-foreground">
-                  Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               )}
               <p className={part.stock > 0 ? "text-green-600 mt-1" : "text-red-600 mt-1"}>
