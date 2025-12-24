@@ -65,10 +65,13 @@ service cloud.firestore {
     /******************* Orders Collection Rules *******************/
     
     match /orders/{orderId} {
-      allow list: if isAdmin();
       allow get: if isOwner(resource.data.userId) || isAdmin();
       allow update, delete: if isAdmin();
-      allow create: if (request.auth.uid == request.resource.data.userId) || isAdmin();
+    }
+    
+    match /orders {
+        allow list: if isAdmin();
+        allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
     }
     
     /******************* Admins Collection Rules *******************/

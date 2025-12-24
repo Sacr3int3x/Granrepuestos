@@ -27,28 +27,28 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
-
+  
+  // This effect handles user authentication and redirection.
   useEffect(() => {
-    // If cart is empty after initial load, redirect to the parts page.
-    if (cartItems.length > 0 && !isUserLoading && !user && auth) {
-      setIsSigningIn(true);
-      signInAnonymously(auth)
-        .catch((error) => {
-          console.error("Anonymous sign-in failed:", error);
-          toast({
-            variant: "destructive",
-            title: "Error de autenticación",
-            description: "No se pudo iniciar una sesión segura para procesar la orden.",
-          });
-        })
-        .finally(() => {
-          setIsSigningIn(false);
-        });
-    } else if (cartItems.length === 0 && !isUserLoading) {
+    // If cart is empty after initial load, redirect.
+    if (!isUserLoading && cartItems.length === 0) {
       router.replace('/parts');
+      return;
     }
-  }, [cartItems.length, isUserLoading, user, auth, router, toast]);
+
+    // If not loading, not logged in, but we have items, sign in anonymously.
+    if (!isUserLoading && !user && cartItems.length > 0 && auth) {
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "No se pudo iniciar una sesión segura para procesar la orden.",
+        });
+      });
+    }
+  }, [isUserLoading, user, cartItems.length, auth, router, toast]);
+
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
       })
       .catch((serverError) => {
         const permissionError = new FirestorePermissionError({
-          path: ordersCollection.path,
+          path: 'orders', // Use collection path for create operations
           operation: 'create',
           requestResourceData: orderData,
         });
@@ -106,20 +106,13 @@ export default function CheckoutPage() {
         setIsSubmitting(false);
       });
   };
-
-  if (isUserLoading || isSigningIn) {
+  
+  // Loading state: either checking user auth or cart is empty and we are about to redirect.
+  if (isUserLoading || !user) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="ml-4 text-muted-foreground">Iniciando sesión segura...</p>
-      </div>
-    );
-  }
-
-  if (cartItems.length === 0) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <p className="text-muted-foreground">Tu carrito está vacío.</p>
       </div>
     );
   }
