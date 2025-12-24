@@ -29,17 +29,15 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
-  
-  useEffect(() => {
-    if (isUserLoading) return; // Wait until Firebase has determined the auth state.
 
-    // If there's already a user (either logged in or anonymous), we're ready.
+  useEffect(() => {
+    if (isUserLoading) return;
+
     if (user) {
       setIsAuthReady(true);
       return;
     }
-
-    // If there's no user and the auth service is available, sign in anonymously.
+    
     if (!user && auth) {
       signInAnonymously(auth)
         .catch((error) => {
@@ -49,20 +47,18 @@ export default function CheckoutPage() {
             title: "Error de autenticación",
             description: "No se pudo iniciar una sesión segura para procesar la orden.",
           });
-        })
-        .finally(() => {
-          // The onAuthStateChanged listener in the provider will update the user state,
-          // and this effect will re-run, hitting the `if (user)` block above.
-          // We can set auth ready here as a fallback.
-          setIsAuthReady(true);
         });
-    } else {
-        // If auth service isn't even ready, we mark as ready to avoid infinite load,
-        // but operations requiring auth will fail.
-        setIsAuthReady(true);
+        // The onAuthStateChanged listener will eventually set isAuthReady to true
     }
   }, [isUserLoading, user, auth, toast]);
-  
+
+  // This effect runs when the auth state is finally determined
+  useEffect(() => {
+     if (!isUserLoading && user) {
+        setIsAuthReady(true);
+     }
+  }, [isUserLoading, user])
+
   useEffect(() => {
     // Redirect if cart is empty after authentication is resolved
     if (isAuthReady && cartItems.length === 0) {
@@ -110,7 +106,6 @@ export default function CheckoutPage() {
         router.push(`/`); 
       })
       .catch((serverError) => {
-        console.error("Order creation failed:", serverError);
         const permissionError = new FirestorePermissionError({
           path: ordersCollection.path,
           operation: 'create',

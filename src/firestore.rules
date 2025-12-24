@@ -53,7 +53,7 @@ service cloud.firestore {
      */
     match /brands/{brandId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     /******************* Categories Collection Rules *******************/
@@ -68,7 +68,7 @@ service cloud.firestore {
      */
     match /categories/{categoryId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     /******************* Parts Collection Rules *******************/
@@ -83,44 +83,35 @@ service cloud.firestore {
      */
     match /parts/{partId} {
       allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     /******************* Orders Collection Rules *******************/
     
     /**
-     * @description Controls write access to the /orders collection itself.
-     * @path /orders
-     * @allow create: Any authenticated user can create their own order, or an admin can create an order.
-     */
-    match /orders {
-      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid) || isAdmin();
-    }
-
-    /**
      * @description Controls access to individual documents in the /orders collection.
      * @path /orders/{orderId}
-     * @allow get: User can get their own order.
-     * @allow update: User can update their own order (e.g., add payment info).
-     * @allow list, delete: Not allowed for users.
-     * @allow (get, list, update): Admins have full access.
+     * @allow create: User can create their own order.
+     * @allow get, update: User can get/update their own order.
+     * @allow list, delete: Not allowed for non-admin users.
+     * @allow (get, list, update, create): Admins have full access.
      * @principle Users can manage their own orders, admins can manage all orders.
      */
     match /orders/{orderId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow get, update: if isOwner(resource.data.userId);
       allow list, delete: if false;
 
-      // Admin overrides for individual documents
-      allow get, list, update: if isAdmin();
+      // Admin overrides
+      allow get, list, update, create: if isAdmin();
     }
     
     /******************* Admins Collection Rules *******************/
     /**
      * @description Controls access to the /admins collection.
      * @path /admins/{uid}
-     * @allow get: if isAdmin();
-     * @allow list: if isAdmin();
-     * @allow create, update, delete: if false; // Prevent all client-side modification.
+     * @allow get, list: if isAdmin();
+     * @allow write: if false; // Prevent all client-side modification.
      * @principle Secures the admin collection by preventing any client-side modifications.
      */
       match /admins/{uid} {
