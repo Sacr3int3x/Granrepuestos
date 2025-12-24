@@ -42,6 +42,10 @@ export function CheckoutForm({ onSubmit, totalAmount, isLoading }: CheckoutFormP
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      referenceNumber: "",
+      bank: "",
+      phone: "",
+      idNumber: "",
       amount: totalAmount,
       paymentDate: new Date(),
     },
