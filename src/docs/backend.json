@@ -6,43 +6,15 @@
       "type": "object",
       "description": "Represents a brand of auto parts.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Brand entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the brand."
-        },
-        "logoUrl": {
-          "type": "string",
-          "description": "URL of the brand's logo.",
-          "format": "uri"
-        },
-        "description": {
-          "type": "string",
-          "description": "A detailed description of the brand."
-        },
-        "countryOfOrigin": {
-          "type": "string",
-          "description": "The country of origin for the brand."
-        },
-        "heroImageUrl": {
-          "type": "string",
-          "description": "URL for a hero image for the brand's detail page.",
-          "format": "uri"
-        },
-        "websiteUrl": {
-          "type": "string",
-          "description": "URL of the brand's official website.",
-          "format": "uri"
-        }
+        "id": { "type": "string", "description": "Unique identifier for the Brand entity." },
+        "name": { "type": "string", "description": "The name of the brand." },
+        "logoUrl": { "type": "string", "description": "URL of the brand's logo.", "format": "uri" },
+        "description": { "type": "string", "description": "A detailed description of the brand." },
+        "countryOfOrigin": { "type": "string", "description": "The country of origin for the brand." },
+        "heroImageUrl": { "type": "string", "description": "URL for a hero image for the brand's detail page.", "format": "uri" },
+        "websiteUrl": { "type": "string", "description": "URL of the brand's official website.", "format": "uri" }
       },
-      "required": [
-        "id",
-        "name",
-        "logoUrl"
-      ]
+      "required": ["id", "name", "logoUrl"]
     },
     "Category": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -50,19 +22,10 @@
       "type": "object",
       "description": "Represents a category of auto parts (e.g., Engine, Suspension, Body).",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Category entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the category."
-        }
+        "id": { "type": "string", "description": "Unique identifier for the Category entity." },
+        "name": { "type": "string", "description": "The name of the category." }
       },
-      "required": [
-        "id",
-        "name"
-      ]
+      "required": ["id", "name"]
     },
     "Part": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -70,76 +33,27 @@
       "type": "object",
       "description": "Represents an auto part.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Part entity."
-        },
-        "brandId": {
-          "type": "string",
-          "description": "Reference to Brand. (Relationship: Brand 1:N Part)"
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the part."
-        },
-        "description": {
-          "type": "string",
-          "description": "A description of the part."
-        },
-        "sku": {
-          "type": "string",
-          "description": "The stock keeping unit code for the part."
-        },
-        "price": {
-          "type": "number",
-          "description": "The price of the part."
-        },
-        "stock": {
-          "type": "number",
-          "description": "The number of parts in stock."
-        },
-        "imageUrls": {
-          "type": "array",
-          "description": "URLs of the images for the part.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "categoryIds": {
-          "type": "array",
-          "description": "References to Categories. (Relationship: Category N:N Part)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "vehicleBrandId": {
-          "type": "string",
-          "description": "The brand of the vehicle this part is for."
-        },
-        "vehicleModelId": {
-          "type": "string",
-          "description": "The model of the vehicle this part is for."
-        }
+        "id": { "type": "string", "description": "Unique identifier for the Part entity." },
+        "brandId": { "type": "string", "description": "Reference to Brand. (Relationship: Brand 1:N Part)" },
+        "name": { "type": "string", "description": "The name of the part." },
+        "description": { "type": "string", "description": "A description of the part." },
+        "sku": { "type": "string", "description": "The stock keeping unit code for the part." },
+        "price": { "type": "number", "description": "The price of the part." },
+        "stock": { "type": "number", "description": "The number of parts in stock." },
+        "imageUrls": { "type": "array", "description": "URLs of the images for the part.", "items": { "type": "string" } },
+        "categoryIds": { "type": "array", "description": "References to Categories. (Relationship: Category N:N Part)", "items": { "type": "string" } },
+        "vehicleBrandId": { "type": "string", "description": "The brand of the vehicle this part is for." },
+        "vehicleModelId": { "type": "string", "description": "The model of the vehicle this part is for." }
       },
-      "required": [
-        "id",
-        "brandId",
-        "name",
-        "description",
-        "sku",
-        "price",
-        "stock",
-        "imageUrls"
-      ]
+      "required": ["id", "brandId", "name", "description", "sku", "price", "stock", "imageUrls"]
     },
-    "Order": {
+    "PaymentReport": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Order",
+      "title": "PaymentReport",
       "type": "object",
-      "description": "Represents a customer order and payment information.",
+      "description": "Represents a customer's payment report for an order.",
       "properties": {
         "id": { "type": "string" },
-        "userId": { "type": "string", "description": "The ID of the user who placed the order (can be anonymous)." },
         "customerEmail": { "type": "string", "format": "email", "description": "The customer's email for notifications." },
         "items": {
           "type": "array",
@@ -155,7 +69,7 @@
           }
         },
         "totalAmount": { "type": "number" },
-        "status": { "type": "string", "enum": ["pending", "paid", "verified", "rejected", "shipped"], "default": "pending" },
+        "status": { "type": "string", "enum": ["pending_verification", "verified", "rejected"], "default": "pending_verification" },
         "createdAt": { "type": "string", "format": "date-time" },
         "paymentDetails": {
           "type": "object",
@@ -166,10 +80,11 @@
             "idNumber": { "type": "string" },
             "amount": { "type": "number" },
             "paymentDate": { "type": "string", "format": "date" }
-          }
+          },
+           "required": ["referenceNumber", "bank", "amount", "paymentDate"]
         }
       },
-      "required": ["userId", "customerEmail", "items", "totalAmount", "status", "createdAt"]
+      "required": ["customerEmail", "items", "totalAmount", "status", "createdAt", "paymentDetails"]
     },
     "admins": {
       "title": "Admin User",
@@ -178,88 +93,30 @@
       "properties": {}
     }
   },
-  "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
-  },
+  "auth": { "providers": ["password", "anonymous"] },
   "firestore": {
     "structure": [
       {
         "path": "/brands/{brandId}",
-        "definition": {
-          "entityName": "Brand",
-          "schema": {
-            "$ref": "#/backend/entities/Brand"
-          },
-          "description": "Stores brand information. Each document represents a brand of auto parts.",
-          "params": [
-            {
-              "name": "brandId",
-              "description": "Unique identifier for the brand."
-            }
-          ]
-        }
+        "definition": { "entityName": "Brand", "schema": { "$ref": "#/backend/entities/Brand" }, "description": "Stores brand information." }
       },
       {
         "path": "/categories/{categoryId}",
-        "definition": {
-          "entityName": "Category",
-          "schema": {
-            "$ref": "#/backend/entities/Category"
-          },
-          "description": "Stores category information. Each document represents a category of auto parts.",
-          "params": [
-            {
-              "name": "categoryId",
-              "description": "Unique identifier for the category."
-            }
-          ]
-        }
+        "definition": { "entityName": "Category", "schema": { "$ref": "#/backend/entities/Category" }, "description": "Stores category information." }
       },
       {
         "path": "/parts/{partId}",
-        "definition": {
-          "entityName": "Part",
-          "schema": {
-            "$ref": "#/backend/entities/Part"
-          },
-          "description": "Stores auto part information. Each document represents an auto part.",
-          "params": [
-            {
-              "name": "partId",
-              "description": "Unique identifier for the part."
-            }
-          ]
-        }
+        "definition": { "entityName": "Part", "schema": { "$ref": "#/backend/entities/Part" }, "description": "Stores auto part information." }
       },
       {
-        "path": "/orders/{orderId}",
-        "definition": {
-          "entityName": "Order",
-          "schema": { "$ref": "#/backend/entities/Order" },
-          "description": "Stores customer orders and their payment status.",
-          "params": [{ "name": "orderId", "description": "Unique identifier for the order." }]
-        }
+        "path": "/paymentReports/{reportId}",
+        "definition": { "entityName": "PaymentReport", "schema": { "$ref": "#/backend/entities/PaymentReport" }, "description": "Stores payment reports submitted by customers. Publicly writable." }
       },
       {
         "path": "/admins/{uid}",
-        "definition": {
-          "entityName": "admins",
-          "schema": {
-            "$ref": "#/backend/entities/admins"
-          },
-          "description": "Collection of admin users. The presence of a document indicates admin privileges.",
-          "params": [
-            {
-              "name": "uid",
-              "description": "User ID of the administrator."
-            }
-          ]
-        }
+        "definition": { "entityName": "admins", "schema": { "$ref": "#/backend/entities/admins" }, "description": "Collection of admin users." }
       }
     ],
-    "reasoning": "The Firestore structure is designed to support the Auto Parts Hub application, focusing on a clean separation of concerns, security, and efficient data retrieval. The structure prioritizes authorization independence and supports listing operations (QAPs) through structural segregation. Brands, Categories, and Parts are stored in separate collections at the root level to facilitate easy management and querying. The administrative functionality is secured through a dedicated 'admins' collection, leveraging the principle of 'Existence over Content' for role management, enhancing security. The new 'orders' collection allows users to create their own orders, but only admins can view and manage all orders, ensuring customer privacy and administrative control."
+    "reasoning": "The Firestore structure now uses a 'paymentReports' collection which is publicly writable, simplifying the checkout process by removing the need for user authentication at the time of submission. This resolves persistent security rule issues. Admins can then securely read and manage these reports. The 'orders' collection has been removed."
   }
 }

@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
-import { useUser, useFirestore, useAuth, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { signInAnonymously } from 'firebase/auth';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -17,53 +16,28 @@ import { CheckoutForm, type PaymentFormValues } from './components/checkout-form
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { CreditCard, Loader2 } from 'lucide-react';
-import type { Order } from '@/lib/types';
+import type { PaymentReport } from '@/lib/types';
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal, clearCart, exchangeRate } = useCart();
-  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // This effect handles user authentication and redirection.
-  useEffect(() => {
-    // If cart is empty after initial load, redirect.
-    if (!isUserLoading && cartItems.length === 0) {
-      router.replace('/parts');
-      return;
-    }
-
-    // If not loading, not logged in, but we have items, sign in anonymously.
-    if (!isUserLoading && !user && cartItems.length > 0 && auth) {
-      signInAnonymously(auth).catch((error) => {
-        console.error("Anonymous sign-in failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Error de autenticación",
-          description: "No se pudo iniciar una sesión segura para procesar la orden.",
-        });
-      });
-    }
-  }, [isUserLoading, user, cartItems.length, auth, router, toast]);
-
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
-    if (!firestore || !user || cartItems.length === 0) {
+    if (!firestore || cartItems.length === 0) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'No se pudo procesar la orden. Faltan datos, el carrito está vacío o no se pudo autenticar.',
+        description: 'No se pudo procesar el reporte. El carrito está vacío o la base de datos no está disponible.',
       });
       return;
     }
 
     setIsSubmitting(true);
 
-    const orderData: Omit<Order, 'id'> = {
-      userId: user.uid,
+    const reportData: Omit<PaymentReport, 'id'> = {
       customerEmail: data.customerEmail,
       items: cartItems.map((item) => ({
         partId: item.part.id,
@@ -72,7 +46,7 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       })),
       totalAmount: cartTotal,
-      status: 'paid',
+      status: 'pending_verification',
       createdAt: serverTimestamp(),
       paymentDetails: {
         referenceNumber: data.referenceNumber,
@@ -84,38 +58,37 @@ export default function CheckoutPage() {
       },
     };
 
-    const ordersCollection = collection(firestore, 'orders');
-    addDoc(ordersCollection, orderData)
-      .then((docRef) => {
-        toast({
-          title: '¡Orden Recibida!',
-          description: `Tu orden #${docRef.id.slice(0, 6)} ha sido registrada. La verificaremos pronto.`,
-        });
-        clearCart();
-        router.push(`/`);
-      })
-      .catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: 'orders', // Use collection path for create operations
-          operation: 'create',
-          requestResourceData: orderData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+    try {
+      const reportsCollection = collection(firestore, 'paymentReports');
+      const docRef = await addDoc(reportsCollection, reportData);
+      toast({
+        title: '¡Reporte de Pago Recibido!',
+        description: `Tu reporte #${docRef.id.slice(0, 6)} ha sido registrado. Lo verificaremos pronto.`,
       });
+      clearCart();
+      router.push(`/`);
+    } catch (error) {
+      console.error("Error submitting payment report: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Error al enviar reporte',
+        description: 'Hubo un problema al registrar tu pago. Por favor, intenta de nuevo o contacta a soporte.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
-  // Loading state: either checking user auth or cart is empty and we are about to redirect.
-  if (isUserLoading || !user) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-4 text-muted-foreground">Iniciando sesión segura...</p>
-      </div>
-    );
+  if (cartItems.length === 0 && typeof window !== 'undefined') {
+      router.replace('/parts');
+      return (
+         <div className="flex justify-center items-center min-h-[50vh]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-4 text-muted-foreground">Tu carrito está vacío, redirigiendo...</p>
+        </div>
+      );
   }
+
 
   return (
     <div className="container mx-auto max-w-5xl py-12 px-4">

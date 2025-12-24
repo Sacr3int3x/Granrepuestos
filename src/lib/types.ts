@@ -52,9 +52,9 @@ export type Part = {
   yearRange?: string; 
 };
 
-export type Order = {
+// Simplified type for payment reports, no user relation needed for creation.
+export type PaymentReport = {
   id: string;
-  userId: string;
   customerEmail: string;
   items: {
     partId: string;
@@ -63,9 +63,9 @@ export type Order = {
     quantity: number;
   }[];
   totalAmount: number;
-  status: 'pending' | 'paid' | 'verified' | 'rejected' | 'shipped';
+  status: 'pending_verification' | 'verified' | 'rejected';
   createdAt: any; // Firestore Timestamp
-  paymentDetails?: {
+  paymentDetails: {
     referenceNumber: string;
     bank: string;
     phone: string;

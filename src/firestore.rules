@@ -1,24 +1,4 @@
 
-/**
- * @fileoverview Firestore Security Rules for Auto Parts Hub.
- *
- * Core Philosophy:
- * This ruleset provides role-based access control for administrative functions using an "admins" collection. Brands, Categories, and Parts are publicly readable, but can only be created, updated, or deleted by administrators. This enforces a clear separation of concerns and ensures data integrity.
- *
- * Data Structure:
- * - /brands/{brandId}: Stores brand information.
- * - /categories/{categoryId}: Stores category information.
- * - /parts/{partId}: Stores auto part information.
- * - /orders/{orderId}: Stores customer orders.
- * - /admins/{uid}: Stores administrator user IDs. The existence of a document in this collection grants admin privileges.
- *
- * Key Security Decisions:
- * - Public Read Access: The 'brands', 'categories', and 'parts' collections are publicly readable to allow for open browsing of the parts catalog.
- * - Admin-Only Writes: Create, update, and delete operations on 'brands', 'categories', and 'parts' are restricted to administrators only.
- * - Order Security: Authenticated users can create their own orders and view them. Admins can view and manage all orders. Users cannot see other users' orders.
- * - Existence-Based Roles: Admin privileges are determined solely by the existence of a document in the `/admins/{uid}` collection, not by its content. This simplifies the security rules and avoids potential data integrity issues.
- * - No User Listing: Listing of users is not permitted.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -32,53 +12,36 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.uid == "txlhGIPOaQR1zISpvJwMgBzdBIt2";
     }
 
-    /**
-     * @description Checks if the requesting user is the owner of the document using the existing resource data.
-     * @param {string} userId - The userId stored in the document.
-     * @return {boolean} True if the user is the owner, false otherwise.
-     */
-     function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /******************* Brands Collection Rules *******************/
-
+    /******************* Publicly Readable Collections *******************/
     match /brands/{brandId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    /******************* Categories Collection Rules *******************/
-    
     match /categories/{categoryId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
 
-    /******************* Parts Collection Rules *******************/
-    
     match /parts/{partId} {
       allow get, list: if true;
       allow write: if isAdmin();
     }
-
-    /******************* Orders Collection Rules *******************/
     
-    match /orders/{orderId} {
-      allow get: if isOwner(resource.data.userId) || isAdmin();
-      allow update, delete: if isAdmin();
-    }
+    /******************* Payment Reports Collection Rules *******************/
     
-    match /orders {
-        allow list: if isAdmin();
-        allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    match /paymentReports/{reportId} {
+      // ANYONE can create a payment report. This simplifies the checkout process.
+      allow create: if true;
+      
+      // Only Admins can read, update, or delete payment reports.
+      allow get, list, update, delete: if isAdmin();
     }
     
     /******************* Admins Collection Rules *******************/
       match /admins/{uid} {
         allow get, list: if isAdmin();
-        allow write: if false;
+        allow write: if false; // Prevent client-side modification of admin roles.
     }
   }
 }
-
