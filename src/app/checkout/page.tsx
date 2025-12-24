@@ -28,26 +28,34 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthReady, setIsAuthReady] = useState(false);
   
   useEffect(() => {
-    if (!isUserLoading && !user && auth) {
-      signInAnonymously(auth).catch((error) => {
-        console.error("Anonymous sign-in failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Error de autenticación",
-          description: "No se pudo iniciar una sesión segura para procesar la orden.",
+    if (isUserLoading) return;
+
+    if (!user && auth) {
+      signInAnonymously(auth)
+        .then(() => setIsAuthReady(true))
+        .catch((error) => {
+          console.error("Anonymous sign-in failed:", error);
+          toast({
+            variant: "destructive",
+            title: "Error de autenticación",
+            description: "No se pudo iniciar una sesión segura para procesar la orden.",
+          });
+          setIsAuthReady(true); // Still ready, but with an error
         });
-      });
+    } else {
+        setIsAuthReady(true);
     }
   }, [isUserLoading, user, auth, toast]);
   
   useEffect(() => {
-    // Redirect if cart is empty after user is loaded and checked
-    if (!isUserLoading && cartItems.length === 0) {
+    // Redirect if cart is empty after authentication is resolved
+    if (isAuthReady && cartItems.length === 0) {
       router.replace("/parts");
     }
-  }, [cartItems, isUserLoading, router]);
+  }, [cartItems, isAuthReady, router]);
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
@@ -102,7 +110,7 @@ export default function CheckoutPage() {
       });
   };
 
-  const isLoading = isUserLoading || !user;
+  const isLoading = isUserLoading || !isAuthReady;
 
   if (isLoading) {
     return (
@@ -188,8 +196,8 @@ export default function CheckoutPage() {
                     </div>
                     {exchangeRate > 0 && (
                         <div className="flex justify-between text-muted-foreground text-base pt-1 border-t">
-                            <span>Total Aprox. en Bolívares</span>
-                            <span>Bs. {(cartTotal * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span>Aprox. Bs.</span>
+                            <span>{(cartTotal * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                     )}
                 </div>
