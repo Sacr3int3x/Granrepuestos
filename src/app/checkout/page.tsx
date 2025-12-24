@@ -27,28 +27,51 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!isUserLoading && !user && auth) {
-      setIsSigningIn(true);
-      signInAnonymously(auth).finally(() => setIsSigningIn(false));
+    if (!isUserLoading) {
+      if (user) {
+        setIsReady(true);
+      } else if (auth) {
+        // If not logged in, sign in anonymously and then set ready
+        signInAnonymously(auth)
+          .then(() => {
+             // onAuthStateChanged will handle setting the user,
+             // another useEffect will catch the user change and set isReady.
+          })
+          .catch((error) => {
+            console.error("Anonymous sign-in failed:", error);
+            toast({
+              variant: "destructive",
+              title: "Error de autenticación",
+              description: "No se pudo iniciar una sesión segura para procesar la orden.",
+            });
+          });
+      }
     }
-  }, [user, isUserLoading, auth]);
+  }, [user, isUserLoading, auth, toast]);
+
+   useEffect(() => {
+    // This effect runs when the user state changes *after* anonymous sign-in
+    if (!isUserLoading && user) {
+        setIsReady(true);
+    }
+  }, [user, isUserLoading]);
 
   useEffect(() => {
-    // Redirect if cart is empty after initial load
-    if (!isUserLoading && cartItems.length === 0) {
+    // Redirect if cart is empty after initialization and readiness check
+    if (isReady && cartItems.length === 0) {
       router.replace("/parts");
     }
-  }, [cartItems, isUserLoading, router]);
+  }, [cartItems, isReady, router]);
 
   const handleSubmitPayment = async (data: PaymentFormValues) => {
     if (!firestore || !user || cartItems.length === 0) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo procesar la orden. Intenta de nuevo.",
+        description: "No se pudo procesar la orden. Faltan datos o el carrito está vacío.",
       });
       return;
     }
@@ -64,7 +87,7 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       })),
       totalAmount: cartTotal,
-      status: "paid", // Initial status when payment is reported
+      status: "paid",
       createdAt: serverTimestamp(),
       paymentDetails: {
         ...data,
@@ -74,17 +97,16 @@ export default function CheckoutPage() {
 
     const ordersCollection = collection(firestore, "orders");
     addDoc(ordersCollection, orderData)
-      .then(() => {
+      .then((docRef) => {
         toast({
           title: "¡Orden Recibida!",
-          description: "Hemos recibido tu reporte de pago. Lo verificaremos pronto.",
+          description: `Tu orden #${docRef.id.slice(0, 6)} ha sido registrada. La verificaremos pronto.`,
         });
         clearCart();
-        router.push(`/`); // Redirect to a confirmation page
+        router.push(`/`); 
       })
-      .catch(() => {
-        // The global error handler will catch and display the permission error
-        // so we don't need a specific toast here. We just need to trigger it.
+      .catch((error) => {
+        console.error("Order creation failed:", error);
         const permissionError = new FirestorePermissionError({
           path: ordersCollection.path,
           operation: 'create',
@@ -97,18 +119,18 @@ export default function CheckoutPage() {
       });
   };
 
-  const isLoading = isUserLoading || isSigningIn;
+  const isLoading = isUserLoading || !isReady;
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-4 text-muted-foreground">Iniciando sesión segura...</p>
       </div>
     );
   }
 
   if (cartItems.length === 0) {
-    // This is a fallback for the useEffect redirect
     return (
         <div className="flex justify-center items-center min-h-[50vh]">
             <p className="text-muted-foreground">Tu carrito está vacío.</p>
@@ -124,7 +146,6 @@ export default function CheckoutPage() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
-        {/* Payment Details Section */}
         <div className="order-2 lg:order-1">
           <Card className="shadow-lg">
             <CardHeader>
@@ -152,7 +173,6 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Order Summary Section */}
         <div className="order-1 lg:order-2">
           <Card className="shadow-lg sticky top-24">
             <CardHeader>
