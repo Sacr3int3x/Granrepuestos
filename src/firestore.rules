@@ -88,26 +88,26 @@ service cloud.firestore {
 
     /******************* Orders Collection Rules *******************/
     
-    /**
-     * @description Controls access for the /orders collection.
-     * - create: Any authenticated user can create an order.
-     * - list: Only admins can list all orders.
-     */
-    match /orders {
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow list: if isAdmin();
-      allow get, update, delete: if false; 
-    }
-    
-    /**
-     * @description Controls access to individual order documents.
-     * - get, update: The owner of the order or an admin can access/update it.
-     * - delete: Only admins can delete orders.
-     */
     match /orders/{orderId} {
-      allow get, update: if isOwner(resource.data.userId) || isAdmin();
-      allow delete: if isAdmin();
-      allow create, list: if false; 
+      /**
+       * @description Controls access to the /orders collection for create operations.
+       * - create: Authenticated users can create orders for themselves.
+       */
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+      /**
+       * @description Controls access for listing and reading individual orders.
+       * - list: Only admins can list all orders.
+       * - get: The owner of the order or an admin can read it.
+       */
+      allow list: if isAdmin();
+      allow get: if isOwner(resource.data.userId) || isAdmin();
+      
+      /**
+       * @description Controls access for updating and deleting individual orders.
+       * - update, delete: Only admins can update or delete orders.
+       */
+      allow update, delete: if isAdmin();
     }
     
     /******************* Admins Collection Rules *******************/

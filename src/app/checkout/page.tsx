@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     // If cart is empty after initial load, redirect to the parts page.
@@ -36,8 +37,9 @@ export default function CheckoutPage() {
   }, [cartItems, isUserLoading, router]);
 
   useEffect(() => {
-    // If auth is loaded, there's no user, and the cart is not empty, sign in anonymously.
+    // If auth is loaded, there's no user, and the cart has items, sign in anonymously.
     if (auth && !user && !isUserLoading && cartItems.length > 0) {
+        setIsSigningIn(true);
         signInAnonymously(auth).catch((error) => {
             console.error("Anonymous sign-in failed:", error);
             toast({
@@ -45,6 +47,8 @@ export default function CheckoutPage() {
                 title: "Error de autenticación",
                 description: "No se pudo iniciar una sesión segura para procesar la orden.",
             });
+        }).finally(() => {
+            setIsSigningIn(false);
         });
     }
   }, [isUserLoading, user, auth, cartItems.length, toast]);
@@ -106,7 +110,7 @@ export default function CheckoutPage() {
       });
   };
 
-  if (isUserLoading || (!user && cartItems.length > 0)) {
+  if (isUserLoading || isSigningIn) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
