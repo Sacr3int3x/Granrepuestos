@@ -72,34 +72,29 @@ export default function CheckoutPage() {
       },
     };
 
-    try {
-      const ordersCollection = collection(firestore, "orders");
-      await addDoc(ordersCollection, orderData);
-      
-      toast({
-        title: "¡Orden Recibida!",
-        description: "Hemos recibido tu reporte de pago. Lo verificaremos pronto.",
+    const ordersCollection = collection(firestore, "orders");
+    addDoc(ordersCollection, orderData)
+      .then(() => {
+        toast({
+          title: "¡Orden Recibida!",
+          description: "Hemos recibido tu reporte de pago. Lo verificaremos pronto.",
+        });
+        clearCart();
+        router.push(`/`); // Redirect to a confirmation page
+      })
+      .catch(() => {
+        // The global error handler will catch and display the permission error
+        // so we don't need a specific toast here. We just need to trigger it.
+        const permissionError = new FirestorePermissionError({
+          path: ordersCollection.path,
+          operation: 'create',
+          requestResourceData: orderData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-
-      clearCart();
-      router.push(`/`); // Redirect to a confirmation page
-    } catch (error) {
-       if (firestore) {
-         const permissionError = new FirestorePermissionError({
-            path: 'orders',
-            operation: 'create',
-            requestResourceData: orderData,
-          });
-          errorEmitter.emit('permission-error', permissionError);
-       }
-      toast({
-        variant: "destructive",
-        title: "Error al crear la orden",
-        description: "Hubo un problema al guardar tu orden. Por favor, intenta de nuevo.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const isLoading = isUserLoading || isSigningIn;

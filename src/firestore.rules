@@ -91,7 +91,7 @@ service cloud.firestore {
     /**
      * @description Controls access to the /orders collection.
      * @path /orders/{orderId}
-     * @allow create: Any authenticated user can create their own order.
+     * @allow create: Any authenticated user can create their own order, or an admin can create an order.
      * @allow get: User can get their own order.
      * @allow update: User can update their own order (e.g., add payment info).
      * @allow list, delete: Not allowed for users.
@@ -99,7 +99,7 @@ service cloud.firestore {
      * @principle Users can manage their own orders, admins can manage all orders.
      */
     match /orders/{orderId} {
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow create: if (request.auth != null && request.resource.data.userId == request.auth.uid) || isAdmin();
       allow get, update: if isOwner(resource.data.userId);
       allow list, delete: if false;
 
