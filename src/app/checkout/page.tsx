@@ -31,33 +31,30 @@ export default function CheckoutPage() {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    if (isUserLoading) {
-      return; // Wait until user state is resolved
-    }
-
-    if (user) {
-      // If a user (anonymous or authenticated) already exists, we're ready.
-      setIsAuthReady(true);
-    } else if (auth) {
-      // If no user and auth is available, sign in anonymously.
-      // The onAuthStateChanged listener in the provider will then update the user state.
-      signInAnonymously(auth).catch((error) => {
-        console.error("Anonymous sign-in failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Error de autenticación",
-          description: "No se pudo iniciar una sesión segura para procesar la orden.",
-        });
-      });
-    }
-  }, [isUserLoading, user, auth, toast]);
-
-  // This effect marks auth as ready once the user object is available after any sign-in process.
-  useEffect(() => {
+    // If a user (anonymous or authenticated) already exists, we're ready.
     if (!isUserLoading && user) {
       setIsAuthReady(true);
+      return;
     }
-  }, [isUserLoading, user]);
+
+    // If still loading, or if auth service isn't ready, wait.
+    if (isUserLoading || !auth) {
+      return;
+    }
+    
+    // If no user and auth is available, sign in anonymously.
+    // The onAuthStateChanged listener in the provider will then update the user state.
+    signInAnonymously(auth).catch((error) => {
+      console.error("Anonymous sign-in failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de autenticación",
+        description: "No se pudo iniciar una sesión segura para procesar la orden.",
+      });
+      setIsAuthReady(true); // Mark as ready even on failure to avoid infinite loops
+    });
+    
+  }, [isUserLoading, user, auth, toast]);
 
 
   useEffect(() => {
