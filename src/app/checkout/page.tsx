@@ -29,8 +29,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // If cart is empty, redirect to the parts page.
-    // This is now the primary effect to handle redirection.
+    // If cart is empty after initial load, redirect to the parts page.
     if (!isUserLoading && cartItems.length === 0) {
       router.replace('/parts');
     }
@@ -38,15 +37,15 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     // If auth is loaded, there's no user, and the cart is not empty, sign in anonymously.
-    if (!isUserLoading && !user && cartItems.length > 0 && auth) {
-      signInAnonymously(auth).catch((error) => {
-        console.error('Anonymous sign-in failed:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error de autenticación',
-          description: 'No se pudo iniciar una sesión segura para procesar la orden.',
+    if (auth && !user && !isUserLoading && cartItems.length > 0) {
+        signInAnonymously(auth).catch((error) => {
+            console.error("Anonymous sign-in failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Error de autenticación",
+                description: "No se pudo iniciar una sesión segura para procesar la orden.",
+            });
         });
-      });
     }
   }, [isUserLoading, user, auth, cartItems.length, toast]);
 

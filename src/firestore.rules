@@ -15,7 +15,7 @@
  * Key Security Decisions:
  * - Public Read Access: The 'brands', 'categories', and 'parts' collections are publicly readable to allow for open browsing of the parts catalog.
  * - Admin-Only Writes: Create, update, and delete operations on 'brands', 'categories', and 'parts' are restricted to administrators only.
- * - Order Security: Users can create their own orders and view them. Admins can view and manage all orders. Users cannot see other users' orders.
+ * - Order Security: Authenticated users can create their own orders and view them. Admins can view and manage all orders. Users cannot see other users' orders.
  * - Existence-Based Roles: Admin privileges are determined solely by the existence of a document in the `/admins/{uid}` collection, not by its content. This simplifies the security rules and avoids potential data integrity issues.
  * - No User Listing: Listing of users is not permitted.
  */
@@ -90,11 +90,11 @@ service cloud.firestore {
     
     /**
      * @description Controls access for the /orders collection.
-     * - create: Authenticated users can create their own orders. Admins can create any order.
+     * - create: Any authenticated user can create an order.
      * - list: Only admins can list all orders.
      */
     match /orders {
-      allow create: if (request.auth != null && request.auth.uid == request.resource.data.userId) || isAdmin();
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow list: if isAdmin();
       allow get, update, delete: if false; 
     }
