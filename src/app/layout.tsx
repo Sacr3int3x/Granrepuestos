@@ -10,13 +10,13 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
-import Snowfall from "@/components/snowfall";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Repuestos Originales en Guatire | GranRepuestos",
-  description: "Tu tienda de repuestos en Guatire con entregas en Caracas. Consigue repuestos originales y certificados para tu carro. ¡Cotiza por WhatsApp!",
+  title: "GranRepuestos: Repuestos para Carros en Venezuela - Catálogo Online",
+  description: "Encuentra repuestos originales y de calidad para tu carro en Venezuela. Catálogo online con envíos a nivel nacional desde Guatire. ¡Cotiza por WhatsApp!",
+  keywords: ["repuestos para carros", "repuestos en venezuela", "granrepuestos", "tienda de repuestos", "guatire", "caracas", "repuestos originales"],
 };
 
 export default function RootLayout({
@@ -28,14 +28,13 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "AutoPartsStore",
     "name": "GranRepuestos",
-    "image": "URL_DE_TU_LOGO",
-    "@id": "https://www.granrepuestos.com",
+    "image": "https://i.postimg.cc/8CLbC2vM/Logo-GR.png",
     "url": "https://www.granrepuestos.com",
-    "telephone": "+58-412-0177075",
+    "telephone": "+584120177075",
     "priceRange": "$$",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Tu Dirección en Guatire",
+      "streetAddress": "Av. Principal de Castillejo",
       "addressLocality": "Guatire",
       "addressRegion": "Miranda",
       "postalCode": "1221",
@@ -49,6 +48,10 @@ export default function RootLayout({
       {
         "@type": "City",
         "name": "Caracas"
+      },
+       {
+        "@type": "Country",
+        "name": "Venezuela"
       }
     ],
     "openingHoursSpecification": {
@@ -62,7 +65,10 @@ export default function RootLayout({
       ],
       "opens": "08:00",
       "closes": "17:00"
-    }
+    },
+    "sameAs": [
+      "https://www.instagram.com/granrepuesto.ve"
+    ]
   };
 
   return (
@@ -79,7 +85,6 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
             <CartProviderWrapper>
-                <Snowfall />
                 <div className="relative flex min-h-screen flex-col">
                     <Header />
                     <main className="flex-1 animate-fade-in">{children}</main>

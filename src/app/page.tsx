@@ -243,10 +243,10 @@ export default function Home() {
       </section>
 
       {/* Brands Section */}
-      <section id="brands" className="py-16 lg:py-24 bg-card border-y animate-fade-in-up [animation-delay:0.8s]">
+      <section id="brands" aria-labelledby="brands-heading" className="py-16 lg:py-24 bg-card border-y animate-fade-in-up [animation-delay:0.8s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
+            <h2 id="brands-heading" className="text-3xl md:text-4xl font-bold font-headline text-foreground">
               Distribuidores de Repuestos Originales en Venezuela
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -263,10 +263,10 @@ export default function Home() {
       </section>
 
       {/* Featured Products Section */}
-      <section id="featured-products" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1s]">
+      <section id="featured-products" aria-labelledby="featured-products-heading" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline">Catálogo de Repuestos para Carros</h2>
+            <h2 id="featured-products-heading" className="text-3xl md:text-4xl font-bold font-headline">Catálogo de Repuestos para Carros</h2>
             <p className="mt-4 text-lg text-muted-foreground">
               Explora las piezas más buscadas. Si no encuentras tu repuesto, contáctanos.
             </p>
@@ -276,7 +276,7 @@ export default function Home() {
       </section>
 
       {/* MercadoLibre Section */}
-      <section id="mercadolibre" className="py-16 lg:py-24 bg-card border-t animate-fade-in-up [animation-delay:1.2s]">
+      <section id="mercadolibre" aria-labelledby="mercadolibre-heading" className="py-16 lg:py-24 bg-card border-t animate-fade-in-up [animation-delay:1.2s]">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 text-center md:text-left">
             <div className="relative h-20 w-48 shrink-0">
@@ -289,7 +289,7 @@ export default function Home() {
                 />
             </div>
             <div className="max-w-xl">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline">Tienda de Repuestos con Reputación en MercadoLibre</h2>
+                <h2 id="mercadolibre-heading" className="text-3xl md:text-4xl font-bold font-headline">Tienda de Repuestos con Reputación en MercadoLibre</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
                     Con más de 5 años de trayectoria y reputación impecable en MercadoLibre Venezuela, somos tu opción de confianza para comprar repuestos automotrices en línea.
                 </p>
@@ -299,10 +299,10 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1.4s]">
+      <section id="contact" aria-labelledby="contact-heading" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1.4s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline">Contáctanos - Asesoría para tu Repuesto</h2>
+            <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold font-headline">Contáctanos - Asesoría para tu Repuesto</h2>
             <p className="mt-4 text-lg text-muted-foreground">
               ¿No estás seguro de qué pieza necesitas? ¡Te ayudamos! Escríbenos para una cotización inmediata.
             </p>
@@ -361,5 +361,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

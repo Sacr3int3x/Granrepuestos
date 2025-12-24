@@ -29,6 +29,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "Catálogo de Repuestos para Carros | GranRepuestos",
+    description: "Explora nuestro catálogo completo de repuestos para carros en Venezuela. Filtra por marca, categoría y vehículo para encontrar la pieza que necesitas.",
+};
 
 
 const PARTS_PER_PAGE = 16;
@@ -185,7 +191,7 @@ function PartsPageContent() {
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-headline">
-            Repuestos
+            Catálogo de Repuestos
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
             Encuentra la pieza perfecta para tu vehículo.

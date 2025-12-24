@@ -39,9 +39,9 @@ function BrandsList() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {brands.map((brand) => (
                 <a 
-                  href={brand.websiteUrl || '#'}
+                  href={brand.websiteUrl || `/brands/${brand.id}`}
                   key={brand.id}
-                  target="_blank"
+                  target={brand.websiteUrl ? '_blank' : '_self'}
                   rel="noopener noreferrer"
                   className="group"
                 >
@@ -75,10 +75,10 @@ export default function BrandsPage() {
         <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div className="mb-12 text-center">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl font-headline">
-                    Nuestras Marcas
+                    Nuestras Marcas de Repuestos
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Explora el catálogo de repuestos de nuestras marcas aliadas, seleccionadas por su calidad, durabilidad y rendimiento garantizado.
+                    Explora el catálogo de repuestos de nuestras marcas aliadas, seleccionadas por su calidad, durabilidad y rendimiento garantizado para carros.
                 </p>
             </div>
             <BrandsList />
