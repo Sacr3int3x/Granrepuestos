@@ -218,7 +218,6 @@ export default function Home() {
                 alt="Repuestos de automoviles originales en Venezuela"
                 fill
                 className="object-cover"
-                quality={100}
                 priority
                 sizes="100vw"
             />
@@ -362,3 +361,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
