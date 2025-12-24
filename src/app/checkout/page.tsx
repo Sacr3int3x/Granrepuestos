@@ -30,19 +30,16 @@ export default function CheckoutPage() {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    // If auth is not loading and we either have a user or the auth service is ready to sign in.
-    if (!isUserLoading && (user || auth)) {
+    if (isUserLoading) {
+      return; 
+    }
+    
+    if (user) {
       setIsAuthReady(true);
       return;
     }
-  
-    // If still loading, wait.
-    if (isUserLoading) {
-      return;
-    }
-  
-    // If auth is ready but there's no user, sign in anonymously.
-    if (auth && !user) {
+
+    if (auth) {
       signInAnonymously(auth).catch((error) => {
         console.error("Anonymous sign-in failed:", error);
         toast({
@@ -50,10 +47,9 @@ export default function CheckoutPage() {
           title: "Error de autenticación",
           description: "No se pudo iniciar una sesión segura para procesar la orden.",
         });
-        // Still mark as ready to prevent infinite loops, but the submission will fail.
-        setIsAuthReady(true);
       });
     }
+    
   }, [user, isUserLoading, auth, toast]);
 
 
