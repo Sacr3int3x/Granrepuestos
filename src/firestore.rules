@@ -28,17 +28,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
-    /******************* Payment Reports Collection Rules *******************/
-    
-    match /paymentReports/{reportId} {
-      // ANYONE can create a payment report. No validation is needed here
-      // as it was causing permission issues. The data is validated on the client.
-      allow create;
-      
-      // Only Admins can read, update, or delete payment reports.
-      allow get, list, update, delete: if isAdmin();
-    }
-    
     /******************* Admins Collection Rules *******************/
       match /admins/{uid} {
         allow get, list: if isAdmin();

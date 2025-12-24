@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Brand": {
@@ -47,45 +48,6 @@
       },
       "required": ["id", "brandId", "name", "description", "sku", "price", "stock", "imageUrls"]
     },
-    "PaymentReport": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "PaymentReport",
-      "type": "object",
-      "description": "Represents a customer's payment report for an order.",
-      "properties": {
-        "id": { "type": "string" },
-        "customerEmail": { "type": "string", "format": "email", "description": "The customer's email for notifications." },
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "partId": { "type": "string" },
-              "name": { "type": "string" },
-              "price": { "type": "number" },
-              "quantity": { "type": "number" }
-            },
-            "required": ["partId", "name", "price", "quantity"]
-          }
-        },
-        "totalAmount": { "type": "number" },
-        "status": { "type": "string", "enum": ["pending_verification", "verified", "rejected"], "default": "pending_verification" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "paymentDetails": {
-          "type": "object",
-          "properties": {
-            "referenceNumber": { "type": "string" },
-            "bank": { "type": "string" },
-            "phone": { "type": "string" },
-            "idNumber": { "type": "string" },
-            "amount": { "type": "number" },
-            "paymentDate": { "type": "string", "format": "date" }
-          },
-           "required": ["referenceNumber", "bank", "amount", "paymentDate"]
-        }
-      },
-      "required": ["customerEmail", "items", "totalAmount", "status", "createdAt", "paymentDetails"]
-    },
     "admins": {
       "title": "Admin User",
       "description": "An empty document whose ID is the UID of a Firebase Auth user. The existence of this document indicates that the user has admin privileges. No properties are stored in the document itself.",
@@ -109,14 +71,10 @@
         "definition": { "entityName": "Part", "schema": { "$ref": "#/backend/entities/Part" }, "description": "Stores auto part information." }
       },
       {
-        "path": "/paymentReports/{reportId}",
-        "definition": { "entityName": "PaymentReport", "schema": { "$ref": "#/backend/entities/PaymentReport" }, "description": "Stores payment reports submitted by customers. Publicly writable." }
-      },
-      {
         "path": "/admins/{uid}",
         "definition": { "entityName": "admins", "schema": { "$ref": "#/backend/entities/admins" }, "description": "Collection of admin users." }
       }
     ],
-    "reasoning": "The Firestore structure now uses a 'paymentReports' collection which is publicly writable, simplifying the checkout process by removing the need for user authentication at the time of submission. This resolves persistent security rule issues. Admins can then securely read and manage these reports. The 'orders' collection has been removed."
+    "reasoning": "The Firestore structure is simplified by removing the 'paymentReports' collection. The checkout process now directly generates a WhatsApp/email message, eliminating the need for a publicly writable collection and resolving persistent permission errors."
   }
 }
