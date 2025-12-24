@@ -242,8 +242,13 @@ export default function Home() {
               Distribuidores de Repuestos Originales en Venezuela
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-              Nuestro compromiso es con la calidad. Solo distribuimos repuestos originales y certificados de fabricantes líderes. Tu carro merece lo mejor, por eso ofrecemos ¡Cero imitaciones, Cero chino!
+              Nuestro compromiso es con la calidad. Solo distribuimos repuestos originales y certificados de fabricantes líderes. Tu carro merece lo mejor.
             </p>
+            <div className="mt-4 inline-block">
+                <p className="text-lg font-semibold text-primary border border-primary/50 bg-primary/10 rounded-full px-4 py-2">
+                    ¡Cero imitaciones, Cero chino!
+                </p>
+            </div>
           </div>
           <BrandsSection />
         </div>
