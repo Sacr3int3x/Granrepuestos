@@ -103,7 +103,7 @@ export default function CartSheet() {
 
                 <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-slate-800 font-bold shadow-md h-12">
                     <a href={binanceUrl} target="_blank" rel="noopener noreferrer">
-                       <Image src="https://i.postimg.cc/gJ08Pj4K/binance-pay-logo.png" alt="Binance Pay" width={24} height={24} className="mr-2"/>
+                       <Image src="/binance-pay-logo.png" alt="Binance Pay" width={24} height={24} className="mr-2"/>
                        Pagar con Binance
                     </a>
                 </Button>
