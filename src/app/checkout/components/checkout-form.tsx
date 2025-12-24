@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const formSchema = z.object({
+  customerEmail: z.string().email({ message: "Por favor, introduce un correo válido." }),
   referenceNumber: z.string().min(4, { message: "La referencia debe tener al menos 4 dígitos." }),
   bank: z.string().min(2, { message: "Por favor, indica el banco." }),
   phone: z.string().min(10, { message: "El número de teléfono no es válido." }),
@@ -42,6 +43,7 @@ export function CheckoutForm({ onSubmit, totalAmount, isLoading }: CheckoutFormP
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      customerEmail: "",
       referenceNumber: "",
       bank: "",
       phone: "",
@@ -54,6 +56,20 @@ export function CheckoutForm({ onSubmit, totalAmount, isLoading }: CheckoutFormP
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+            control={form.control}
+            name="customerEmail"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel>Correo Electrónico</FormLabel>
+                <FormControl>
+                <Input type="email" placeholder="tu@correo.com" {...field} />
+                </FormControl>
+                <FormDescription>Recibirás las actualizaciones de tu orden en este correo.</FormDescription>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}

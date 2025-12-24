@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -31,30 +30,31 @@ export default function CheckoutPage() {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    // If a user (anonymous or authenticated) already exists, we're ready.
-    if (!isUserLoading && user) {
+    // If auth is not loading and we either have a user or the auth service is ready to sign in.
+    if (!isUserLoading && (user || auth)) {
       setIsAuthReady(true);
       return;
     }
-
-    // If still loading, or if auth service isn't ready, wait.
-    if (isUserLoading || !auth) {
+  
+    // If still loading, wait.
+    if (isUserLoading) {
       return;
     }
-    
-    // If no user and auth is available, sign in anonymously.
-    // The onAuthStateChanged listener in the provider will then update the user state.
-    signInAnonymously(auth).catch((error) => {
-      console.error("Anonymous sign-in failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Error de autenticación",
-        description: "No se pudo iniciar una sesión segura para procesar la orden.",
+  
+    // If auth is ready but there's no user, sign in anonymously.
+    if (auth && !user) {
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "No se pudo iniciar una sesión segura para procesar la orden.",
+        });
+        // Still mark as ready to prevent infinite loops, but the submission will fail.
+        setIsAuthReady(true);
       });
-      setIsAuthReady(true); // Mark as ready even on failure to avoid infinite loops
-    });
-    
-  }, [isUserLoading, user, auth, toast]);
+    }
+  }, [user, isUserLoading, auth, toast]);
 
 
   useEffect(() => {
@@ -78,6 +78,7 @@ export default function CheckoutPage() {
 
     const orderData: Omit<Order, 'id'> = {
       userId: user.uid,
+      customerEmail: data.customerEmail,
       items: cartItems.map(item => ({
         partId: item.part.id,
         name: item.part.name,
@@ -88,7 +89,11 @@ export default function CheckoutPage() {
       status: "paid",
       createdAt: serverTimestamp(),
       paymentDetails: {
-        ...data,
+        referenceNumber: data.referenceNumber,
+        bank: data.bank,
+        phone: data.phone,
+        idNumber: data.idNumber,
+        amount: data.amount,
         paymentDate: format(data.paymentDate, "yyyy-MM-dd"),
       },
     };

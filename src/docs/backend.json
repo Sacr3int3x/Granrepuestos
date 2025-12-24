@@ -140,6 +140,7 @@
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string", "description": "The ID of the user who placed the order (can be anonymous)." },
+        "customerEmail": { "type": "string", "format": "email", "description": "The customer's email for notifications." },
         "items": {
           "type": "array",
           "items": {
@@ -168,7 +169,7 @@
           }
         }
       },
-      "required": ["userId", "items", "totalAmount", "status", "createdAt"]
+      "required": ["userId", "customerEmail", "items", "totalAmount", "status", "createdAt"]
     },
     "admins": {
       "title": "Admin User",

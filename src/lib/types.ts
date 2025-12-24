@@ -55,6 +55,7 @@ export type Part = {
 export type Order = {
   id: string;
   userId: string;
+  customerEmail: string;
   items: {
     partId: string;
     name: string;
