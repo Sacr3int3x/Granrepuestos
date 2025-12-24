@@ -42,7 +42,6 @@ async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: B
         const relatedQuery = query(
             collection(db, 'parts'),
             where('vehicleModelIds', 'array-contains-any', part.vehicleModelIds),
-            where('id', '!=', id),
             limit(5) // Get up to 5 related parts (4 + the current one to filter out)
         );
         const relatedSnap = await getDocs(relatedQuery);
@@ -98,4 +97,3 @@ export default async function PartDetailPage({ params }: { params: { id: string 
     
     return <PartDetailPageClient part={data.part} brand={data.brand} category={data.category} relatedParts={data.relatedParts} />;
 }
-
