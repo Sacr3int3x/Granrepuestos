@@ -17,29 +17,43 @@ import CartItemCard from "./cart-item-card";
 import { ShoppingCart, PackageX, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 export default function CartSheet() {
   const { cartItems, cartTotal, isCartOpen, setIsCartOpen, cartItemCount } = useCart();
 
-  const generateQuoteMessage = (format: 'whatsapp' | 'email') => {
+  const binanceDiscount = 0.15;
+  const discountedTotal = cartTotal * (1 - binanceDiscount);
+
+  const generateQuoteMessage = (format: 'whatsapp' | 'email' | 'binance') => {
     let message = `¡Hola! Quisiera solicitar una cotización para los siguientes repuestos:\n\n`;
+
+    if (format === 'binance') {
+      message = `¡Hola! Quiero pagar mi orden con *Binance Pay* y aplicar el *descuento del 15%*.\n\n*Detalles del Pedido:*\n`;
+    }
     
     cartItems.forEach(item => {
       message += `- ${item.part.name} (Cantidad: ${item.quantity}) - €${(item.part.price * item.quantity).toFixed(2)}\n`;
     });
     
-    message += `\n*Subtotal: €${cartTotal.toFixed(2)}*\n\n`;
-    message += `Quedo a la espera de su respuesta. ¡Gracias!`;
-
-    if (format === 'whatsapp') {
-      return encodeURIComponent(message);
-    }
+    message += `\n*Subtotal: €${cartTotal.toFixed(2)}*\n`;
     
+    if (format === 'binance') {
+        message += `*Descuento Binance (15%): -€${(cartTotal * binanceDiscount).toFixed(2)}*\n`;
+        message += `*TOTAL A PAGAR: €${discountedTotal.toFixed(2)}*\n\n`;
+        message += `Por favor, envíame el enlace de pago de Binance. ¡Gracias!`;
+    } else {
+        message += `\nQuedo a la espera de su respuesta. ¡Gracias!`;
+    }
+
+
     return encodeURIComponent(message);
   };
 
   const whatsappUrl = `https://wa.me/584120177075?text=${generateQuoteMessage('whatsapp')}`;
   const emailUrl = `mailto:soporte@granrepuestos.com?subject=Solicitud%20de%20Cotización%20de%20Repuestos&body=${generateQuoteMessage('email')}`;
+  const binanceUrl = `https://wa.me/584120177075?text=${generateQuoteMessage('binance')}`;
+
 
   const handleSheetClose = () => setIsCartOpen(false);
 
@@ -74,8 +88,20 @@ export default function CartSheet() {
                 <span>Subtotal:</span>
                 <span>€{cartTotal.toFixed(2)}</span>
               </div>
+              <div className="text-sm font-semibold w-full flex justify-between items-center text-green-600">
+                <span>Total con Binance (15% dto):</span>
+                <span>€{discountedTotal.toFixed(2)}</span>
+              </div>
                <div className="flex flex-col gap-3">
-                <p className="text-sm text-center text-muted-foreground">Solicita tu cotización por el medio de tu preferencia:</p>
+                <p className="text-sm text-center text-muted-foreground">Selecciona tu método de pago o cotización:</p>
+
+                <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-black">
+                    <a href={binanceUrl} target="_blank" rel="noopener noreferrer">
+                       <Image src="https://i.postimg.cc/pX0HjQz7/binance-pay-logo.png" alt="Binance Pay" width={24} height={24} className="mr-2"/>
+                       Pagar con Binance
+                    </a>
+                </Button>
+
                 <Button asChild size="lg" onClick={handleSheetClose}>
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700">
                       <MessageSquare className="mr-2 h-4 w-4" />
