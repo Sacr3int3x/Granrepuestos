@@ -34,15 +34,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
-        const response = await fetch('https://ve.dolarapi.com/v1/euros');
+        const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        // Assuming the API returns an array and we need the first entry for 'oficial'
-        const officialRate = data.find((rate: any) => rate.casa === 'oficial');
-        if (officialRate && officialRate.promedio) {
-          setExchangeRate(officialRate.promedio);
+        
+        if (data && data.promedio) {
+          setExchangeRate(data.promedio);
         }
       } catch (error) {
         console.error("Failed to fetch exchange rate:", error);
