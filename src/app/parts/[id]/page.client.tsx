@@ -134,7 +134,7 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                 <BreadcrumbLink asChild>
                     <Link href="/parts">Repuestos</Link>
                 </BreadcrumbLink>
-                </BreadcrumbItem>
+                </a</BreadcrumbItem>
                 <BreadcrumbSeparator />
                 {category && (
                     <>
@@ -226,23 +226,25 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
                 <p className="text-xs text-muted-foreground mt-1">ID: {part.id}</p>
             </div>
-           <div className="my-6 flex justify-between items-center">
-            <div>
-              <p className="text-4xl font-bold text-primary">€{part.price.toFixed(2)}</p>
-              {exchangeRate > 0 && (
-                <p className="text-lg text-muted-foreground">
-                  Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-              )}
-              <p className={part.stock > 0 ? "text-green-600 mt-1" : "text-red-600 mt-1"}>
-                {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
-              </p>
+           <div className="my-6">
+                <div>
+                  <p className="text-4xl font-bold text-primary">€{part.price.toFixed(2)}</p>
+                  {exchangeRate > 0 && (
+                    <p className="text-lg text-muted-foreground">
+                      Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  )}
+                  <p className={cn("mt-1", part.stock > 0 ? "text-green-600" : "text-red-600")}>
+                    {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
+                  </p>
+                </div>
             </div>
-             <div className="flex items-center gap-2">
-                <AddToCartButton part={fullPart as Part} size="lg" showText={true}/>
-            </div>
-          </div>
             
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 my-6">
+                <AddToCartButton part={fullPart as Part} size="lg" showText={true}/>
+                <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
+            </div>
+
             <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800 [&>svg]:text-amber-600">
                 <PercentCircle className="h-4 w-4" />
                 <AlertTitle className="font-bold">¡Oferta Exclusiva!</AlertTitle>
@@ -299,9 +301,6 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
               </Table>
             </div>
              <div className="mt-auto pt-4 flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                 <ShareButton title={part.name} text={`Mira este repuesto: ${part.name}`} url={`/parts/${part.id}`} />
-              </div>
               <Alert>
                 <Wallet className="h-4 w-4" />
                 <AlertTitle>Métodos de Pago</AlertTitle>
