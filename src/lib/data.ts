@@ -166,12 +166,10 @@ export function getParts(
     vehicleModel?: string;
   } = {}
 ) {
-  const sanitizedParts = allParts.map(part => ({
+  let filteredParts = allParts.map(part => ({
     ...part,
     imageUrls: sanitizeImageUrls(part.imageUrls),
   }));
-
-  let filteredParts = sanitizedParts;
 
   if (filters.query) {
     const searchWords = filters.query.toLowerCase().split(' ').filter(Boolean);
