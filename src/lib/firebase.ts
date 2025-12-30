@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -9,7 +9,9 @@ const firebaseConfig = {
     "measurementId": "",
     "messagingSenderId": "740752463489"
 };
-  
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+// Initialize Firebase App
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = getFirestore(app);
+
+export { db };
