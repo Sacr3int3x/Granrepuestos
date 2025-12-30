@@ -172,16 +172,55 @@ export function getParts(
   }));
 
   if (filters.query) {
-    const searchWords = filters.query.toLowerCase().split(' ').filter(Boolean);
-    filteredParts = filteredParts.filter((part) => {
-        const partText = [
-            part.name.toLowerCase(),
-            part.sku.toLowerCase(),
-            part.description?.toLowerCase() || ''
-        ].join(' ');
+    const spanishStopWords = new Set(['de', 'a', 'la', 'el', 'los', 'las', 'un', 'una', 'unos', 'unas', 'y', 'o', 'pero', 'por', 'para', 'con', 'sin', 'sobre']);
+    const searchWords = filters.query.toLowerCase().split(' ').filter(word => word && !spanishStopWords.has(word));
 
-        return searchWords.every(word => partText.includes(word));
-    });
+    if (searchWords.length > 0) {
+      filteredParts = filteredParts
+        .map(part => {
+          let score = 0;
+          const name = part.name.toLowerCase();
+          const sku = part.sku.toLowerCase();
+          const description = part.description?.toLowerCase() || '';
+
+          const fullSearchPhrase = searchWords.join(' ');
+
+          // Highest score for exact SKU match
+          if (sku === fullSearchPhrase) {
+            score += 100;
+          }
+          
+          // High score for exact name match
+          if (name === fullSearchPhrase) {
+            score += 80;
+          }
+
+          searchWords.forEach(word => {
+            // High score for whole word match in name
+            if (name.split(' ').includes(word)) {
+              score += 20;
+            }
+            // Medium score for partial match in name or sku
+            else if (name.includes(word)) {
+              score += 10;
+            }
+
+            if (sku.includes(word)) {
+              score += 10;
+            }
+
+            // Low score for match in description
+            if (description.includes(word)) {
+              score += 1;
+            }
+          });
+
+          return { part, score };
+        })
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(item => item.part);
+    }
   }
 
   if (filters.brand) {
