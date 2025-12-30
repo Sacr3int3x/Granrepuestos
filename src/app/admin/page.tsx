@@ -19,19 +19,32 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (!user) {
+        // If there's no user, just redirect to login
+        router.push('/login');
+      } else if (user.isAnonymous) {
+        // If the user is anonymous, sign them out and then redirect.
+        // This prevents the admin login from being affected by the anonymous session.
+        signOut(auth).then(() => {
+          router.push('/login');
+        });
+      }
+      // If the user is not anonymous, we assume they are an admin or trying to be.
+      // The security rules on the backend will be the ultimate gatekeeper.
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, auth]);
 
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
     }
+    // After logout, always redirect to the login page
     router.push('/login');
   };
 
-  if (isUserLoading || !user) {
+  // Show a loading skeleton while checking for the user's auth state.
+  if (isUserLoading || !user || user.isAnonymous) {
     return (
       <div className="container mx-auto py-10">
         <div className="space-y-4">
@@ -45,6 +58,7 @@ export default function AdminPage() {
       </div>
     );
   }
+
 
   return (
     <div className="container mx-auto py-10">

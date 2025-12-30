@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import AddToCartButton from "@/app/parts/components/add-to-cart-button";
 import { Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { db } from "@/lib/firebase";
+import { getDb } from "@/lib/firebase";
 import { Metadata, ResolvingMetadata } from "next";
 import BrandPageClient from "./page.client";
 
@@ -19,6 +20,7 @@ type Props = {
 
 // Function to get brand data from Firestore
 async function getBrand(id: string): Promise<Brand | null> {
+    const db = getDb();
     const brandRef = doc(db, 'brands', id);
     const brandSnap = await getDoc(brandRef);
     if (!brandSnap.exists()) {
@@ -29,6 +31,7 @@ async function getBrand(id: string): Promise<Brand | null> {
 
 // Function to get parts for a brand
 async function getPartsForBrand(brandId: string): Promise<Part[]> {
+    const db = getDb();
     const partsQuery = query(collection(db, 'parts'), where('brandId', '==', brandId));
     const partsSnapshot = await getDocs(partsQuery);
     return partsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Part[];

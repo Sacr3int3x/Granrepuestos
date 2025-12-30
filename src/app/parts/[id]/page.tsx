@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { doc, getDoc, collection, query, where, getDocs, limit } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories } from "@/lib/data";
-import { db } from "@/lib/firebase";
+import { getDb } from "@/lib/firebase";
 import { Metadata, ResolvingMetadata } from 'next';
 import PartDetailPageClient from "./page.client";
 
@@ -12,6 +12,7 @@ type Props = {
 }
 
 async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null, relatedParts: Part[] } | null> {
+    const db = getDb();
     const partRef = doc(db, 'parts', id);
     const partSnap = await getDoc(partRef);
 

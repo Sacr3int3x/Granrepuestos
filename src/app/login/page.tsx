@@ -58,8 +58,10 @@ export default function LoginPage() {
       case AuthErrorCodes.INVALID_EMAIL:
         return "El formato del correo electrónico no es válido.";
       case AuthErrorCodes.USER_DELETED:
+      case "auth/user-not-found": // Legacy code
         return "El usuario no ha sido encontrado.";
       case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
+      case "auth/wrong-password": // Legacy code
         return "Credenciales incorrectas. Por favor, revisa tu correo y contraseña.";
       case AuthErrorCodes.EMAIL_EXISTS:
         return "Este correo electrónico ya está en uso. Intenta iniciar sesión.";
@@ -72,6 +74,15 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    if (!auth) {
+        toast({
+            variant: "destructive",
+            title: "Error de configuración",
+            description: "El servicio de autenticación no está disponible."
+        });
+        setIsLoading(false);
+        return;
+    }
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({

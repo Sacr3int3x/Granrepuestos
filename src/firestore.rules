@@ -5,10 +5,12 @@ service cloud.firestore {
 
     /**
      * @description Checks if the requesting user is an admin.
+     * Admin status is granted if the user's UID exists as a document ID in the `/admins` collection.
+     * This provides a secure, server-side way to manage roles without exposing admin logic to the client.
+     * The hardcoded UID is a failsafe for the primary developer account.
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      // The user is an admin if their UID exists in the /admins collection or matches a hardcoded UID.
       return exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || request.auth.uid == "txlhGIPOaQR1zISpvJwMgBzdBIt2";
     }
 
