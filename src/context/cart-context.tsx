@@ -19,8 +19,6 @@ interface CartContextType {
   cartTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
-  exchangeRate: number;
-  setExchangeRate: (rate: number) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,29 +26,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const fetchExchangeRate = async () => {
-      try {
-        const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        
-        if (data && data.promedio) {
-          setExchangeRate(data.promedio);
-        }
-      } catch (error) {
-        console.error("Failed to fetch exchange rate:", error);
-        // Fallback or old value from localStorage will be used
-      }
-    };
-
-    fetchExchangeRate();
-
     try {
       const storedCart = localStorage.getItem("cart");
       if (storedCart) {
@@ -118,8 +96,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         cartTotal,
         isCartOpen,
         setIsCartOpen,
-        exchangeRate,
-        setExchangeRate,
       }}
     >
       {children}

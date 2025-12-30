@@ -10,7 +10,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { sanitizeImageUrls } from '@/lib/data';
 import AddToCartButton from './add-to-cart-button';
-import { useCart } from '@/context/cart-context';
 
 interface RelatedPartsProps {
   parts: Part[];
@@ -18,7 +17,6 @@ interface RelatedPartsProps {
 
 export default function RelatedParts({ parts }: RelatedPartsProps) {
   const firestore = useFirestore();
-  const { exchangeRate } = useCart();
   
   const brandsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -84,11 +82,6 @@ export default function RelatedParts({ parts }: RelatedPartsProps) {
                 <CardFooter className="p-4 flex justify-between items-center mt-auto">
                     <div>
                         <p className="text-lg font-bold text-primary">€{part.price.toFixed(2)}</p>
-                        {exchangeRate > 0 && (
-                            <p className="text-sm text-muted-foreground">
-                            Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </p>
-                        )}
                     </div>
                   <AddToCartButton part={fullPart as Part} size="icon" />
                 </CardFooter>

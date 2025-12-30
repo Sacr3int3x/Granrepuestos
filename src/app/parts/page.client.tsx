@@ -21,7 +21,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescri
 import { Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { useCart } from "@/context/cart-context";
 import { collection } from 'firebase/firestore';
 import { getParts, getCategories, getVehicleBrands, sanitizeImageUrls } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,7 +35,6 @@ function PartsPageClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { exchangeRate } = useCart();
   
   const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
   const query = searchParams.get('query') || undefined;
@@ -302,11 +300,6 @@ function PartsPageClient() {
                             <CardFooter className="p-4 flex justify-between items-center mt-auto">
                                 <div>
                                     <p className="text-lg font-bold text-primary">€{part.price.toFixed(2)}</p>
-                                    {exchangeRate > 0 && (
-                                        <p className="text-sm text-muted-foreground">
-                                        Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </p>
-                                    )}
                                 </div>
                                 <AddToCartButton part={fullPart} size="icon" />
                             </CardFooter>

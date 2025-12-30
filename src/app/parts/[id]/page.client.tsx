@@ -27,7 +27,6 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import ShareButton from "../components/share-button";
 import Script from "next/script";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/context/cart-context";
 import RelatedParts from "../components/related-parts";
 import { Separator } from "@/components/ui/separator";
 
@@ -35,7 +34,6 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
   
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
-  const { exchangeRate } = useCart();
 
   const staticData = useMemo(() => ({
       vehicleBrands: getVehicleBrands(),
@@ -229,11 +227,6 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
            <div className="my-6">
                 <div>
                   <p className="text-4xl font-bold text-primary">€{part.price.toFixed(2)}</p>
-                  {exchangeRate > 0 && (
-                    <p className="text-lg text-muted-foreground">
-                      Aprox. Bs. {(part.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                  )}
                   <p className={cn("mt-1", part.stock > 0 ? "text-green-600" : "text-red-600")}>
                     {part.stock > 0 ? `${part.stock} en stock` : "Agotado"}
                   </p>
