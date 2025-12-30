@@ -75,7 +75,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
         }
       });
       // Reset page to 1 when filters change
-      if (!params.has('page')) {
+      if (!('page' in paramsToUpdate)) {
         params.set('page', '1');
       }
       return params.toString();
@@ -84,7 +84,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
   );
   
   const handleStateChange = (key: string) => (value: string) => {
-    const newState: any = { ...localState, [key]: value };
+    const newState: any = { ...localState, [key]: value, page: 1 };
     if (key === 'vehicleBrand') {
         newState.vehicleModel = 'all'; // Reset model when brand changes
     }
@@ -97,7 +97,7 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
   };
 
   const handleApplyFilters = () => {
-    router.push(`${pathname}?${createQueryString(localState)}`);
+    router.push(`${pathname}?${createQueryString({...localState, page: 1})}`);
     if(onApply) onApply();
   }
 
@@ -107,9 +107,9 @@ export default function Filters({ categories, vehicleBrands, isMobile = false, o
     const query = formData.get('query') as string;
     
     if (isMobile) {
-        setLocalState(prev => ({...prev, query}));
+        setLocalState(prev => ({...prev, query, page: 1}));
     } else {
-        router.push(pathname + '?' + createQueryString({ ...localState, query: query || undefined }));
+        router.push(pathname + '?' + createQueryString({ ...localState, query: query || undefined, page: 1 }));
     }
   };
 

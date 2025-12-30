@@ -117,7 +117,7 @@ function PartsPageClient() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const query = formData.get('query') as string;
-    router.push(pathname + '?' + createQueryString({ query: query || undefined }));
+    router.push(pathname + '?' + createQueryString({ query: query || undefined, page: 1 }));
   };
 
   const createPageURL = (pageNumber: number | string) => {
