@@ -9,7 +9,8 @@ import CartSheet from "@/components/cart/cart-sheet";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, ShoppingCart } from "lucide-react";
+import CartButton from "@/components/cart/cart-button";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -74,6 +75,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -101,6 +103,7 @@ export default function RootLayout({
                      </a>
                    </Button>
                 </div>
+                <CartButton />
                 <CartSheet />
             </CartProviderWrapper>
           <Toaster />
