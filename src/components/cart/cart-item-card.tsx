@@ -27,17 +27,21 @@ export default function CartItemCard({ item }: CartItemCardProps) {
       variant: "destructive",
     });
   };
+  
+  const firstImage = (item.part.imageUrls && item.part.imageUrls.length > 0) ? item.part.imageUrls[0] : null;
 
   return (
     <div className="flex items-start gap-4">
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border">
-        <Image
-          src={item.part.imageUrls[0]}
-          alt={item.part.name}
-          fill
-          className="object-cover"
-          sizes="80px"
-        />
+        {firstImage ? (
+            <Image
+            src={firstImage}
+            alt={item.part.name}
+            fill
+            className="object-cover"
+            sizes="80px"
+            />
+        ) : <div className="h-full w-full bg-muted" />}
       </div>
       <div className="flex-1">
         <h3 className="font-semibold text-sm line-clamp-2">{item.part.name}</h3>

@@ -1,14 +1,7 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { doc, collection, query, where, getDoc, getDocs, DocumentReference, Firestore, initializeFirestore } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
 import { getCategories } from "@/lib/data";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import AddToCartButton from "@/app/parts/components/add-to-cart-button";
-import { Globe } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { getDb } from "@/lib/firebase";
 import { Metadata, ResolvingMetadata } from "next";
 import BrandPageClient from "./page.client";

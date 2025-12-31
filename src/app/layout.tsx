@@ -7,7 +7,6 @@ import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
-import CartButton from "@/components/cart/cart-button";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -85,26 +84,25 @@ export default function RootLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
-            <CartProviderWrapper>
-                <div className="relative flex min-h-screen flex-col">
-                    <Header />
-                    <main className="flex-1 animate-fade-in">{children}</main>
-                    <Footer />
-                </div>
-                 <CartButton />
-                <div className="fixed bottom-28 right-4 z-50">
-                   <Button
-                    size="icon"
-                    className="h-14 w-14 rounded-full shadow-lg bg-green-600 hover:bg-green-700"
-                    asChild
-                   >
-                     <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-                       <MessageSquare className="h-6 w-6 text-white" />
-                     </a>
-                   </Button>
-                </div>
-            </CartProviderWrapper>
-            <Toaster />
+          <CartProviderWrapper>
+            <div className="relative flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1 animate-fade-in">{children}</main>
+              <Footer />
+            </div>
+            <div className="fixed bottom-28 right-4 z-50">
+              <Button
+                size="icon"
+                className="h-14 w-14 rounded-full shadow-lg bg-green-600 hover:bg-green-700"
+                asChild
+              >
+                <a href="https://wa.me/584120177075" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+                  <MessageSquare className="h-6 w-6 text-white" />
+                </a>
+              </Button>
+            </div>
+          </CartProviderWrapper>
+          <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>
