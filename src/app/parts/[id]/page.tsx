@@ -59,7 +59,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { part, brand } = await getPartData(params.id);
+  const { id } = params;
+  const { part, brand } = await getPartData(id);
 
   const previousImages = (await parent).openGraph?.images || [];
   const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
@@ -82,7 +83,8 @@ export async function generateMetadata(
 
 
 export default async function PartDetailPage({ params }: Props) {
-    const { part, brand, category, relatedParts } = await getPartData(params.id);
+    const { id } = params;
+    const { part, brand, category, relatedParts } = await getPartData(id);
     
     return <PartDetailPageClient part={part} brand={brand} category={category} relatedParts={relatedParts} />;
 }

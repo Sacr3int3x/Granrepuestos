@@ -35,7 +35,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { brand } = await getBrandData(params.id);
+  const { id } = params;
+  const { brand } = await getBrandData(id);
 
   return {
     title: `${brand.name} | GranRepuestos`,
@@ -44,7 +45,8 @@ export async function generateMetadata(
 }
 
 export default async function BrandDetailPage({ params }: Props) {
-    const { brand, parts, categories } = await getBrandData(params.id);
+    const { id } = params;
+    const { brand, parts, categories } = await getBrandData(id);
 
     return <BrandPageClient brand={brand} parts={parts} categories={categories} />;
 }
