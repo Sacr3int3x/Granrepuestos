@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -37,6 +36,7 @@ export default function CartItemCard({ item }: CartItemCardProps) {
           alt={item.part.name}
           fill
           className="object-cover"
+          sizes="80px"
         />
       </div>
       <div className="flex-1">

@@ -7,8 +7,9 @@ import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
-import { Button } from "@/components/ui/button";
+import CartButton from "@/components/cart/cart-button";
 import { MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -90,6 +91,7 @@ export default function RootLayout({
                     <main className="flex-1 animate-fade-in">{children}</main>
                     <Footer />
                 </div>
+                 <CartButton />
                 <div className="fixed bottom-28 right-4 z-50">
                    <Button
                     size="icon"
