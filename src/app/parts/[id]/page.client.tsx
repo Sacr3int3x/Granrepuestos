@@ -51,10 +51,10 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
       return
     }
  
-    setCurrent(api.selectedScrollSnap())
+    setCurrent(api.selectedScrollSnap() + 1)
  
     api.on("select", () => {
-      setCurrent(api.selectedScrollSnap())
+      setCurrent(api.selectedScrollSnap() + 1)
     })
   }, [api]);
 
@@ -199,7 +199,7 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                         <div
                             className={cn(
                             "aspect-square relative rounded-md overflow-hidden cursor-pointer border-2",
-                            index === current ? "border-primary" : "border-transparent opacity-60 hover:opacity-100 transition-opacity"
+                            (index + 1) === current ? "border-primary" : "border-transparent opacity-60 hover:opacity-100 transition-opacity"
                             )}
                             onClick={() => onThumbClick(index)}
                         >

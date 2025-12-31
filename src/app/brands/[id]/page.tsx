@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
