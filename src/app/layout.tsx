@@ -15,7 +15,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "GranRepuestos: Repuestos para Carros en Venezuela - Catálogo Online",
   description: "Encuentra repuestos originales y de calidad para tu carro en Venezuela. Catálogo online con envíos a nivel nacional desde Guatire. ¡Cotiza por WhatsApp!",
-  keywords: ["repuestos para carros", "repuestos en venezuela", "granrepuestos", "tienda de repuestos", "guatire", "caracas", "repuestos originales"],
+  keywords: ["repuestos para carros", "repuestos en venezuela", "granrepuestos", "tienda de repuestos", "guatire", "caracas", "repuestos originales", "venta de repuestos guatire", "tienda de repuestos en guatire", "repuestos toyota guatire", "repuestos chevrolet guatire"],
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "AutoPartsStore",
+    "@type": ["AutoPartsStore", "LocalBusiness"],
     "name": "GranRepuestos",
     "image": "https://i.postimg.cc/8CLbC2vM/Logo-GR.png",
     "url": "https://www.granrepuestos.com",
@@ -38,6 +38,11 @@ export default function RootLayout({
       "addressRegion": "Miranda",
       "postalCode": "1221",
       "addressCountry": "VE"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 10.4695,
+      "longitude": -66.5432
     },
     "areaServed": [
       {
@@ -73,7 +78,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>" />
+        <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🚗%3c/text%3e%3c/svg%3e" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

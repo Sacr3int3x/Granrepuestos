@@ -1,4 +1,3 @@
-
 import { notFound } from "next/navigation";
 import { doc, getDoc, collection, query, where, getDocs, limit } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
@@ -64,15 +63,19 @@ export async function generateMetadata(
 
   const previousImages = (await parent).openGraph?.images || [];
   const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
+  const title = `${part.name} - ${brand?.name || 'GranRepuestos'}`;
+  const description = part.description ? part.description.substring(0, 155) : `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada para tu vehículo en Guatire, Venezuela.`;
+
 
   return {
-    title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
-    description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+    title,
+    description,
+    keywords: [part.name, brand?.name || '', part.sku, "repuestos guatire", "repuestos venezuela"],
     openGraph: {
       images: [imageUrl, ...previousImages],
       type: 'website',
-      title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
-      description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+      title,
+      description,
       price: {
         amount: part.price.toString(),
         currency: 'EUR',

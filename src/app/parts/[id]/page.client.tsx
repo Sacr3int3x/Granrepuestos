@@ -113,12 +113,47 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
     },
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "https://www.granrepuestos.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Repuestos",
+        "item": "https://www.granrepuestos.com/parts"
+      },
+      ...(category ? [{
+        "@type": "ListItem",
+        "position": 3,
+        "name": category.name,
+        "item": `https://www.granrepuestos.com/parts?category=${category.id}`
+      }] : []),
+      {
+        "@type": "ListItem",
+        "position": category ? 4 : 3,
+        "name": part.name
+      }
+    ]
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Script
             id="product-schema"
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+        <Script
+          id="breadcrumb-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
         <Breadcrumb className="mb-6">
             <BreadcrumbList>
