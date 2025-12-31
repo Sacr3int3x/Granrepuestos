@@ -11,61 +11,7 @@ type Props = {
     params: { id: string }
 }
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const id = params.id;
-  if (!id) return { title: "Error", description: "ID de repuesto no válido." };
-
-  const db = getDb();
-  const partRef = doc(db, 'parts', id);
-  const partSnap = await getDoc(partRef);
-
-  if (!partSnap.exists()) {
-    return {
-      title: "Repuesto No Encontrado",
-      description: "El repuesto que buscas no existe o fue eliminado.",
-    }
-  }
-  
-  const part = { ...partSnap.data(), id: partSnap.id } as Part;
-  
-  let brand: Brand | null = null;
-  if (part.brandId) {
-    const brandRef = doc(db, 'brands', part.brandId);
-    const brandSnap = await getDoc(brandRef);
-    if (brandSnap.exists()) {
-      brand = { ...brandSnap.data(), id: brandSnap.id } as Brand;
-    }
-  }
-
-  const previousImages = (await parent).openGraph?.images || [];
-  const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
-
-  return {
-    title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
-    description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
-    openGraph: {
-      images: [imageUrl, ...previousImages],
-      type: 'website',
-      title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
-      description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
-      price: {
-        amount: part.price.toString(),
-        currency: 'EUR',
-      },
-    },
-  }
-}
-
-
-export default async function PartDetailPage({ params }: Props) {
-    const id = params.id;
-    if(!id) {
-        notFound();
-    }
-    
+async function getPartData(id: string) {
     const db = getDb();
     const partRef = doc(db, 'parts', id);
     const partSnap = await getDoc(partRef);
@@ -104,6 +50,39 @@ export default async function PartDetailPage({ params }: Props) {
             .filter(p => (p as Part).id !== id)
             .slice(0, 4) as Part[];
     }
+
+    return { part, brand: brandData, category: categoryData, relatedParts };
+}
+
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { part, brand } = await getPartData(params.id);
+
+  const previousImages = (await parent).openGraph?.images || [];
+  const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
+
+  return {
+    title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
+    description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+    openGraph: {
+      images: [imageUrl, ...previousImages],
+      type: 'website',
+      title: `${part.name} - ${brand?.name || 'GranRepuestos'}`,
+      description: part.description || `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada.`,
+      price: {
+        amount: part.price.toString(),
+        currency: 'EUR',
+      },
+    },
+  }
+}
+
+
+export default async function PartDetailPage({ params }: Props) {
+    const { part, brand, category, relatedParts } = await getPartData(params.id);
     
-    return <PartDetailPageClient part={part} brand={brandData} category={categoryData} relatedParts={relatedParts} />;
+    return <PartDetailPageClient part={part} brand={brand} category={category} relatedParts={relatedParts} />;
 }

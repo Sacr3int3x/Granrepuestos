@@ -11,42 +11,11 @@ type Props = {
     params: { id: string };
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const id = params.id;
-  if (!id) return { title: "Error", description: "ID de marca no válido." };
-
-  const db = getDb();
-  const brandRef = doc(db, 'brands', id);
-  const brandSnap = await getDoc(brandRef);
-
-  if (!brandSnap.exists()) {
-    return {
-      title: "Marca No Encontrada",
-      description: "La marca que buscas no existe o fue eliminada.",
-    }
-  }
-  
-  const brand = { ...brandSnap.data(), id: brandSnap.id } as Brand;
-
-  return {
-    title: `${brand.name} | GranRepuestos`,
-    description: brand.description || `Catálogo de repuestos de la marca ${brand.name} en GranRepuestos.`,
-  }
-}
-
-export default async function BrandDetailPage({ params }: Props) {
-    const id = params.id;
-    if (!id) {
-        notFound();
-    }
-
+async function getBrandData(id: string) {
     const db = getDb();
     const brandRef = doc(db, 'brands', id);
     const brandSnap = await getDoc(brandRef);
-    
+
     if (!brandSnap.exists()) {
         notFound();
     }
@@ -58,6 +27,24 @@ export default async function BrandDetailPage({ params }: Props) {
     const parts = partsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Part[];
     
     const categories = getCategories();
+    
+    return { brand, parts, categories };
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { brand } = await getBrandData(params.id);
+
+  return {
+    title: `${brand.name} | GranRepuestos`,
+    description: brand.description || `Catálogo de repuestos de la marca ${brand.name} en GranRepuestos.`,
+  }
+}
+
+export default async function BrandDetailPage({ params }: Props) {
+    const { brand, parts, categories } = await getBrandData(params.id);
 
     return <BrandPageClient brand={brand} parts={parts} categories={categories} />;
 }
