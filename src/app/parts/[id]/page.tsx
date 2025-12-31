@@ -11,7 +11,7 @@ type Props = {
     params: { id: string }
 }
 
-async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null, relatedParts: Part[] } | null> {
+async function getPartData(id: string): Promise<{ part: Part; brand: Brand | null; category: Category | null, relatedParts: Part[] } | null> {
     if (!id) return null;
     const db = getDb();
     const partRef = doc(db, 'parts', id);
@@ -56,12 +56,13 @@ async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: B
     return { part, brand: brandData, category: categoryData, relatedParts };
 }
 
+
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const id = params.id;
-  const data = await getPartAndRelatedData(id);
+  const data = await getPartData(id);
 
   if (!data) {
     return {
@@ -93,7 +94,11 @@ export async function generateMetadata(
 
 export default async function PartDetailPage({ params }: Props) {
     const { id } = params;
-    const data = await getPartAndRelatedData(id);
+    if(!id) {
+        notFound();
+    }
+    
+    const data = await getPartData(id);
 
     if (!data) {
         notFound();

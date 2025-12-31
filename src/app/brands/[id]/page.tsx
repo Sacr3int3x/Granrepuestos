@@ -53,6 +53,11 @@ export async function generateMetadata(
 
 export default async function BrandDetailPage({ params }: Props) {
     const { id } = params;
+    
+    if (!id) {
+        notFound();
+    }
+
     const brand = await getBrand(id);
     
     if (!brand) {
