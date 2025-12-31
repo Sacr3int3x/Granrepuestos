@@ -48,7 +48,7 @@ async function getPartAndRelatedData(id: string): Promise<{ part: Part; brand: B
         const relatedSnap = await getDocs(relatedQuery);
         relatedParts = relatedSnap.docs
             .map(doc => ({...doc.data(), id: doc.id}))
-            .filter(p => p.id !== id) // Ensure current part is not in the list
+            .filter(p => (p as Part).id !== id) // Ensure current part is not in the list
             .slice(0, 4) as Part[];
     }
 

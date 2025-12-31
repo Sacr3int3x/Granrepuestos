@@ -51,13 +51,14 @@ export async function generateMetadata(
 }
 
 export default async function BrandDetailPage({ params }: Props) {
-    const brand = await getBrand(params.id);
+    const { id } = params;
+    const brand = await getBrand(id);
     
     if (!brand) {
         notFound();
     }
 
-    const parts = await getPartsForBrand(params.id);
+    const parts = await getPartsForBrand(id);
     const categories = getCategories();
 
     return <BrandPageClient brand={brand} parts={parts} categories={categories} />;
