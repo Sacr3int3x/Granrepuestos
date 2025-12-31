@@ -90,8 +90,8 @@ export async function generateMetadata(
 }
 
 
-export default async function PartDetailPage({ params }: { params: { id: string }}) {
-    const id = params.id;
+export default async function PartDetailPage({ params }: Props) {
+    const { id } = params;
     const data = await getPartAndRelatedData(id);
 
     if (!data) {
