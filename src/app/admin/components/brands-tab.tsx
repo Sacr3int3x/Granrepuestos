@@ -204,7 +204,7 @@ export default function BrandsTab() {
                 <DialogHeader>
                     <DialogTitle>{editingBrand ? "Editar Marca" : "Añadir Nueva Marca"}</DialogTitle>
                     <DialogDescription>
-                    {editingBrand ? "Edita los detalles de la marca." : "Rellena los detalles para añadir una nueva marca."}
+                    {editingBrand ? "Edita los detalles de la marca para actualizarla en la base de datos." : "Rellena los detalles para añadir una nueva marca al catálogo."}
                     </DialogDescription>
                 </DialogHeader>
                 <BrandForm

@@ -276,7 +276,7 @@ export default function ProductsTab() {
             <DialogHeader>
               <DialogTitle>{editingPart ? "Editar Repuesto" : "Añadir Nuevo Repuesto"}</DialogTitle>
               <DialogDescription>
-                {editingPart ? "Edita los detalles del repuesto." : "Rellena los detalles para añadir un nuevo repuesto."}
+                {editingPart ? "Edita los detalles del repuesto para actualizarlo en el catálogo." : "Rellena los detalles para añadir un nuevo repuesto al catálogo."}
               </DialogDescription>
             </DialogHeader>
             <ProductForm

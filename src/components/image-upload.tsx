@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -129,5 +128,3 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }
 
 export default ImageUpload;
-
-    

@@ -5,12 +5,10 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
-import CartSheet from "@/components/cart/cart-sheet";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, ShoppingCart } from "lucide-react";
-import CartButton from "@/components/cart/cart-button";
+import { MessageSquare } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -103,10 +101,8 @@ export default function RootLayout({
                      </a>
                    </Button>
                 </div>
-                <CartButton />
-                <CartSheet />
             </CartProviderWrapper>
-          <Toaster />
+            <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>
