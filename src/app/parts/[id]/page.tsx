@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import { doc, getDoc, collection, query, where, getDocs, limit } from "firebase/firestore";
 import type { Part, Brand, Category } from "@/lib/types";
@@ -7,8 +8,8 @@ import { Metadata, ResolvingMetadata } from 'next';
 import PartDetailPageClient from "./page.client";
 
 type Props = {
-    params: { id: string }
-}
+    params: Promise<{ id: string }>;
+};
 
 async function getPartData(id: string) {
     const db = getDb();
@@ -16,7 +17,7 @@ async function getPartData(id: string) {
     const partSnap = await getDoc(partRef);
 
     if (!partSnap.exists()) {
-      notFound();
+      return null;
     }
     
     const part = { ...partSnap.data(), id: partSnap.id } as Part;
@@ -58,9 +59,14 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = params;
-  const { part, brand } = await getPartData(id);
+  const { id } = await params;
+  const data = await getPartData(id);
 
+  if (!data) {
+      return { title: 'Repuesto no encontrado | GranRepuestos' };
+  }
+
+  const { part, brand } = data;
   const previousImages = (await parent).openGraph?.images || [];
   const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
   const title = `${part.name} - ${brand?.name || 'GranRepuestos'}`;
@@ -86,8 +92,12 @@ export async function generateMetadata(
 
 
 export default async function PartDetailPage({ params }: Props) {
-    const { id } = params;
-    const { part, brand, category, relatedParts } = await getPartData(id);
+    const { id } = await params;
+    const data = await getPartData(id);
     
-    return <PartDetailPageClient part={part} brand={brand} category={category} relatedParts={relatedParts} />;
+    if (!data) {
+        notFound();
+    }
+
+    return <PartDetailPageClient part={data.part} brand={data.brand} category={data.category} relatedParts={data.relatedParts} />;
 }

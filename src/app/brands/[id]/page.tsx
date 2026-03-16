@@ -8,7 +8,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import BrandPageClient from "./page.client";
 
 type Props = {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 };
 
 async function getBrandData(id: string) {
@@ -17,7 +17,7 @@ async function getBrandData(id: string) {
     const brandSnap = await getDoc(brandRef);
 
     if (!brandSnap.exists()) {
-        notFound();
+        return null;
     }
 
     const brand = { ...brandSnap.data(), id: brandSnap.id } as Brand;
@@ -35,8 +35,14 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = params;
-  const { brand } = await getBrandData(id);
+  const { id } = await params;
+  const data = await getBrandData(id);
+
+  if (!data) {
+      return { title: 'Marca no encontrada | GranRepuestos' };
+  }
+
+  const { brand } = data;
 
   return {
     title: `${brand.name} | GranRepuestos`,
@@ -45,8 +51,12 @@ export async function generateMetadata(
 }
 
 export default async function BrandDetailPage({ params }: Props) {
-    const { id } = params;
-    const { brand, parts, categories } = await getBrandData(id);
+    const { id } = await params;
+    const data = await getBrandData(id);
 
-    return <BrandPageClient brand={brand} parts={parts} categories={categories} />;
+    if (!data) {
+        notFound();
+    }
+
+    return <BrandPageClient brand={data.brand} parts={data.parts} categories={data.categories} />;
 }

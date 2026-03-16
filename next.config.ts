@@ -58,6 +58,12 @@ const nextConfig: NextConfig = {
         hostname: 'www.lucasautomotive.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
