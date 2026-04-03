@@ -289,7 +289,105 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section id="faq" aria-labelledby="faq-heading" className="py-16 lg:py-24 bg-card border-t">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "¿Los repuestos de GranRepuestos son originales?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sí, todos nuestros repuestos son 100% originales y certificados de fabricantes líderes. Nuestra política es Cero imitaciones, Cero chino. Si no es original, no lo vendemos."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "¿Hacen envíos a toda Venezuela?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sí, realizamos envíos a todo el territorio nacional a través de MRW, Zoom y Tealca bajo la modalidad de Cobro a Destino. Una vez despachado, te enviamos el número de guía para seguimiento."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "¿Aceptan pago en bolívares?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Aceptamos múltiples métodos de pago. Para más detalles sobre los métodos disponibles y tasas de cambio, contáctanos directamente por WhatsApp al +58 412-0177075."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "¿Hay descuento si pago con Binance?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sí, ofrecemos un 15% de descuento en tu compra total si pagas con Binance Pay. Al hacer tu pedido por WhatsApp, solicita el descuento Binance."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "¿Cómo cotizo un repuesto?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Puedes cotizar de tres formas: (1) Buscando el repuesto en nuestro catálogo online y añadiéndolo al carrito, (2) escribiéndonos por WhatsApp al +58 412-0177075 con el nombre y modelo de tu vehículo, o (3) enviando un correo a soporte@granrepuestos.com."
+                  }
+                }
+              ]
+            })
+          }}
+        />
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold font-headline">
+              Preguntas Frecuentes
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Todo lo que necesitas saber antes de comprar.
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto divide-y divide-border rounded-xl border bg-background overflow-hidden">
+            {[
+              {
+                q: "¿Los repuestos son originales?",
+                a: "Sí, todos nuestros repuestos son 100% originales y certificados de fabricantes líderes. Nuestra política es Cero imitaciones, Cero chino. Si no es original, no lo vendemos."
+              },
+              {
+                q: "¿Hacen envíos a toda Venezuela?",
+                a: "Sí, enviamos a todo el territorio nacional por MRW, Zoom y Tealca bajo la modalidad de Cobro a Destino. Al despachar tu pedido, te enviamos el número de guía para seguimiento en tiempo real."
+              },
+              {
+                q: "¿Aceptan pago en bolívares?",
+                a: "Aceptamos múltiples formas de pago. Para detalles sobre métodos disponibles y tasas vigentes, contáctanos por WhatsApp al +58 412-0177075."
+              },
+              {
+                q: "¿Hay descuento si pago con Binance?",
+                a: "¡Sí! Ofrecemos un 15% de descuento en tu compra total pagando con Binance Pay. Al hacer tu pedido por WhatsApp, solo solicita el descuento Binance."
+              },
+              {
+                q: "¿Cómo cotizo un repuesto?",
+                a: "Puedes buscar el repuesto en nuestro catálogo online y añadirlo al carrito para enviarnos una cotización automática por WhatsApp. También puedes escribirnos directamente al +58 412-0177075."
+              },
+            ].map((item, i) => (
+              <details key={i} className="group p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-foreground list-none">
+                  {item.q}
+                  <span className="ml-4 text-primary text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
+
       <section id="contact" aria-labelledby="contact-heading" className="py-16 lg:py-24 bg-background animate-fade-in-up [animation-delay:1.4s]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
