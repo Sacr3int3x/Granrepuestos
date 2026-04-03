@@ -14,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CartItemCard from "./cart-item-card";
-import { ShoppingCart, PackageX, Mail, MessageSquare, DollarSign } from "lucide-react";
+import { ShoppingCart, PackageX, Mail, MessageSquare, Euro } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
@@ -34,14 +34,14 @@ export default function CartSheet() {
     
     cartItems.forEach(item => {
       const subtotal = (item.part.price * item.quantity).toFixed(2);
-      message += `• ${item.part.name}\n  SKU: ${item.part.sku} | Cantidad: ${item.quantity} | $${item.part.price.toFixed(2)} c/u | Subtotal: $${subtotal}\n\n`;
+      message += `• ${item.part.name}\n  SKU: ${item.part.sku} | Cantidad: ${item.quantity} | €${item.part.price.toFixed(2)} c/u | Subtotal: €${subtotal}\n\n`;
     });
     
-    message += `*Subtotal: $${cartTotal.toFixed(2)}*\n`;
+    message += `*Subtotal: €${cartTotal.toFixed(2)}*\n`;
     
     if (format === 'binance') {
-        message += `*Descuento Binance (15%): -$${(cartTotal * binanceDiscount).toFixed(2)}*\n`;
-        message += `*TOTAL A PAGAR: $${discountedTotal.toFixed(2)}*\n\n`;
+        message += `*Descuento Binance (15%): -€${(cartTotal * binanceDiscount).toFixed(2)}*\n`;
+        message += `*TOTAL A PAGAR: €${discountedTotal.toFixed(2)}*\n\n`;
         message += `Por favor, envíame el enlace de pago de Binance. ¡Gracias!`;
     } else {
         message += `\nQuedo a la espera de su respuesta. ¡Gracias! 😊`;
@@ -87,15 +87,15 @@ export default function CartSheet() {
                <div className="space-y-2">
                  <div className="flex justify-between items-center text-muted-foreground">
                     <span>Subtotal:</span>
-                    <span className="font-medium text-foreground">${cartTotal.toFixed(2)}</span>
+                    <span className="font-medium text-foreground">€{cartTotal.toFixed(2)}</span>
                  </div>
                  <div className="flex justify-between items-center text-amber-600">
                     <span>Descuento Binance (15%):</span>
-                    <span className="font-medium">-${(cartTotal * binanceDiscount).toFixed(2)}</span>
+                    <span className="font-medium">-€{(cartTotal * binanceDiscount).toFixed(2)}</span>
                  </div>
                  <div className="flex justify-between items-center font-bold text-lg border-t pt-2 mt-2">
                     <span>Total con Binance:</span>
-                    <span>${discountedTotal.toFixed(2)}</span>
+                    <span>€{discountedTotal.toFixed(2)}</span>
                 </div>
                </div>
                <div className="flex flex-col gap-3 pt-4">
@@ -103,7 +103,7 @@ export default function CartSheet() {
 
                 <Button asChild size="lg" onClick={handleSheetClose} className="bg-[#FCD535] hover:bg-[#FCD535]/90 text-slate-800 font-bold shadow-md h-12">
                     <a href={binanceUrl} target="_blank" rel="noopener noreferrer">
-                       <DollarSign className="mr-2 h-5 w-5"/>
+                       <Euro className="mr-2 h-5 w-5"/>
                        Pagar con Binance (15% OFF)
                     </a>
                 </Button>

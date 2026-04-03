@@ -1,6 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RotateCw, ShieldCheck } from "lucide-react";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Políticas de Compra, Devolución y Garantía | GranRepuestos",
+  description: "Conoce nuestras políticas de devolución y garantía. Compramos con seguridad en GranRepuestos, distribuidores de repuestos originales en Guatire, Venezuela.",
+  openGraph: {
+    title: "Políticas de Compra | GranRepuestos",
+    description: "Términos claros para una compra segura. Conoce nuestras políticas de devolución y garantía.",
+  },
+};
+
 
 export default function PoliciesPage() {
   return (

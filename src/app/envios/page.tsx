@@ -1,6 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, Package, Clock } from "lucide-react";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Envíos de Repuestos a toda Venezuela — MRW, Zoom, Tealca | GranRepuestos",
+  description: "Enviamos repuestos automotrices a todo el territorio venezolano por MRW, Zoom y Tealca. Despacho en 24-48 horas desde Guatire, Miranda. Cobro a destino.",
+  openGraph: {
+    title: "Envíos a toda Venezuela | GranRepuestos",
+    description: "Recibe tus repuestos originales en cualquier ciudad de Venezuela. Enviamos por MRW, Zoom y Tealca desde Guatire.",
+  },
+};
+
 
 export default function ShippingPage() {
   return (
