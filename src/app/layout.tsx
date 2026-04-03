@@ -12,8 +12,8 @@ import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "GranRepuestos — Repuestos Originales para tu Carro 🚗",
-  description: "Repuestos originales · Guatire, Venezuela · Envíos a todo el país · Cotiza por WhatsApp. ¡Cero imitaciones, Cero chino!",
+  title: "GranRepuestos",
+  description: "¡Cero imitación, Cero chino! Repuestos originales para tu carro en Venezuela. Envíos a todo el país desde Guatire.",
   keywords: ["repuestos para carros", "repuestos en venezuela", "granrepuestos", "tienda de repuestos", "guatire", "caracas", "repuestos originales", "venta de repuestos guatire", "tienda de repuestos en guatire", "repuestos toyota guatire", "repuestos chevrolet guatire", "repuestos miranda"],
   icons: {
     icon: [
