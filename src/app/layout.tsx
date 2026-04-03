@@ -12,18 +12,20 @@ import CartProviderWrapper from "@/components/cart/cart-provider-wrapper";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "GranRepuestos: Repuestos para Carros en Guatire - Catálogo Online",
-  description: "Encuentra repuestos originales y de calidad para tu carro en Venezuela. Catálogo online con envíos a nivel nacional desde Guatire. ¡Cotiza por WhatsApp!",
+  title: "GranRepuestos — Repuestos Originales para tu Carro 🚗",
+  description: "Repuestos originales · Guatire, Venezuela · Envíos a todo el país · Cotiza por WhatsApp. ¡Cero imitaciones, Cero chino!",
   keywords: ["repuestos para carros", "repuestos en venezuela", "granrepuestos", "tienda de repuestos", "guatire", "caracas", "repuestos originales", "venta de repuestos guatire", "tienda de repuestos en guatire", "repuestos toyota guatire", "repuestos chevrolet guatire", "repuestos miranda"],
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: '/favicon.png',
+    shortcut: '/favicon.ico',
   },
   openGraph: {
-    title: 'GranRepuestos — Repuestos Originales en Guatire, Venezuela',
-    description: 'Distribuidores de repuestos originales. Catálogo online con envíos a toda Venezuela. ¡Céro imitaciones, Cero chino!',
+    title: 'GranRepuestos — Repuestos Originales en Venezuela 🚗',
+    description: 'Repuestos originales para tu carro. Envíos a toda Venezuela. ¡Cotiza ya por WhatsApp!',
     url: 'https://www.granrepuestos.com',
     siteName: 'GranRepuestos',
     images: [{ url: 'https://i.postimg.cc/8CLbC2vM/Logo-GR.png', width: 1200, height: 630, alt: 'GranRepuestos Logo' }],
