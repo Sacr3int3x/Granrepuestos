@@ -15,7 +15,6 @@ export default function Footer() {
            <Link href="/politicas" className="text-muted-foreground hover:text-primary hover:underline">
             Políticas
           </Link>
-           <Link href="/admin" className="text-muted-foreground hover:text-primary hover:underline">Admin</Link>
         </div>
       </div>
     </footer>
