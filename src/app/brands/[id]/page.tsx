@@ -35,8 +35,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = await params;
-  const data = await getBrandData(id);
+  const resolvedParams = await params;
+  const data = await getBrandData(resolvedParams.id);
 
   if (!data) {
       return { title: 'Marca no encontrada | GranRepuestos' };
@@ -45,14 +45,14 @@ export async function generateMetadata(
   const { brand } = data;
 
   return {
-    title: `${brand.name} | GranRepuestos`,
-    description: brand.description || `Catálogo de repuestos de la marca ${brand.name} en GranRepuestos.`,
+    title: `${brand.name} | Repuestos Originales en GranRepuestos`,
+    description: brand.description || `Catálogo de repuestos de la marca ${brand.name} en GranRepuestos. Disponibles en Guatire con envíos nacionales.`,
   }
 }
 
 export default async function BrandDetailPage({ params }: Props) {
-    const { id } = await params;
-    const data = await getBrandData(id);
+    const resolvedParams = await params;
+    const data = await getBrandData(resolvedParams.id);
 
     if (!data) {
         notFound();

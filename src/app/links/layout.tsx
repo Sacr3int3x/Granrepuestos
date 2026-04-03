@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "../globals.css";
 import { Inter } from "next/font/google";
@@ -8,8 +9,8 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "GranRepuestos - Contacto",
-  description: "Enlaces de contacto y tienda de GranRepuestos.",
+  title: "GranRepuestos - Enlaces de Contacto",
+  description: "Accede rápidamente a nuestro catálogo, WhatsApp y redes sociales de GranRepuestos.",
 };
 
 export default function LinksLayout({
@@ -27,7 +28,7 @@ export default function LinksLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <FirebaseClientProvider>
-          {children}
+          <main>{children}</main>
           <Toaster />
         </FirebaseClientProvider>
       </body>

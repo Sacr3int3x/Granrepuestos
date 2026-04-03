@@ -54,13 +54,12 @@ async function getPartData(id: string) {
     return { part, brand: brandData, category: categoryData, relatedParts };
 }
 
-
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = await params;
-  const data = await getPartData(id);
+  const resolvedParams = await params;
+  const data = await getPartData(resolvedParams.id);
 
   if (!data) {
       return { title: 'Repuesto no encontrado | GranRepuestos' };
@@ -70,13 +69,12 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
   const imageUrl = part.imageUrls && part.imageUrls.length > 0 ? part.imageUrls[0] : '';
   const title = `${part.name} - ${brand?.name || 'GranRepuestos'}`;
-  const description = part.description ? part.description.substring(0, 155) : `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada para tu vehículo en Guatire, Venezuela.`;
-
+  const description = part.description ? part.description.substring(0, 155) : `Encuentra ${part.name} (SKU: ${part.sku}) en GranRepuestos. Calidad garantizada para tu vehículo en Guatire, Miranda.`;
 
   return {
     title,
     description,
-    keywords: [part.name, brand?.name || '', part.sku, "repuestos guatire", "repuestos venezuela"],
+    keywords: [part.name, brand?.name || '', part.sku, "repuestos guatire", "repuestos venezuela", "repuestos miranda"],
     openGraph: {
       images: [imageUrl, ...previousImages],
       type: 'website',
@@ -90,10 +88,9 @@ export async function generateMetadata(
   }
 }
 
-
 export default async function PartDetailPage({ params }: Props) {
-    const { id } = await params;
-    const data = await getPartData(id);
+    const resolvedParams = await params;
+    const data = await getPartData(resolvedParams.id);
     
     if (!data) {
         notFound();

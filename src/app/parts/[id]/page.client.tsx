@@ -113,47 +113,12 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
     },
   };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Inicio",
-        "item": "https://www.granrepuestos.com/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Repuestos",
-        "item": "https://www.granrepuestos.com/parts"
-      },
-      ...(category ? [{
-        "@type": "ListItem",
-        "position": 3,
-        "name": category.name,
-        "item": `https://www.granrepuestos.com/parts?category=${category.id}`
-      }] : []),
-      {
-        "@type": "ListItem",
-        "position": category ? 4 : 3,
-        "name": part.name
-      }
-    ]
-  };
-
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Script
             id="product-schema"
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-        <Script
-          id="breadcrumb-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
         <Breadcrumb className="mb-6">
             <BreadcrumbList>
@@ -243,7 +208,7 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                             alt={`Miniatura de ${part.name} - ${index + 1}`}
                             fill
                             className="object-cover"
-                            sizes="10vw"
+                            sizes="(max-width: 768px) 25vw, 10vw"
                             />
                         </div>
                         </CarouselItem>
@@ -257,7 +222,6 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
             <div>
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">{part.name}</h1>
                 <p className="text-sm text-muted-foreground mt-1">SKU: {part.sku}</p>
-                <p className="text-xs text-muted-foreground mt-1">ID: {part.id}</p>
             </div>
            <div className="my-6">
                 <div>
@@ -280,7 +244,6 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                     Obtén un <strong>15% de descuento</strong> en tu compra total pagando con <strong>Binance Pay</strong>.
                 </AlertDescription>
             </Alert>
-
 
            <div className="mt-6">
             <h3 className="text-lg font-bold tracking-tight">Detalles Técnicos</h3>
@@ -328,55 +291,8 @@ function PartDetailPageClient({ part, brand, category, relatedParts }: { part: P
                   </TableBody>
               </Table>
             </div>
-             <div className="mt-auto pt-4 md:hidden">
-              <div className="flex flex-col gap-4">
-                <Alert>
-                  <Wallet className="h-4 w-4" />
-                  <AlertTitle>Métodos de Pago</AlertTitle>
-                  <AlertDescription>
-                    Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
-                  </AlertDescription>
-                </Alert>
-                <Alert>
-                  <Truck className="h-4 w-4" />
-                  <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
-                  <AlertDescription>
-                      Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
-                  </AlertDescription>
-                </Alert>
-                <div className="flex items-center gap-2">
-                    <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
-                      Ver políticas de compra y devolución
-                    </Link>
-                </div>
-              </div>
-            </div>
         </div>
       </div>
-        <footer className="hidden md:block mt-12 pt-8 border-t">
-            <div className="grid md:grid-cols-2 gap-8">
-                 <Alert>
-                    <Wallet className="h-4 w-4" />
-                    <AlertTitle>Métodos de Pago</AlertTitle>
-                    <AlertDescription>
-                    Aceptamos pagos a tasa BCV: Pago Móvil, Transferencias y Binance Pay.
-                    </AlertDescription>
-                </Alert>
-                <Alert>
-                    <Truck className="h-4 w-4" />
-                    <AlertTitle>Envíos a Nivel Nacional</AlertTitle>
-                    <AlertDescription>
-                        Realizamos envíos a toda Venezuela a través de MRW, Zoom y Tealca (Cobro a Destino).
-                    </AlertDescription>
-                </Alert>
-            </div>
-             <div className="mt-4 text-center">
-                <Link href="/politicas" className="text-sm text-muted-foreground hover:underline">
-                    Ver políticas de compra y devolución
-                </Link>
-            </div>
-        </footer>
-
        {relatedParts && relatedParts.length > 0 && (
             <div className="mt-16">
                 <Separator />

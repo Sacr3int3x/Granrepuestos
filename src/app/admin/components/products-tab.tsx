@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -33,7 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2, Search, X, AlertCircle } from "lucide-react";
-import type { Part, Brand, Category, VehicleCompatibility } from "@/lib/types";
+import type { Part, Brand, Category } from "@/lib/types";
 import { useFirestore, useCollection, useMemoFirebase, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,7 +44,6 @@ import { getCategories } from "@/lib/data";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
 
 const PARTS_PER_PAGE = 10;
 
@@ -137,7 +137,6 @@ export default function ProductsTab() {
     return { paginatedParts: paginated, totalPages: total };
 
   }, [parts, searchQuery, brandFilter, categoryFilter, statusFilter, currentPage]);
-
 
   const handleFormSubmit = async (data: any) => {
     if (!firestore || !partsCollection) return;
@@ -275,7 +274,7 @@ export default function ProductsTab() {
             <DialogHeader>
               <DialogTitle>{editingPart ? "Editar Repuesto" : "Añadir Nuevo Repuesto"}</DialogTitle>
               <DialogDescription>
-                {editingPart ? "Edita los detalles del repuesto para actualizarlo en el catálogo." : "Rellena los detalles para añadir un nuevo repuesto al catálogo."}
+                Completa el formulario para gestionar los detalles técnicos y de stock del repuesto en el catálogo.
               </DialogDescription>
             </DialogHeader>
             <ProductForm
